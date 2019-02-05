@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace EhTagApi.Controllers
 {
@@ -20,7 +21,7 @@ namespace EhTagApi.Controllers
         public IActionResult Post(
             [FromHeader(Name = "X-GitHub-Event")] string ev,
             [FromHeader(Name = "X-GitHub-Delivery")] Guid delivery,
-            [FromBody]object payload)
+            [FromBody]dynamic payload)
         {
             if (delivery == Guid.Empty)
                 return BadRequest($"Wrong X-GitHub-Delivery");
@@ -32,6 +33,13 @@ namespace EhTagApi.Controllers
 
             if (ev != "push")
                 return BadRequest($"Unsupported X-GitHub-Event");
+
+            using (var repo = RepositoryClient.Get())
+            {
+                var head = repo.Commits.First();
+                if (head.Sha == payload.after)
+                    return Ok("Already up-to-date.");
+            }
 
             var start = DateTimeOffset.Now;
             RepositoryClient.Pull();
