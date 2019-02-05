@@ -10,7 +10,7 @@ namespace EhTagClient
     public static class RepositoryClient
     {
         internal const string REPO_PATH = "./Db";
-        private const string REMOTE_PATH = "https://github.com/OpportunityLiu/EhTagTranslation.git";
+        private const string REMOTE_PATH = "https://github.com/ehtagtranslation/Database.git";
 
         private static string _GitPath;
 
