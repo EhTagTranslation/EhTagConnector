@@ -23,9 +23,24 @@ namespace EhTagApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Namespace>> Get()
+        public IActionResult Get()
         {
-            return new JsonResult(Database.Keys);
+            using (var repo = RepositoryClient.Get())
+            {
+                var head = repo.Commits.First();
+                return new JsonResult(new
+                {
+                    Head = new
+                    {
+                        head.Author,
+                        head.Committer,
+                        head.Sha,
+                        head.Message
+                    },
+                    Version = Database.GetVersion(),
+                    Namespaces = Database.Values.Select(v => new { v.Namespace, v.Count }),
+                });
+            }
         }
 
         [HttpGet("{namespace}")]

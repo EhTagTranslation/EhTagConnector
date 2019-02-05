@@ -209,6 +209,13 @@ namespace EhTagClient
         public RecordDictionary Female { get; } = new RecordDictionary(Namespace.Female);
         public RecordDictionary Misc { get; } = new RecordDictionary(Namespace.Misc);
 
+        public int GetVersion()
+        {
+            if (!int.TryParse(File.ReadAllText(RepositoryClient.REPO_PATH + "/version"), out var ver))
+                return -1;
+            return ver;
+        }
+
         public IEnumerable<Namespace> Keys { get; }
         public IEnumerable<RecordDictionary> Values { get; }
         public int Count => Keys.Count();
