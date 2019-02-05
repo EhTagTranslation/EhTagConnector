@@ -25,7 +25,7 @@ namespace EhTagApi.Controllers
             if (ev == "ping")
                 return NoContent();
 
-            if (ev != "pull" || delivery == null)
+            if (ev != "push" || delivery == null)
                 return BadRequest();
 
             var start = DateTimeOffset.Now;
