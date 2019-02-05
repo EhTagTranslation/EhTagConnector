@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace EhTagTranslatorClient
+namespace EhTagClient
 {
     [System.Diagnostics.DebuggerDisplay(@"MD{RawString}")]
     public sealed class MarkdownText
@@ -85,7 +85,7 @@ namespace EhTagTranslatorClient
     }
 
     [System.Diagnostics.DebuggerDisplay(@"{GetType()}{ToString()}")]
-    public abstract class MarkdownToken : Windows.Foundation.IStringable
+    public abstract class MarkdownToken
     {
     }
 
