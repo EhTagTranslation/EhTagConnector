@@ -22,6 +22,9 @@ namespace EhTagApi.Controllers
             [FromHeader(Name = "X-GitHub-Delivery")] string delivery,
             [FromBody]object payload)
         {
+            if (ev == "ping")
+                return NoContent();
+
             if (ev != "pull" || delivery == null)
                 return BadRequest();
 
