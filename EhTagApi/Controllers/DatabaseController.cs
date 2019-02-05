@@ -29,6 +29,7 @@ namespace EhTagApi.Controllers
         {
             using (var repo = RepositoryClient.Get())
             {
+                Database.Load();
                 var head = repo.Commits.First();
                 return new JsonResult(new
                 {
