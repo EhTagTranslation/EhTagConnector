@@ -1,6 +1,7 @@
 ﻿using EhTagClient;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,11 +16,12 @@ namespace EhTagApi.Controllers
     {
         public Database Database { get; }
 
-        public DatabaseController()
+        private readonly ILogger logger;
+
+        public DatabaseController(ILogger<WebhookController> logger)
         {
-            RepositoryClient.Pull();
             Database = new Database();
-            Database.Load();
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -48,7 +50,9 @@ namespace EhTagApi.Controllers
         {
             try
             {
-                return Database[@namespace];
+                var db = Database[@namespace];
+                db.Load();
+                return db;
             }
             catch (KeyNotFoundException)
             {
@@ -62,6 +66,7 @@ namespace EhTagApi.Controllers
             try
             {
                 var dic = Database[@namespace];
+                dic.Load();
                 var rec = dic.Find(key);
 
                 if (rec is null)
@@ -81,6 +86,7 @@ namespace EhTagApi.Controllers
             try
             {
                 var dic = Database[@namespace];
+                dic.Load();
                 var found = dic.Find(record.Original);
 
                 if (found is null)
@@ -128,7 +134,9 @@ Current value: (deleted)";
                     errors.AddModelError("translated", "translated should not be empty");
                 if (!errors.IsValid)
                     return ValidationProblem(errors);
+
                 var dic = Database[@namespace];
+                dic.Load();
                 var replaced = dic.AddOrReplace(record);
 
                 if (replaced != null && record.ToString() == replaced.ToString())
