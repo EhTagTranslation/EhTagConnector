@@ -19,14 +19,19 @@ namespace EhTagApi.Controllers
         [HttpPost]
         public IActionResult Post(
             [FromHeader(Name = "X-GitHub-Event")] string ev,
-            [FromHeader(Name = "X-GitHub-Delivery")] string delivery,
+            [FromHeader(Name = "X-GitHub-Delivery")] Guid delivery,
             [FromBody]object payload)
         {
+            if (delivery == Guid.Empty)
+                return BadRequest($"Wrong X-GitHub-Delivery");
+            if (string.IsNullOrWhiteSpace(ev))
+                return BadRequest($"Missing X-GitHub-Event");
+
             if (ev == "ping")
                 return NoContent();
 
-            if (ev != "push" || delivery == null)
-                return BadRequest();
+            if (ev != "push")
+                return BadRequest($"Unsupported X-GitHub-Event");
 
             var start = DateTimeOffset.Now;
             RepositoryClient.Pull();
