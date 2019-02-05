@@ -27,6 +27,8 @@ namespace EhTagClient
         [JsonIgnore]
         public string Suffix { get; set; }
 
+        public int Count => this.MapData.Count;
+
         public IEnumerable<Record> Data
         {
             get
@@ -128,8 +130,6 @@ namespace EhTagClient
                 sw.Write(Suffix);
             }
         }
-
-        public int Count => this.MapData.Count;
 
         public Record Find(string key)
         {
