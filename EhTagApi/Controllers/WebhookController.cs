@@ -1,6 +1,7 @@
 ﻿using EhTagClient;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 
@@ -37,7 +38,7 @@ namespace EhTagApi.Controllers
             using (var repo = RepositoryClient.Get())
             {
                 var head = repo.Commits.First();
-                if (head.Sha == payload.after)
+                if (head.Sha.Equals((string)payload.after.Value, StringComparison.OrdinalIgnoreCase))
                     return Ok("Already up-to-date.");
             }
 
