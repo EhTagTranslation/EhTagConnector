@@ -33,15 +33,16 @@ namespace EhTagApi.Controllers
                 var head = repo.Commits.First();
                 return new JsonResult(new
                 {
+                    Repo = repo.Network.Remotes["origin"].PushUrl,
                     Head = new
                     {
                         head.Author,
                         head.Committer,
                         head.Sha,
-                        head.Message
+                        head.Message,
                     },
                     Version = Database.GetVersion(),
-                    Namespaces = Database.Values.Select(v => new { v.Namespace, v.Count }),
+                    Data = Database.Values.Select(v => new { v.Namespace, v.Count }),
                 });
             }
         }
