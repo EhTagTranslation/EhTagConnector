@@ -28,7 +28,7 @@ namespace EhTagClient
                 };
             };
 
-        public static Identity CommandIdentity { get; set; } = new Identity(Username, Email);
+        public static Identity CommandIdentity => new Identity(Username, Email);
 
         public static void Init()
         {

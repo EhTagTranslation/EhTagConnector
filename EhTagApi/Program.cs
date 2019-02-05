@@ -14,7 +14,6 @@ namespace EhTagApi
     {
         public static void Main(string[] args)
         {
-            EhTagClient.RepositoryClient.Init();
             CreateWebHostBuilder(args).Build().Run();
         }
 

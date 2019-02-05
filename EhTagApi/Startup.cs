@@ -47,6 +47,11 @@ namespace EhTagApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            EhTagClient.RepositoryClient.Username = Configuration.GetValue<string>("GitHub:Username");
+            EhTagClient.RepositoryClient.Password = Configuration.GetValue<string>("GitHub:Password");
+            EhTagClient.RepositoryClient.Email = Configuration.GetValue<string>("GitHub:Email");
+            EhTagClient.RepositoryClient.Init();
         }
     }
 }
