@@ -138,7 +138,7 @@ namespace EhTagClient
             return RawData[index];
         }
 
-        public void AddOrReplace(Record record)
+        public Record AddOrReplace(Record record)
         {
             if (record is null)
                 throw new ArgumentNullException(nameof(record));
@@ -148,11 +148,16 @@ namespace EhTagClient
                 throw new ArgumentException("Invalied record.Original");
 
             if (MapData.TryGetValue(key, out var index))
+            {
+                var old = this.RawData[index];
                 this.RawData[index] = record;
+                return old;
+            }
             else
             {
                 this.MapData.Add(key, this.RawData.Count);
                 this.RawData.Add(record);
+                return null;
             }
         }
 

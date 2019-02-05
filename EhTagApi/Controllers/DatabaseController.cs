@@ -1,7 +1,9 @@
 ﻿using EhTagClient;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -51,6 +53,87 @@ namespace EhTagApi.Controllers
                     return NotFound();
 
                 return rec;
+            }
+            catch (KeyNotFoundException)
+            {
+                return BadRequest(new { @namespace = new[] { $"The value '{@namespace}' is not valid." } });
+            }
+        }
+
+        [HttpDelete("{namespace}")]
+        public ActionResult<Record> Delete(Namespace @namespace, [FromQuery]string username, [EmailAddress][FromQuery]string email, [FromBody] Record record)
+        {
+            try
+            {
+                var dic = Database[@namespace];
+                var found = dic.Find(record.Original);
+
+                if (found is null)
+                    return NotFound();
+
+                if (record.ToString() != found.ToString())
+                    return Conflict(new
+                    {
+                        Exist = found,
+                        Request = record
+                    });
+
+                dic.Remove(record.Original);
+                dic.Save();
+                try
+                {
+                    var message = $@"Modified '{record.Original}' of {@namespace.ToString().ToLower()}.
+
+Previous value: {found}
+Current value: (deleted)";
+                    RepositoryClient.Commit(message, new LibGit2Sharp.Identity(username, email));
+                    RepositoryClient.Push();
+                    return Ok(record);
+                }
+                catch (Exception ex)
+                {
+                    return Conflict(ex);
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                return BadRequest(new { @namespace = new[] { $"The value '{@namespace}' is not valid." } });
+            }
+        }
+
+        [HttpPost("{namespace}")]
+        public ActionResult<Record> Post(Namespace @namespace, [FromQuery]string username, [EmailAddress][FromQuery]string email, [FromBody] Record record)
+        {
+            try
+            {
+                var errors = new ModelStateDictionary();
+                if (string.IsNullOrEmpty(record.Original))
+                    errors.AddModelError("original", "original should not be empty");
+                if (string.IsNullOrEmpty(record.TranslatedRaw))
+                    errors.AddModelError("translated", "translated should not be empty");
+                if (!errors.IsValid)
+                    return ValidationProblem(errors);
+                var dic = Database[@namespace];
+                var replaced = dic.AddOrReplace(record);
+
+                if (replaced != null && record.ToString() == replaced.ToString())
+                    return NoContent();
+
+                dic.Save();
+                try
+                {
+                    var message = $@"Modified '{record.Original}' of {@namespace.ToString().ToLower()}.
+
+Previous value: {(object)replaced ?? "(non-existence)"}
+Current value: {record}";
+                    RepositoryClient.Commit(message, new LibGit2Sharp.Identity(username, email));
+                    RepositoryClient.Push();
+                    return Created($"api/database/{@namespace.ToString().ToLower()}/{record.Original}", record);
+                }
+                catch (Exception ex)
+                {
+                    return Conflict(ex);
+                }
             }
             catch (KeyNotFoundException)
             {

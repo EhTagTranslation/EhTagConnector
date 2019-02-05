@@ -96,6 +96,7 @@ namespace EhTagClient
             return new Record(r1.Original, translated, intro, $"{r1.ExternalLinksRaw} {r2.ExternalLinksRaw}");
         }
 
+        [JsonConstructor]
         public Record(string original, string translated, string introduction, string externalLinks)
         {
             this.Original = original.Trim().ToLower();
