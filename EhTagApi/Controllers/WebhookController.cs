@@ -27,8 +27,9 @@ namespace EhTagApi.Controllers
 
             var start = DateTimeOffset.Now;
             RepositoryClient.Pull();
-            this.logger.LogInformation($"Pulled form github in {(DateTimeOffset.Now - start).TotalMilliseconds}ms.");
-            return Ok();
+            var log = $"Pulled form github in {(DateTimeOffset.Now - start).TotalMilliseconds}ms.";
+            this.logger.LogInformation(log);
+            return Ok(log);
         }
     }
 }
