@@ -82,7 +82,7 @@ namespace EhTagApi.Controllers
                 dic.Save();
                 try
                 {
-                    var message = $@"Modified '{record.Original}' of {@namespace.ToString().ToLower()}.
+                    var message = $@"In {@namespace.ToString().ToLower()}: Deleted '{record.Original}'.
 
 Previous value: {found}
 Current value: (deleted)";
@@ -122,7 +122,7 @@ Current value: (deleted)";
                 dic.Save();
                 try
                 {
-                    var message = $@"Modified '{record.Original}' of {@namespace.ToString().ToLower()}.
+                    var message = $@"In {@namespace.ToString().ToLower()}: {(replaced is null ? "Added" : "Modified")} '{record.Original}'.
 
 Previous value: {(object)replaced ?? "(non-existence)"}
 Current value: {record}";
