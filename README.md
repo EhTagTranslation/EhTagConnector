@@ -198,6 +198,7 @@ HTTP/2.0 201 Created
 Content-Type: application/json; charset=utf-8
 Content-Encoding: gzip
 Location: api/database/parody/gotoubun no hanayome
+ETag: "d4553b638098466ef013567b319c034f8ee34950"
 ```
 
 ```js
@@ -238,6 +239,7 @@ HTTP/2.0 200 OK
 ---
 Content-Type: application/json; charset=utf-8
 Content-Encoding: gzip
+ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
 
 ```js
@@ -268,4 +270,5 @@ If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 ```yml
 HTTP/2.0 204 No Content
 ---
+ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
