@@ -65,7 +65,7 @@ namespace EhTagApi.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (context.HttpContext.Response.StatusCode < 300)
+            if (context.HttpContext.Response.StatusCode < 300 && context.HttpContext.Response.StatusCode >= 200)
                 context.HttpContext.Response.Headers.Add("ETag", new StringValues(CurrentETag));
         }
     }
