@@ -65,19 +65,8 @@ namespace EhTagApi.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            switch (context.HttpContext.Request.Method)
-            {
-            case "GET":
-            case "HEAD":
+            if (context.HttpContext.Response.StatusCode < 300)
                 context.HttpContext.Response.Headers.Add("ETag", new StringValues(CurrentETag));
-                return;
-
-            case "POST":
-            case "PUT":
-            case "PATCH":
-            case "DELETE":
-                return;
-            }
         }
     }
 }
