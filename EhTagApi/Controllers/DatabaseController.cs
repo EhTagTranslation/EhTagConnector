@@ -90,16 +90,8 @@ Current value: (deleted)";
         public ActionResult<Record> Post([SingleNamespace]Namespace @namespace,
             [Required][MinLength(1)][FromQuery]string username,
             [Required][EmailAddress][FromQuery]string email,
-            [Required][FromBody] Record record)
+            [AcceptableTranslation][FromBody] Record record)
         {
-            var errors = new ModelStateDictionary();
-            if (string.IsNullOrEmpty(record.Original))
-                errors.AddModelError("original", "original should not be empty");
-            if (string.IsNullOrEmpty(record.TranslatedRaw))
-                errors.AddModelError("translated", "translated should not be empty");
-            if (!errors.IsValid)
-                return ValidationProblem(errors);
-
             var dic = this.database[@namespace];
             var replaced = dic.Find(record.Original);
 
@@ -122,16 +114,8 @@ Current value: {record}";
         public ActionResult<Record> Put([SingleNamespace]Namespace @namespace,
             [Required][MinLength(1)][FromQuery]string username,
             [Required][EmailAddress][FromQuery]string email,
-            [Required][FromBody] Record record)
+            [AcceptableTranslation][FromBody] Record record)
         {
-            var errors = new ModelStateDictionary();
-            if (string.IsNullOrEmpty(record.Original))
-                errors.AddModelError("original", "original should not be empty");
-            if (string.IsNullOrEmpty(record.TranslatedRaw))
-                errors.AddModelError("translated", "translated should not be empty");
-            if (!errors.IsValid)
-                return ValidationProblem(errors);
-
             var dic = this.database[@namespace];
             var replaced = dic.Find(record.Original);
 

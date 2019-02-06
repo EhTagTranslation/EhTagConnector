@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,25 @@ using System.Text.RegularExpressions;
 
 namespace EhTagClient
 {
+    public class AcceptableTranslationAttribute : ValidationAttribute
+    {
+        public override bool RequiresValidationContext => true;
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            if (!(value is Record record))
+                return new ValidationResult($"The value '{value}' is not valid.");
+            var failedFields = new List<string>(2);
+            if (string.IsNullOrEmpty(record.Original))
+                failedFields.Add(validationContext.MemberName + ".original");
+            if (string.IsNullOrEmpty(record.TranslatedRaw))
+                failedFields.Add(validationContext.MemberName + ".translated");
+            if (failedFields.Count != 0)
+                return new ValidationResult($"Field should not be empty.", failedFields);
+            return ValidationResult.Success;
+        }
+    }
+
     [DebuggerDisplay(@"\{{Original} => {Translated.RawString}\}")]
     public class Record
     {

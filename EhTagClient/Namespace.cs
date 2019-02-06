@@ -24,8 +24,6 @@ namespace EhTagClient
 
     public class SingleNamespaceAttribute : ValidationAttribute
     {
-        public override string FormatErrorMessage(string name) => $"{name} is not valid namespace.";
-
         public override bool RequiresValidationContext => true;
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
