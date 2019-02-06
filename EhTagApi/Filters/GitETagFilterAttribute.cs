@@ -30,6 +30,7 @@ namespace EhTagApi.Filters
             switch (context.HttpContext.Request.Method)
             {
             case "GET":
+            case "HEAD":
                 if (!context.HttpContext.Request.Headers.TryGetValue("If-None-Match", out var ifNoneMatch))
                     return;
                 if (!EqualsCurrentETag(ifNoneMatch))
@@ -64,10 +65,19 @@ namespace EhTagApi.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (context.HttpContext.Request.Method != "GET")
+            switch (context.HttpContext.Request.Method)
+            {
+            case "GET":
+            case "HEAD":
+                context.HttpContext.Response.Headers.Add("ETag", new StringValues(CurrentETag));
                 return;
 
-            context.HttpContext.Response.Headers.Add("ETag", new[] { '"' + EhTagClient.RepositoryClient.CurrentSha + '"' });
+            case "POST":
+            case "PUT":
+            case "PATCH":
+            case "DELETE":
+                return;
+            }
         }
     }
 }

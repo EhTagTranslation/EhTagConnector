@@ -25,6 +25,12 @@ namespace EhTagApi.Controllers
             this.database = database;
         }
 
+        [HttpHead]
+        public IActionResult Head()
+        {
+            return NoContent();
+        }
+
         [HttpGet]
         public IActionResult Get()
         {

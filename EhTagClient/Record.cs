@@ -68,7 +68,7 @@ namespace EhTagClient
                 sb.Replace(@"\~", @"~");
                 sb.Replace(@"\*", @"*");
                 sb.Replace(@"\\", @"\");
-                sb.Replace("<br>", Environment.NewLine);
+                sb.Replace("<br>", "\n");
                 return sb.ToString();
             }
             return value;
@@ -81,7 +81,9 @@ namespace EhTagClient
                 .Replace(@"|", @"\|")
                 .Replace(@"~", @"\~")
                 .Replace(@"*", @"\*")
-                .Replace(Environment.NewLine, "<br>");
+                .Replace("\r\n", "<br>")
+                .Replace("\n", "<br>")
+                .Replace("\r", "<br>");
         }
 
         internal static Record Combine(Record r1, Record r2)
