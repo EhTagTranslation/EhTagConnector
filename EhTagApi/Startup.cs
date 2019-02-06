@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using EhTagClient;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,21 @@ namespace EhTagApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            RepositoryClient.Username = Configuration.GetValue<string>("GitHub:Username");
+            RepositoryClient.Password = Configuration.GetValue<string>("GitHub:Password");
+            RepositoryClient.Email = Configuration.GetValue<string>("GitHub:Email");
+            RepositoryClient.Init();
+
+            var db = new Database();
+            db.Load();
+
+            services.AddSingleton(db);
+
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+            });
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options =>
@@ -46,12 +62,8 @@ namespace EhTagApi
             }
 
             app.UseHttpsRedirection();
+            app.UseResponseCompression();
             app.UseMvc();
-
-            EhTagClient.RepositoryClient.Username = Configuration.GetValue<string>("GitHub:Username");
-            EhTagClient.RepositoryClient.Password = Configuration.GetValue<string>("GitHub:Password");
-            EhTagClient.RepositoryClient.Email = Configuration.GetValue<string>("GitHub:Email");
-            EhTagClient.RepositoryClient.Init();
         }
     }
 }

@@ -12,10 +12,12 @@ namespace EhTagApi.Controllers
     public class WebhookController : Controller
     {
         private readonly ILogger logger;
+        private readonly Database database;
 
-        public WebhookController(ILogger<WebhookController> logger)
+        public WebhookController(ILogger<WebhookController> logger, Database database)
         {
             this.logger = logger;
+            this.database = database;
         }
 
         [HttpPost]
@@ -35,17 +37,14 @@ namespace EhTagApi.Controllers
             if (ev != "push")
                 return BadRequest($"Unsupported X-GitHub-Event");
 
-            using (var repo = RepositoryClient.Get())
-            {
-                var head = repo.Commits.First();
-                if (head.Sha.Equals((string)payload.after.Value, StringComparison.OrdinalIgnoreCase))
-                    return Ok("Already up-to-date.");
-            }
+            if (RepositoryClient.CurrentSha.Equals((string)payload.after.Value, StringComparison.OrdinalIgnoreCase))
+                return Ok("Already up-to-date.");
 
             var start = DateTimeOffset.Now;
             RepositoryClient.Pull();
             var log = $"Pulled form github in {(DateTimeOffset.Now - start).TotalMilliseconds}ms.";
             this.logger.LogInformation(log);
+            this.database.Load();
             return Ok(log);
         }
     }

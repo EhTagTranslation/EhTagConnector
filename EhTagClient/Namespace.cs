@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace EhTagClient
@@ -19,6 +20,35 @@ namespace EhTagClient
         Male = 64,
         Female = 128,
         Misc = 256
+    }
+
+    public class SingleNamespaceAttribute : ValidationAttribute
+    {
+        public override string FormatErrorMessage(string name) => $"{name} is not valid namespace.";
+
+        public override bool RequiresValidationContext => true;
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            if (!(value is Namespace ns))
+                return new ValidationResult($"The value '{value}' is not valid.");
+            switch (ns)
+            {
+            case Namespace.Unknown:
+            default:
+                return new ValidationResult($"The value '{value}' is not valid.");
+            case Namespace.Reclass:
+            case Namespace.Language:
+            case Namespace.Parody:
+            case Namespace.Character:
+            case Namespace.Group:
+            case Namespace.Artist:
+            case Namespace.Male:
+            case Namespace.Female:
+            case Namespace.Misc:
+                return ValidationResult.Success;
+            }
+        }
     }
 
     public static class NamespaceExtention
