@@ -9,7 +9,7 @@ EhTagConnector
 <https://ehtagconnector.azurewebsites.net/api/>
 
 ### 版本控制
-使用 [`ETag`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/ETag) 进行版本控制，其值为最新一次 Git commit 的 sha1 值。
+使用 [`ETag`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/ETag) 进行版本控制，其值为最新一次 Git commit 的 sha1 值。可以使用[数据库基本情况](#数据库基本情况) API 进行查询。
 
 + 对于 `GET` 请求，`ETag` 将随 `HTTP2XX` 响应返回。
   
