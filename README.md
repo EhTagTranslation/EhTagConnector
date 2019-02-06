@@ -9,7 +9,7 @@
 <https://ehtagconnector.azurewebsites.net/api/>
 
 ### 版本控制
-使用 [`ETag`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/ETag) 进行版本控制，其值为最新一次 Git commit 的 sha1 值。可以使用[数据库基本情况](#数据库基本情况) API 进行查询。
+使用 [`ETag`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/ETag) 进行版本控制，其值为最新一次 Git commit 的 sha1 值。可以使用[查询数据库数据版本](#查询数据库数据版本) API 进行查询。
 
 + `ETag` 将随 `HTTP 2XX` 响应返回。
 
@@ -31,11 +31,9 @@
 提交的显示效果如下：  
 ![](/DocImages/commit.png)
 
-### 查询 API (`GET` 请求)
+### 查询数据库基本情况
 
-#### 数据库基本情况
-
-路径: `/database`
+路径: `GET /database`
 
 示例请求：
 ```yml
@@ -85,26 +83,30 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 }
 ```
 
-> 如只需获取 `ETag` 信息（即最新一次提交的 sha1），可以使用相应的 `HEAD` 请求。
-> 
-> 示例请求：
-> ```yml
-> HEAD /api/database
-> ---
-> If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
-> ```
-> 
-> 示例响应：
-> ```yml
-> HTTP/2.0 204 No Content
-> ---
-> ETag: "d4553b638098466ef013567b319c034f8ee34950"
-> ```
+### 查询数据库数据版本
+
+如只需获取 `ETag` 信息（即最新一次提交的 sha1），可以使用 `HEAD` 请求。
+
+路径: `HEAD /database`
+
+示例请求：
+```yml
+HEAD /api/database
+---
+If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
+```
+
+示例响应：
+```yml
+HTTP/2.0 204 No Content
+---
+ETag: "d4553b638098466ef013567b319c034f8ee34950"
+```
 
 
-#### 某一分类的翻译
+### 查询某一分类的翻译
 
-路径: `/database/:namespace`
+路径: `GET /database/:namespace`
 
 示例请求：
 ```yml
@@ -138,9 +140,28 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 }
 ```
 
-#### 某一条目的翻译
+### 查询某一条目是否存在
 
-路径: `/database/:namespace/:original`
+路径: `HEAD /database/:namespace/:original`
+
+示例请求：
+```yml
+HEAD /api/database/reclass/private
+---
+```
+
+示例响应：
+```yml
+HTTP/2.0 204 No Content
+---
+ETag: "d4553b638098466ef013567b319c034f8ee34950"
+```
+
+> 条目不存在则返回 `HTTP 404 Not Found`。
+
+### 查询某一条目的翻译
+
+路径: `GET /database/:namespace/:original`
 
 示例请求：
 ```yml
@@ -168,11 +189,11 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 }
 ```
 
-### 增加 API (`POST` 请求)
+> 条目不存在则返回 `HTTP 404 Not Found`。
 
-#### 增加条目
+### 增加条目
 
-路径: `/database/:namespace`
+路径: `POST /database/:namespace`
 
 示例请求：
 ```yml
@@ -210,11 +231,11 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 }
 ```
 
-### 修改 API (`PUT` 请求)
+> 已有同名条目时将返回 `HTTP 422 Unprocessable Entity`，需改用 `PUT` 请求。
 
-#### 修改条目
+### 修改条目
 
-路径: `/database/:namespace`
+路径: `PUT /database/:namespace`
 
 示例请求：
 ```yml
@@ -253,9 +274,9 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 > 当请求内容与数据库内容一致时（未进行修改），将返回 `HTTP 204 No Content`。
 
-### 删除 API (`DELETE` 请求)
+> 条目不存在则返回 `HTTP 404 Not Found`，需改用 `POST` 请求。
 
-#### 删除条目
+### 删除条目
 
 路径: `/database/:namespace/:original`
 
@@ -272,3 +293,5 @@ HTTP/2.0 204 No Content
 ---
 ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
+
+> 条目不存在则返回 `HTTP 404 Not Found`。

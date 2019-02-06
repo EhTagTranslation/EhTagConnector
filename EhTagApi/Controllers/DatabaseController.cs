@@ -53,13 +53,25 @@ namespace EhTagApi.Controllers
         }
 
         [HttpGet("{namespace}")]
-        public ActionResult<RecordDictionary> Get([SingleNamespace]Namespace @namespace)
+        public ActionResult<RecordDictionary> Get([SingleNamespace] Namespace @namespace)
         {
             return this.database[@namespace];
         }
 
+        [HttpHead("{namespace}/{original}")]
+        public IActionResult Head([SingleNamespace] Namespace @namespace, string original)
+        {
+            var dic = this.database[@namespace];
+            var rec = dic.Find(original);
+
+            if (rec is null)
+                return NotFound();
+
+            return NoContent();
+        }
+
         [HttpGet("{namespace}/{original}")]
-        public ActionResult<Record> Get([SingleNamespace]Namespace @namespace, string original)
+        public ActionResult<Record> Get([SingleNamespace] Namespace @namespace, string original)
         {
             var dic = this.database[@namespace];
             var rec = dic.Find(original);
@@ -71,9 +83,10 @@ namespace EhTagApi.Controllers
         }
 
         [HttpDelete("{namespace}/{original}")]
-        public ActionResult<Record> Delete([SingleNamespace]Namespace @namespace, string original,
-            [Required][MinLength(1)][FromQuery]string username,
-            [Required][EmailAddress][FromQuery]string email)
+        public ActionResult<Record> Delete([SingleNamespace] Namespace @namespace,
+            string original,
+            [Required, MinLength(1), FromQuery] string username,
+            [Required, EmailAddress, FromQuery] string email)
         {
             var dic = this.database[@namespace];
             var found = dic.Find(original);
@@ -93,10 +106,10 @@ Current value: (deleted)";
         }
 
         [HttpPost("{namespace}")]
-        public ActionResult<Record> Post([SingleNamespace]Namespace @namespace,
-            [Required][MinLength(1)][FromQuery]string username,
-            [Required][EmailAddress][FromQuery]string email,
-            [AcceptableTranslation][FromBody] Record record)
+        public ActionResult<Record> Post([SingleNamespace] Namespace @namespace,
+            [Required, MinLength(1), FromQuery] string username,
+            [Required, EmailAddress, FromQuery] string email,
+            [AcceptableTranslation, FromBody] Record record)
         {
             var dic = this.database[@namespace];
             var replaced = dic.Find(record.Original);
@@ -117,16 +130,16 @@ Current value: {record}";
         }
 
         [HttpPut("{namespace}")]
-        public ActionResult<Record> Put([SingleNamespace]Namespace @namespace,
-            [Required][MinLength(1)][FromQuery]string username,
-            [Required][EmailAddress][FromQuery]string email,
-            [AcceptableTranslation][FromBody] Record record)
+        public ActionResult<Record> Put([SingleNamespace] Namespace @namespace,
+            [Required, MinLength(1), FromQuery] string username,
+            [Required, EmailAddress, FromQuery] string email,
+            [AcceptableTranslation, FromBody] Record record)
         {
             var dic = this.database[@namespace];
             var replaced = dic.Find(record.Original);
 
             if (replaced == null)
-                return UnprocessableEntity(new { record = "Record with same 'original' is not found in the wiki, use POST to insert the record." });
+                return NotFound(new { record = "Record with same 'original' is not found in the wiki, use POST to insert the record." });
 
             dic.AddOrReplace(record);
             dic.Save();
