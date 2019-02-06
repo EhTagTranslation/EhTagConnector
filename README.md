@@ -24,7 +24,7 @@
 
 ### 用户授权
 
-进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户授权，需要的信息为用户名 (`username`) 和邮箱 (`email`)，通过 URL Query 输入（如 `POST /api/database/reclass?username=USER&email=user@example.com`）。
+进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户授权，需要的信息为用户名 (`name`) 和邮箱 (`email`)，通过 URL Query 输入（如 `POST /api/database/reclass?name=USER&email=user@example.com`）。
 
 为了便于将修改对应到相应的 GitHub 用户，建议使用 GitHub 用户名和相应的注册邮箱。
 
@@ -197,7 +197,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 示例请求：
 ```yml
-POST /api/database/parody?username=OpportunityLiu&email=Opportunity@live.in
+POST /api/database/parody?name=OpportunityLiu&email=Opportunity@live.in
 ---
 If-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 Content-Type: application/json
@@ -239,7 +239,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 示例请求：
 ```yml
-PUT /api/database/reclass?username=OpportunityLiu&email=Opportunity@live.in
+PUT /api/database/reclass?name=OpportunityLiu&email=Opportunity@live.in
 ---
 Content-Type: application/json
 If-Match: "d4553b638098466ef013567b319c034f8ee34950"
@@ -282,7 +282,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 示例请求：
 ```yml
-DELETE /api/database/reclass/private?username=OpportunityLiu&email=Opportunity@live.in
+DELETE /api/database/reclass/private?name=OpportunityLiu&email=Opportunity@live.in
 ---
 If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 ```

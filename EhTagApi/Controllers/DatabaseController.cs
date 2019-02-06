@@ -1,5 +1,6 @@
 ﻿using EhTagApi.Filters;
 using EhTagClient;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,16 @@ using System.Threading.Tasks;
 
 namespace EhTagApi.Controllers
 {
+    public class IdentityBuilder
+    {
+        [Required, EmailAddress, FromQuery(Name = "email")]
+        public string Email { get; set; }
+        [Required, MinLength(1), FromQuery(Name = "name")]
+        public string Name { get; set; }
+
+        public LibGit2Sharp.Identity Build() => new LibGit2Sharp.Identity(Name, Email);
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     [GitETagFilter]
@@ -85,8 +96,7 @@ namespace EhTagApi.Controllers
         [HttpDelete("{namespace}/{original}")]
         public ActionResult<Record> Delete([SingleNamespace] Namespace @namespace,
             string original,
-            [Required, MinLength(1), FromQuery] string username,
-            [Required, EmailAddress, FromQuery] string email)
+            [FromQuery]IdentityBuilder identity)
         {
             var dic = this.database[@namespace];
             var found = dic.Find(original);
@@ -96,19 +106,13 @@ namespace EhTagApi.Controllers
             dic.Remove(original);
             dic.Save();
 
-            var message = $@"In {@namespace.ToString().ToLower()}: Deleted '{original}'.
-
-Previous value: {found}
-Current value: (deleted)";
-            RepositoryClient.Commit(message, new LibGit2Sharp.Identity(username, email));
-            RepositoryClient.Push();
+            commit(@namespace, found, null, identity);
             return NoContent();
         }
 
         [HttpPost("{namespace}")]
         public ActionResult<Record> Post([SingleNamespace] Namespace @namespace,
-            [Required, MinLength(1), FromQuery] string username,
-            [Required, EmailAddress, FromQuery] string email,
+            [FromQuery]IdentityBuilder identity,
             [AcceptableTranslation, FromBody] Record record)
         {
             var dic = this.database[@namespace];
@@ -120,25 +124,19 @@ Current value: (deleted)";
             dic.AddOrReplace(record);
             dic.Save();
 
-            var message = $@"In {@namespace.ToString().ToLower()}: Added '{record.Original}'.
-
-Previous value: (non-existence)
-Current value: {record}";
-            RepositoryClient.Commit(message, new LibGit2Sharp.Identity(username, email));
-            RepositoryClient.Push();
+            commit(@namespace, null, record, identity);
             return Created($"api/database/{@namespace.ToString().ToLower()}/{record.Original}", record);
         }
 
         [HttpPut("{namespace}")]
         public ActionResult<Record> Put([SingleNamespace] Namespace @namespace,
-            [Required, MinLength(1), FromQuery] string username,
-            [Required, EmailAddress, FromQuery] string email,
+            [FromQuery]IdentityBuilder identity,
             [AcceptableTranslation, FromBody] Record record)
         {
             var dic = this.database[@namespace];
             var replaced = dic.Find(record.Original);
 
-            if (replaced == null)
+            if (replaced is null)
                 return NotFound(new { record = "Record with same 'original' is not found in the wiki, use POST to insert the record." });
 
             dic.AddOrReplace(record);
@@ -147,13 +145,25 @@ Current value: {record}";
             if (record.ToString() == replaced.ToString())
                 return NoContent();
 
-            var message = $@"In {@namespace.ToString().ToLower()}: Modified '{record.Original}'.
-
-Previous value: {replaced}
-Current value: {record}";
-            RepositoryClient.Commit(message, new LibGit2Sharp.Identity(username, email));
-            RepositoryClient.Push();
+            commit(@namespace, replaced, record, identity);
             return Ok(record);
+        }
+
+        private void commit(Namespace @namespace, Record o, Record n, IdentityBuilder identity)
+        {
+            var verb = "Modified";
+            if (o is null)
+                verb = "Added";
+            else if (n is null)
+                verb = "Deleted";
+
+            var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{(o ?? n).Original}'.
+
+Previous value: {o}
+Current value: {n}";
+
+            RepositoryClient.Commit(message, identity.Build());
+            RepositoryClient.Push();
         }
     }
 }
