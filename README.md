@@ -25,6 +25,9 @@ EhTagConnector
 
 为了便于将修改对应到相应的 GitHub 用户，建议使用 GitHub 用户名和相应的注册邮箱。
 
+提交的显示效果如下：
+![](/DocImages/commit.png)
+
 ### 查询 API (`GET` 请求)
 
 #### 数据库基本情况
@@ -153,18 +156,18 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 示例请求：
 ```yml
-POST /api/database/reclass?username=OpportunityLiu&email=Opportuniy@live.in
+POST /api/database/parody?username=OpportunityLiu&email=Opportunity@live.in
 ---
-If-Match: "5dd45269a56960affbcd13cd3828f6dbe577341f"
+If-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 Content-Type: application/json
 ```
 
 ```js
 {
-  "original": "private",
-  "translated": "私人的",
-  "introduction": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
-  "externalLinks": ""
+    "original": "gotoubun no hanayome",
+    "translated": "五等分的新娘",
+    "introduction": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
+    "externalLinks": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
 }
 ```
 
@@ -174,15 +177,15 @@ HTTP/2.0 201 Created
 ---
 Content-Type: application/json; charset=utf-8
 Content-Encoding: gzip
-Location: api/database/reclass/private
+Location: api/database/parody/gotoubun no hanayome
 ```
 
 ```js
 {
-  "original": "private",
-  "translated": "私人的",
-  "introduction": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
-  "externalLinks": ""
+    "original": "gotoubun no hanayome",
+    "translated": "五等分的新娘",
+    "introduction": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
+    "externalLinks": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
 }
 ```
 
@@ -194,7 +197,7 @@ Location: api/database/reclass/private
 
 示例请求：
 ```yml
-PUT /api/database/reclass?username=OpportunityLiu&email=Opportuniy@live.in
+PUT /api/database/reclass?username=OpportunityLiu&email=Opportunity@live.in
 ---
 Content-Type: application/json
 If-Match: "d4553b638098466ef013567b319c034f8ee34950"
@@ -234,7 +237,7 @@ Content-Encoding: gzip
 
 示例请求：
 ```yml
-DELETE /api/database/reclass/private?username=OpportunityLiu&email=Opportuniy@live.in
+DELETE /api/database/reclass/private?username=OpportunityLiu&email=Opportunity@live.in
 ---
 If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 ```
