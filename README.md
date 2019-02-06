@@ -40,6 +40,7 @@ GET /api/database
 ---
 Accept: application/json
 Accept-Encoding: gzip, deflate, br
+If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
 
 示例响应：
@@ -58,17 +59,17 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
   //最新一次提交信息
   "head": {
     "author": {
-      "name": "Opportunity",
+      "name": "OpportunityLiu",
       "email": "Opportunity@live.in",
-      "when": "2019-02-06T02:14:52+08:00"
+      "when": "2019-02-06T14:06:00+00:00"
     },
     "committer": {
-      "name": "GitHub",
-      "email": "noreply@github.com",
-      "when": "2019-02-06T02:14:52+08:00"
+      "name": "EhTagApi-Bot",
+      "email": "47353891+EhTagApi-Bot@users.noreply.github.com",
+      "when": "2019-02-06T14:06:00+00:00"
     },
-    "sha": "d4553b638098466ef013567b319c034f8ee34950",
-    "message": "Update LICENSE.md"
+    "sha": "10ee33e7a348bf5842433944baa196da53eaa0df",
+    "message": "In parody: Added 'gotoubun no hanayome'.\n\nPrevious value: (non-existence)\nCurrent value: | gotoubun no hanayome | 五等分的新娘 | 《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 | [维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (\\*) |\n"
   },
   //数据库结构版本
   "version": 5,
@@ -77,8 +78,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
     {
       "namespace": "reclass",
       "count": 11
-    }, // ...
-  ]
+    },//...
 }
 ```
 
