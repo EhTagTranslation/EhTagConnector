@@ -21,7 +21,7 @@ EhTagConnector
 
 ### 用户授权
 
-进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户授权，需要的信息为用户名 (`username`) 和邮箱 (`email`)，通过 URL Query 输入（如 `POST /api/database/reclass/gamecg?username=USER&email=user@example.com`）。
+进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户授权，需要的信息为用户名 (`username`) 和邮箱 (`email`)，通过 URL Query 输入（如 `POST /api/database/reclass?username=USER&email=user@example.com`）。
 
 为了便于将修改对应到相应的 GitHub 用户，建议使用 GitHub 用户名和相应的注册邮箱。
 
@@ -228,6 +228,8 @@ Content-Encoding: gzip
   "externalLinks": ""
 }
 ```
+
+> 当请求内容与数据库内容一致时（未进行修改），将返回 `HTTP/2.0 204 No Content`。
 
 ### 删除 API (`DELETE` 请求)
 
