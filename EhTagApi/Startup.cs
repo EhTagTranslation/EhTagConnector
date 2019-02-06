@@ -33,8 +33,9 @@ namespace EhTagApi
 
             var db = new Database();
             db.Load();
-
             services.AddSingleton(db);
+
+            services.AddHttpsRedirection(options => options.RedirectStatusCode = 301);
 
             services.AddResponseCompression(options =>
             {
