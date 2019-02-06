@@ -17,7 +17,10 @@ EhTagConnector
   
 + 对于 `POST`, `PUT`, `DELETE` 请求，必须使用 [`If-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Match) 头以防止编辑冲突。  
   
-  当未包含 `If-Match` 头时，将返回 `HTTP400`；当 `If-Match` 头的版本与最新版本不匹配时，将返回 `HTTP412`，此时需要使用对应的 `GET` 请求更新 `ETag` 及相应的资源。
+  当未包含 `If-Match` 头时，将返回 `HTTP 400 Bad Request`；  
+  当 `If-Match` 头的版本与最新版本不匹配时，将返回 `HTTP 412 Precondition Failed`，此时需要使用对应的 `GET` 请求更新 `ETag` 及相应的资源。
+  
+> 参考：[HTTP 条件请求](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Conditional_requests)
 
 ### 用户授权
 
@@ -25,7 +28,7 @@ EhTagConnector
 
 为了便于将修改对应到相应的 GitHub 用户，建议使用 GitHub 用户名和相应的注册邮箱。
 
-提交的显示效果如下：
+提交的显示效果如下：  
 ![](/DocImages/commit.png)
 
 ### 查询 API (`GET` 请求)
@@ -229,7 +232,7 @@ Content-Encoding: gzip
 }
 ```
 
-> 当请求内容与数据库内容一致时（未进行修改），将返回 `HTTP/2.0 204 No Content`。
+> 当请求内容与数据库内容一致时（未进行修改），将返回 `HTTP 204 No Content`。
 
 ### 删除 API (`DELETE` 请求)
 
