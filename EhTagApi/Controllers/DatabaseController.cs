@@ -52,11 +52,11 @@ namespace EhTagApi.Controllers
             return this.database[@namespace];
         }
 
-        [HttpGet("{namespace}/{key}")]
-        public ActionResult<Record> Get([SingleNamespace]Namespace @namespace, string key)
+        [HttpGet("{namespace}/{original}")]
+        public ActionResult<Record> Get([SingleNamespace]Namespace @namespace, string original)
         {
             var dic = this.database[@namespace];
-            var rec = dic.Find(key);
+            var rec = dic.Find(original);
 
             if (rec is null)
                 return NotFound();
@@ -64,20 +64,20 @@ namespace EhTagApi.Controllers
             return rec;
         }
 
-        [HttpDelete("{namespace}/{key}")]
-        public ActionResult<Record> Delete([SingleNamespace]Namespace @namespace, string key,
+        [HttpDelete("{namespace}/{original}")]
+        public ActionResult<Record> Delete([SingleNamespace]Namespace @namespace, string original,
             [Required][MinLength(1)][FromQuery]string username,
             [Required][EmailAddress][FromQuery]string email)
         {
             var dic = this.database[@namespace];
-            var found = dic.Find(key);
+            var found = dic.Find(original);
             if (found is null)
                 return NotFound();
 
-            dic.Remove(key);
+            dic.Remove(original);
             dic.Save();
 
-            var message = $@"In {@namespace.ToString().ToLower()}: Deleted '{key}'.
+            var message = $@"In {@namespace.ToString().ToLower()}: Deleted '{original}'.
 
 Previous value: {found}
 Current value: (deleted)";
