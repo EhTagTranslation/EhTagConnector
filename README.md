@@ -1,4 +1,4 @@
-EhTagConnector
+﻿EhTagConnector
 ====
 连接到 [EhTagTransation 数据库](https://github.com/ehtagtranslation/Database)的 RESTful API。
 
@@ -84,6 +84,23 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
     },//...
 }
 ```
+
+> 如只需获取 `ETag` 信息（即最新一次提交的 sha1），可以使用相应的 `HEAD` 请求。
+> 
+> 示例请求：
+> ```yml
+> HEAD /api/database
+> ---
+> If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
+> ```
+> 
+> 示例响应：
+> ```yml
+> HTTP/2.0 204 No Content
+> ---
+> ETag: "d4553b638098466ef013567b319c034f8ee34950"
+> ```
+
 
 #### 某一分类的翻译
 
