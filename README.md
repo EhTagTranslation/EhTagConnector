@@ -50,7 +50,7 @@ HTTP/2.0 200 OK
 ---
 Content-Type: application/json; charset=utf-8
 Content-Encoding: br
-ETag: "d4553b638098466ef013567b319c034f8ee34950"
+ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 ```
 
 ```js
@@ -100,7 +100,7 @@ If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```yml
 HTTP/2.0 204 No Content
 ---
-ETag: "d4553b638098466ef013567b319c034f8ee34950"
+ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 ```
 
 
