@@ -104,7 +104,7 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 ```
 
 
-### 查询某一分类的翻译
+### 查询某一分类的信息
 
 路径: `GET /database/:namespace`
 
@@ -128,15 +128,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 ```js
 {
   "namespace": "reclass",
-  "count": 11,
-  "data": [
-    {
-      "original": "gamecg",
-      "translated": "游戏CG集",
-      "introduction": "计算机生成的作品，往往从工口游戏（色情游戏）提取。一般有大量图像。并不是指的视频游戏中的人物图像或游戏视频游戏截图。",
-      "externalLinks": ""
-    },//...
-  ]
+  "count": 11
 }
 ```
 

@@ -24,33 +24,32 @@ namespace EhTagApi.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [GitETagFilter]
+    [ServiceFilter(typeof(GitETagFilter))]
     public class DatabaseController : ControllerBase
     {
         private readonly ILogger logger;
+        private readonly RepoClient repoClient;
         private readonly Database database;
 
-        public DatabaseController(ILogger<WebhookController> logger, Database database)
+        public DatabaseController(ILogger<WebhookController> logger, RepoClient repoClient, Database database)
         {
             this.logger = logger;
+            this.repoClient = repoClient;
             this.database = database;
         }
 
         [HttpHead]
-        public IActionResult Head()
-        {
-            return NoContent();
-        }
+        public IActionResult Head() => NoContent();
 
         [HttpGet]
         public IActionResult Get()
         {
-            var repo = RepositoryClient.Repo;
-            var head = repo.Commits.First();
+            var repo = repoClient.Repo;
+            var head = repoClient.Head;
 
             return new JsonResult(new
             {
-                Repo = repo.Network.Remotes["origin"].PushUrl,
+                Repo = repoClient.RemotePath,
                 Head = new
                 {
                     head.Author,
@@ -58,21 +57,22 @@ namespace EhTagApi.Controllers
                     head.Sha,
                     head.Message,
                 },
-                Version = this.database.GetVersion(),
-                Data = this.database.Values.Select(v => new { v.Namespace, v.Count }),
+                Version = database.GetVersion(),
+                Data = database.Values.Select(v => new { v.Namespace, v.Count }),
             });
         }
 
         [HttpGet("{namespace}")]
-        public ActionResult<RecordDictionary> Get([SingleNamespace] Namespace @namespace)
+        public IActionResult Get([SingleNamespace] Namespace @namespace)
         {
-            return this.database[@namespace];
+            var dic = database[@namespace];
+            return new JsonResult(new { dic.Namespace, dic.Count });
         }
 
         [HttpHead("{namespace}/{original}")]
         public IActionResult Head([SingleNamespace] Namespace @namespace, string original)
         {
-            var dic = this.database[@namespace];
+            var dic = database[@namespace];
             var rec = dic.Find(original);
 
             if (rec is null)
@@ -84,7 +84,7 @@ namespace EhTagApi.Controllers
         [HttpGet("{namespace}/{original}")]
         public ActionResult<Record> Get([SingleNamespace] Namespace @namespace, string original)
         {
-            var dic = this.database[@namespace];
+            var dic = database[@namespace];
             var rec = dic.Find(original);
 
             if (rec is null)
@@ -98,7 +98,7 @@ namespace EhTagApi.Controllers
             string original,
             [FromQuery]IdentityBuilder identity)
         {
-            var dic = this.database[@namespace];
+            var dic = database[@namespace];
             var found = dic.Find(original);
             if (found is null)
                 return NotFound();
@@ -115,7 +115,7 @@ namespace EhTagApi.Controllers
             [FromQuery]IdentityBuilder identity,
             [AcceptableTranslation, FromBody] Record record)
         {
-            var dic = this.database[@namespace];
+            var dic = database[@namespace];
             var replaced = dic.Find(record.Original);
 
             if (replaced != null)
@@ -133,7 +133,7 @@ namespace EhTagApi.Controllers
             [FromQuery]IdentityBuilder identity,
             [AcceptableTranslation, FromBody] Record record)
         {
-            var dic = this.database[@namespace];
+            var dic = database[@namespace];
             var replaced = dic.Find(record.Original);
 
             if (replaced is null)
@@ -162,8 +162,8 @@ namespace EhTagApi.Controllers
 Previous value: {o}
 Current value: {n}";
 
-            RepositoryClient.Commit(message, identity.Build());
-            RepositoryClient.Push();
+            repoClient.Commit(message, identity.Build());
+            repoClient.Push();
         }
     }
 }

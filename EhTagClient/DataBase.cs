@@ -17,7 +17,7 @@ namespace EhTagClient
         }
 
         [JsonIgnore]
-        public string FilePath => $"{RepositoryClient.REPO_PATH}/database/{Namespace.ToString().ToLower()}.md";
+        public string FilePath => $"{Consts.REPO_PATH}/database/{Namespace.ToString().ToLower()}.md";
 
         public Namespace Namespace { get; }
 
@@ -211,7 +211,7 @@ namespace EhTagClient
 
         public int GetVersion()
         {
-            if (!int.TryParse(File.ReadAllText(RepositoryClient.REPO_PATH + "/version"), out var ver))
+            if (!int.TryParse(File.ReadAllText(Consts.REPO_PATH + "/version"), out var ver))
                 return -1;
             return ver;
         }

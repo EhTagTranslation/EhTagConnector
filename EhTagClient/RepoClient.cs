@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace EhTagClient
 {
-    public static class RepositoryClient
+    public class RepoClient
     {
-        internal const string REPO_PATH = "./Db";
-        private const string REMOTE_PATH = "https://github.com/ehtagtranslation/Database.git";
+        public RepoClient() => Init();
 
-        private static string _GitPath;
-        private static Repository _Repo;
+        public string RemotePath => $"https://github.com/{Consts.OWNER}/{Consts.REPO}.git";
 
-        public static string Username { get; set; }
-        public static string Password { get; set; }
-        public static string Email { get; set; }
+        private string _GitPath;
+        private Repository _Repo;
 
-        public static Repository Repo
+        public Commit Head => Repo.Commits.First();
+
+        public Repository Repo
         {
             get
             {
@@ -35,17 +34,17 @@ namespace EhTagClient
             }
         }
 
-        public static void Init()
+        public void Init()
         {
-            if (Directory.Exists(REPO_PATH))
+            if (Directory.Exists(Consts.REPO_PATH))
             {
-                _GitPath = Repository.Discover(REPO_PATH);
+                _GitPath = Repository.Discover(Consts.REPO_PATH);
                 Repo = new Repository(_GitPath);
                 Pull();
             }
             else
             {
-                _GitPath = Repository.Clone(REMOTE_PATH, REPO_PATH, new CloneOptions
+                _GitPath = Repository.Clone(RemotePath, Consts.REPO_PATH, new CloneOptions
                 {
                     CredentialsProvider = CredentialsProvider
                 });
@@ -53,21 +52,21 @@ namespace EhTagClient
             }
         }
 
-        private static readonly LibGit2Sharp.Handlers.CredentialsHandler CredentialsProvider
+        private readonly LibGit2Sharp.Handlers.CredentialsHandler CredentialsProvider
             = (string url, string usernameFromUrl, SupportedCredentialTypes types) =>
             {
                 return new UsernamePasswordCredentials
                 {
-                    Username = Username,
-                    Password = Password,
+                    Username = Consts.Username,
+                    Password = Consts.Password,
                 };
             };
 
-        public static Identity CommandIdentity => new Identity(Username, Email);
+        public Identity CommandIdentity => new Identity(Consts.Username, Consts.Email);
 
-        public static string CurrentSha => Repo.Commits.First().Sha;
+        public string CurrentSha => Repo.Commits.First().Sha;
 
-        public static void Pull()
+        public void Pull()
         {
             Commands.Pull(Repo, new Signature(CommandIdentity, DateTimeOffset.Now), new PullOptions
             {
@@ -81,13 +80,13 @@ namespace EhTagClient
             });
         }
 
-        public static void Commit(string message, Identity author)
+        public void Commit(string message, Identity author)
         {
             Commands.Stage(Repo, "*");
             Repo.Commit(message, new Signature(author, DateTimeOffset.Now), new Signature(CommandIdentity, DateTimeOffset.Now));
         }
 
-        public static void Push()
+        public void Push()
         {
             Repo.Network.Push(Repo.Branches["master"], new PushOptions
             {

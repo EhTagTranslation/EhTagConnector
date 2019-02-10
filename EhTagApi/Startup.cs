@@ -26,14 +26,24 @@ namespace EhTagApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            RepositoryClient.Username = Configuration.GetValue<string>("GitHub:Username");
-            RepositoryClient.Password = Configuration.GetValue<string>("GitHub:Password");
-            RepositoryClient.Email = Configuration.GetValue<string>("GitHub:Email");
-            RepositoryClient.Init();
+            Consts.Username = Configuration.GetValue<string>("GitHub:Username");
+            Consts.Password = Configuration.GetValue<string>("GitHub:Password");
+            Consts.Email = Configuration.GetValue<string>("GitHub:Email");
+            Consts.Token = Configuration.GetValue<string>("GitHub:Token");
 
-            var db = new Database();
-            db.Load();
-            services.AddSingleton(db);
+            services.AddSingleton(new RepoClient());
+
+            services.AddSingleton(serviceProvider =>
+            {
+                serviceProvider.GetService<RepoClient>();
+                var db = new Database();
+                db.Load();
+                return db;
+            });
+
+            services.AddSingleton<GitHubApiClient>();
+
+            services.AddScoped<Filters.GitETagFilter>();
 
             services.AddHttpsRedirection(options => options.RedirectStatusCode = 301);
 

@@ -10,9 +10,16 @@ using System.Threading.Tasks;
 
 namespace EhTagApi.Filters
 {
-    public class GitETagFilterAttribute : Attribute, IActionFilter
+    public class GitETagFilter : IActionFilter
     {
-        private string CurrentETag => '"' + EhTagClient.RepositoryClient.CurrentSha + '"';
+        private readonly EhTagClient.RepoClient repoClient;
+
+        public GitETagFilter(EhTagClient.RepoClient repoClient)
+        {
+            this.repoClient = repoClient;
+        }
+
+        private string CurrentETag => '"' + repoClient.CurrentSha + '"';
 
         private bool EqualsCurrentETag(StringValues eTagValue)
         {
@@ -21,6 +28,9 @@ namespace EhTagApi.Filters
                 return false;
             if (tag.Length <= 40)
                 return false;
+
+            if (tag.StartsWith("W/"))
+                tag = tag.Substring(2);
 
             return CurrentETag.Equals(tag, StringComparison.OrdinalIgnoreCase);
         }

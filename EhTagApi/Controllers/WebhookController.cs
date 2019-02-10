@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EhTagApi.Controllers
 {
@@ -12,19 +14,23 @@ namespace EhTagApi.Controllers
     public class WebhookController : Controller
     {
         private readonly ILogger logger;
+        private readonly RepoClient repoClient;
+        private readonly GitHubApiClient gitHubApiClient;
         private readonly Database database;
 
-        public WebhookController(ILogger<WebhookController> logger, Database database)
+        public WebhookController(ILogger<WebhookController> logger, RepoClient repoClient, GitHubApiClient gitHubApiClient, Database database)
         {
             this.logger = logger;
+            this.repoClient = repoClient;
+            this.gitHubApiClient = gitHubApiClient;
             this.database = database;
         }
 
         [HttpPost]
         public IActionResult Post(
-            [FromHeader(Name = "X-GitHub-Event")] string ev,
-            [FromHeader(Name = "X-GitHub-Delivery")] Guid delivery,
-            [FromBody]dynamic payload)
+            [FromHeader(Name = "X-GitHub-Event"), Required] string ev,
+            [FromHeader(Name = "X-GitHub-Delivery"), Required] Guid delivery,
+            [FromBody, Required]dynamic payload)
         {
             if (delivery == Guid.Empty)
                 return BadRequest($"Wrong X-GitHub-Delivery");
@@ -37,14 +43,21 @@ namespace EhTagApi.Controllers
             if (ev != "push")
                 return BadRequest($"Unsupported X-GitHub-Event");
 
-            if (RepositoryClient.CurrentSha.Equals((string)payload.after.Value, StringComparison.OrdinalIgnoreCase))
-                return Ok("Already up-to-date.");
+            string log;
+            if (!repoClient.CurrentSha.Equals((string)payload.after.Value, StringComparison.OrdinalIgnoreCase))
+            {
+                var start = DateTimeOffset.Now;
+                repoClient.Pull();
+                log = $"Pulled form github in {(DateTimeOffset.Now - start).TotalMilliseconds}ms.";
+                logger.LogInformation(log);
+                database.Load();
+            }
+            else
+            {
+                log = "Already up-to-date.";
+            }
 
-            var start = DateTimeOffset.Now;
-            RepositoryClient.Pull();
-            var log = $"Pulled form github in {(DateTimeOffset.Now - start).TotalMilliseconds}ms.";
-            this.logger.LogInformation(log);
-            this.database.Load();
+            _ = gitHubApiClient.Publish();
             return Ok(log);
         }
     }
