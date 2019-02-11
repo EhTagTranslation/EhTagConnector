@@ -3,6 +3,7 @@ using Octokit;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -54,7 +55,18 @@ namespace EhTagClient
                 });
                 writer.Write(upload_data);
                 writer.Flush();
+
                 await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json", "application/json", writer.BaseStream, null));
+
+                using (var gziped = new MemoryStream())
+                {
+                    using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
+                    {
+                        writer.BaseStream.Position = 0;
+                        writer.BaseStream.CopyTo(gzip);
+                    }
+                    await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json.gz", "application/json", gziped, null));
+                }
             }
         }
     }
