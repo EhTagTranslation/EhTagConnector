@@ -22,9 +22,11 @@
   
 > 参考：[HTTP 条件请求](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Conditional_requests)
 
-### 用户授权
+### 用户认证
 
-进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户授权，需要的信息为用户的 GitHub token，可通过 OAuth 或 PAT 获取，只用于确认用户信息，不需要特殊的 scope。通过 Authentication Header 输入（如 `Authorization: token aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。
+进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](https://developer.github.com/apps/building-oauth-apps/) 或 [PAT](https://github.com/settings/tokens) 获取，只用于确认用户信息，不需要除 public access 外的特殊 scope。
+
+认证信息通过 [Authentication Header](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Authentication) 输入（如 `Authorization: token aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。
 
 提交的显示效果如下：  
 ![](/DocImages/commit.png)
