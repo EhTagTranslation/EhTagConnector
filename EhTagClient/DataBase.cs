@@ -27,7 +27,7 @@ namespace EhTagClient
         [JsonIgnore]
         public string Suffix { get; set; }
 
-        public int Count => this.MapData.Count;
+        public int Count => MapData.Count;
 
         public IEnumerable<Record> Data
         {
@@ -92,7 +92,7 @@ namespace EhTagClient
                         }
                         else
                         {
-                            this.RawData.Add(record);
+                            RawData.Add(record);
                             continue;
                         }
                     default:
@@ -149,14 +149,14 @@ namespace EhTagClient
 
             if (MapData.TryGetValue(key, out var index))
             {
-                var old = this.RawData[index];
-                this.RawData[index] = record;
+                var old = RawData[index];
+                RawData[index] = record;
                 return old;
             }
             else
             {
-                this.MapData.Add(key, this.RawData.Count);
-                this.RawData.Add(record);
+                MapData.Add(key, RawData.Count);
+                RawData.Add(record);
                 return null;
             }
         }
@@ -176,12 +176,17 @@ namespace EhTagClient
     {
         public Database()
         {
-            var keys = Enum.GetValues(typeof(Namespace)).Cast<Namespace>().ToList();
-            keys.Remove(Namespace.Unknown);
-            Keys = keys.AsReadOnly();
-
-            Values = new ReadOnlyCollection<RecordDictionary>(keys.Select(k => this[k]).ToArray());
+            _Keys = (Namespace[])Enum.GetValues(typeof(Namespace));
+            Array.Sort(_Keys);
+            _Values = new RecordDictionary[_Keys.Length];
+            for (var i = 0; i < _Keys.Length; i++)
+            {
+                _Values[i] = new RecordDictionary(_Keys[i]);
+            }
         }
+
+        private readonly Namespace[] _Keys;
+        private readonly RecordDictionary[] _Values;
 
         public void Load()
         {
@@ -199,16 +204,6 @@ namespace EhTagClient
             }
         }
 
-        public RecordDictionary Reclass { get; } = new RecordDictionary(Namespace.Reclass);
-        public RecordDictionary Language { get; } = new RecordDictionary(Namespace.Language);
-        public RecordDictionary Parody { get; } = new RecordDictionary(Namespace.Parody);
-        public RecordDictionary Character { get; } = new RecordDictionary(Namespace.Character);
-        public RecordDictionary Group { get; } = new RecordDictionary(Namespace.Group);
-        public RecordDictionary Artist { get; } = new RecordDictionary(Namespace.Artist);
-        public RecordDictionary Male { get; } = new RecordDictionary(Namespace.Male);
-        public RecordDictionary Female { get; } = new RecordDictionary(Namespace.Female);
-        public RecordDictionary Misc { get; } = new RecordDictionary(Namespace.Misc);
-
         public int GetVersion()
         {
             if (!int.TryParse(File.ReadAllText(Consts.REPO_PATH + "/version"), out var ver))
@@ -216,48 +211,38 @@ namespace EhTagClient
             return ver;
         }
 
-        public IEnumerable<Namespace> Keys { get; }
-        public IEnumerable<RecordDictionary> Values { get; }
-        public int Count => Keys.Count();
+        public IEnumerable<Namespace> Keys => _Keys;
+        public IEnumerable<RecordDictionary> Values => _Values;
+        public int Count => _Keys.Length;
 
         public RecordDictionary this[Namespace key]
         {
             get
             {
-                switch (key)
-                {
-                case Namespace.Reclass: return Reclass;
-                case Namespace.Language: return Language;
-                case Namespace.Parody: return Parody;
-                case Namespace.Character: return Character;
-                case Namespace.Group: return Group;
-                case Namespace.Artist: return Artist;
-                case Namespace.Male: return Male;
-                case Namespace.Female: return Female;
-                case Namespace.Misc: return Misc;
-                default:
+                var i = Array.BinarySearch(_Keys, key);
+                if (i < 0)
                     throw new KeyNotFoundException();
-                }
+                return _Values[i];
             }
         }
 
-        public bool ContainsKey(Namespace key) => Keys.Contains(key);
+        public bool ContainsKey(Namespace key) => Array.BinarySearch(_Keys, key) >= 0;
         public bool TryGetValue(Namespace key, out RecordDictionary value)
         {
-            if (Keys.Contains(key))
+            var i = Array.BinarySearch(_Keys, key);
+            if (i < 0)
             {
-                value = this[key];
-                return true;
+                value = default;
+                return false;
             }
-
-            value = default;
-            return false;
+            value = _Values[i];
+            return true;
         }
         public IEnumerator<KeyValuePair<Namespace, RecordDictionary>> GetEnumerator()
         {
-            foreach (var key in Keys)
+            for (var i = 0; i < _Keys.Length; i++)
             {
-                yield return new KeyValuePair<Namespace, RecordDictionary>(key, this[key]);
+                yield return KeyValuePair.Create(_Keys[i], _Values[i]);
             }
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

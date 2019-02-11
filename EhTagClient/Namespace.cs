@@ -9,7 +9,7 @@ namespace EhTagClient
     [Flags]
     public enum Namespace
     {
-        Unknown = 0,
+        Rows = 0,
 
         Reclass = 1,
         Language = 2,
@@ -32,9 +32,7 @@ namespace EhTagClient
                 return new ValidationResult($"The value '{value}' is not valid.");
             switch (ns)
             {
-            case Namespace.Unknown:
-            default:
-                return new ValidationResult($"The value '{value}' is not valid.");
+            case Namespace.Rows:
             case Namespace.Reclass:
             case Namespace.Language:
             case Namespace.Parody:
@@ -45,6 +43,8 @@ namespace EhTagClient
             case Namespace.Female:
             case Namespace.Misc:
                 return ValidationResult.Success;
+            default:
+                return new ValidationResult($"The value '{value}' is not valid.");
             }
         }
     }
