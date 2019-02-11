@@ -56,6 +56,7 @@ namespace EhTagClient
                 writer.Write(upload_data);
                 writer.Flush();
 
+                writer.BaseStream.Position = 0;
                 await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json", "application/json", writer.BaseStream, null));
 
                 using (var gziped = new MemoryStream())
@@ -65,6 +66,7 @@ namespace EhTagClient
                         writer.BaseStream.Position = 0;
                         writer.BaseStream.CopyTo(gzip);
                     }
+                    gziped.Position = 0;
                     await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json.gz", "application/json+gzip", gziped, null));
                 }
             }
