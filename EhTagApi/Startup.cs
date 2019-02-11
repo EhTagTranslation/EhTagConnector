@@ -44,6 +44,7 @@ namespace EhTagApi
             services.AddSingleton<GitHubApiClient>();
 
             services.AddScoped<Filters.GitETagFilter>();
+            services.AddScoped<Filters.GitHubIdentityFilter>();
 
             services.AddHttpsRedirection(options => options.RedirectStatusCode = 301);
 

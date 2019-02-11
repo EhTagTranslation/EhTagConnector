@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using Octokit;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,60 +14,48 @@ namespace EhTagClient
     {
         public GitHubApiClient(RepoClient repoClient, Database database)
         {
-            this.repoClient = repoClient;
-            this.database = database;
+            _RepoClient = repoClient;
+            _Database = database;
         }
 
-        private readonly HttpClient _HttpClient = new HttpClient()
+        private readonly RepoClient _RepoClient;
+        private readonly Database _Database;
+
+        private readonly GitHubClient _GitHubClient = new GitHubClient(new Octokit.ProductHeaderValue(Consts.Username, "1.0"))
         {
-            BaseAddress = new Uri("https://api.github.com/"),
+            Credentials = new Credentials(Consts.Token),
         };
-        private readonly RepoClient repoClient;
-        private readonly Database database;
-
-        private HttpClient HttpClient
-        {
-            get
-            {
-                var headers = _HttpClient.DefaultRequestHeaders;
-                headers.Authorization = new AuthenticationHeaderValue("token", Consts.Token);
-                headers.UserAgent.Clear();
-                headers.UserAgent.Add(new ProductInfoHeaderValue(Consts.Username, "1.0"));
-                return _HttpClient;
-            }
-        }
 
         public async Task Publish()
         {
-            var payload = new
-            {
-                tag_name = $"commit-{repoClient.CurrentSha}",
-                target_commitish = repoClient.CurrentSha,
-                name = $"EhTagConnector Auto Release of {repoClient.CurrentSha}",
-            };
-            var create_response = JsonConvert.DeserializeObject<dynamic>(await (await HttpClient.PostAsync(
-                $"/repos/{Consts.OWNER}/{Consts.REPO}/releases", 
-                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-                )).Content.ReadAsStringAsync());
-            var upload_url = (string)create_response.upload_url.Value;
-            upload_url = upload_url.Replace("{?name,label}", $"?name=db.json");
+            var releaseClient = _GitHubClient.Repository.Release;
 
-            var head = repoClient.Head;
-            var upload_data = new
+            var release = await releaseClient.Create(Consts.OWNER, Consts.REPO, new NewRelease($"commit-{_RepoClient.CurrentSha}")
             {
-                Remote = repoClient.RemotePath,
-                Head = new
+                TargetCommitish = _RepoClient.CurrentSha,
+                Name = $"EhTagConnector Auto Release of {_RepoClient.CurrentSha.Substring(0, 7)}",
+            });
+
+            using (var writer = new StreamWriter(new MemoryStream(), Encoding.UTF8, 0, false))
+            {
+                var head = _RepoClient.Head;
+                var upload_data = JsonConvert.SerializeObject(new
                 {
-                    head.Author,
-                    head.Committer,
-                    head.Sha,
-                    head.Message,
-                },
-                Version = database.GetVersion(),
-                Data = database.Values,
-            };
-
-            await HttpClient.PostAsync(upload_url, new StringContent(JsonConvert.SerializeObject(upload_data), Encoding.UTF8, "application/json"));
+                    Remote = _RepoClient.RemotePath,
+                    Head = new
+                    {
+                        head.Author,
+                        head.Committer,
+                        head.Sha,
+                        head.Message,
+                    },
+                    Version = _Database.GetVersion(),
+                    Data = _Database.Values,
+                });
+                writer.Write(upload_data);
+                writer.Flush();
+                await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json", "application/json", writer.BaseStream, null));
+            }
         }
     }
 }
