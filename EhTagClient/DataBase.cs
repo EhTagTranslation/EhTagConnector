@@ -110,8 +110,8 @@ namespace EhTagClient
             var i = 0;
             foreach (var item in RawData)
             {
-                if (!string.IsNullOrWhiteSpace(item.Original))
-                    MapData[item.Original] = i;
+                if (!string.IsNullOrWhiteSpace(item.Raw))
+                    MapData[item.Raw] = i;
                 i++;
             }
         }
@@ -143,7 +143,7 @@ namespace EhTagClient
             if (record is null)
                 throw new ArgumentNullException(nameof(record));
 
-            var key = record.Original;
+            var key = record.Raw;
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentException("Invalied record.Original");
 

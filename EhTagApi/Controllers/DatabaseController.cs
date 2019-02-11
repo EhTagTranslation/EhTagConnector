@@ -31,7 +31,7 @@ namespace EhTagApi.Controllers
             else if (n is null)
                 verb = "Deleted";
 
-            var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{(o ?? n).Original}'.
+            var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{(o ?? n).Raw}'.
 
 Previous value: {o}
 Current value: {n}";
@@ -129,7 +129,7 @@ Current value: {n}";
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];
-            var replaced = dic.Find(record.Original);
+            var replaced = dic.Find(record.Raw);
 
             if (replaced != null)
                 return UnprocessableEntity(new { record = "Record with same 'original' is in the wiki, use PUT to update the record." });
@@ -138,7 +138,7 @@ Current value: {n}";
             dic.Save();
 
             _Commit(@namespace, null, record, user);
-            return Created($"api/database/{@namespace.ToString().ToLower()}/{record.Original}", record);
+            return Created($"api/database/{@namespace.ToString().ToLower()}/{record.Raw}", record);
         }
 
         [HttpPut("{namespace}")]
@@ -149,7 +149,7 @@ Current value: {n}";
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];
-            var replaced = dic.Find(record.Original);
+            var replaced = dic.Find(record.Raw);
 
             if (replaced is null)
                 return NotFound(new { record = "Record with same 'original' is not found in the wiki, use POST to insert the record." });

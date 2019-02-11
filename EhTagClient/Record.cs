@@ -19,47 +19,47 @@ namespace EhTagClient
             if (!(value is Record record))
                 return new ValidationResult($"The value '{value}' is not valid.");
             var failedFields = new List<string>(2);
-            if (string.IsNullOrEmpty(record.Original))
-                failedFields.Add(validationContext.MemberName + ".original");
-            if (string.IsNullOrEmpty(record.TranslatedRaw))
-                failedFields.Add(validationContext.MemberName + ".translated");
+            if (string.IsNullOrEmpty(record.Raw))
+                failedFields.Add(validationContext.MemberName + ".raw");
+            if (string.IsNullOrEmpty(record.NameRaw))
+                failedFields.Add(validationContext.MemberName + ".name");
             if (failedFields.Count != 0)
                 return new ValidationResult($"Field should not be empty.", failedFields);
             return ValidationResult.Success;
         }
     }
 
-    [DebuggerDisplay(@"\{{Original} => {Translated.RawString}\}")]
+    [DebuggerDisplay(@"\{{Raw} => {Name.RawString}\}")]
     public class Record
     {
-        private static Regex lineRegex = new Regex(
+        private static readonly Regex _LineRegex = new Regex(
             $@"
             ^\s*(?<!\\)\|?\s*
-            (?<{nameof(Original)}>.*?)
+            (?<{nameof(Raw)}>.*?)
 		    \s*(?<!\\)\|\s*
-		    (?<{nameof(Translated)}>.*?)
+		    (?<{nameof(Name)}>.*?)
 		    \s*(?<!\\)\|\s*
-		    (?<{nameof(Introduction)}>.*?)
+		    (?<{nameof(Intro)}>.*?)
 		    \s*(?<!\\)\|\s*
-		    (?<{nameof(ExternalLinks)}>.*?)
+		    (?<{nameof(Links)}>.*?)
 		    \s*(?<!\\)\|?\s*$", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace);
 
         internal static Record TryParse(string line)
         {
-            var match = lineRegex.Match(line);
+            var match = _LineRegex.Match(line);
             if (!match.Success)
             {
                 return null;
             }
 
-            var ori = match.Groups[nameof(Original)].Value;
-            var tra = match.Groups[nameof(Translated)].Value;
-            var intro = match.Groups[nameof(Introduction)].Value;
-            var link = match.Groups[nameof(ExternalLinks)].Value;
-            return new Record(unescape(ori), unescape(tra), unescape(intro), unescape(link));
+            var raw = match.Groups[nameof(Raw)].Value;
+            var name = match.Groups[nameof(Name)].Value;
+            var intro = match.Groups[nameof(Intro)].Value;
+            var links = match.Groups[nameof(Links)].Value;
+            return new Record(_Unescape(raw), _Unescape(name), _Unescape(intro), _Unescape(links));
         }
 
-        private static string unescape(string value)
+        private static string _Unescape(string value)
         {
             if (value.Contains("<br>") || value.Contains(@"\"))
             {
@@ -74,7 +74,7 @@ namespace EhTagClient
             return value;
         }
 
-        private static string escape(string value)
+        private static string _Escape(string value)
         {
             return value
                 .Replace(@"\", @"\\")
@@ -88,68 +88,66 @@ namespace EhTagClient
 
         internal static Record Combine(Record r1, Record r2)
         {
-            if (r1.Original != r2.Original)
+            if (r1.Raw != r2.Raw)
             {
                 throw new InvalidOperationException();
             }
 
-            string translated, intro;
-            if (r1.TranslatedRaw == r2.TranslatedRaw)
+            string name, intro;
+            if (r1.NameRaw == r2.NameRaw)
             {
-                translated = r1.TranslatedRaw;
+                name = r1.NameRaw;
             }
             else
             {
-                translated = $@"{r1.TranslatedRaw} | {r2.TranslatedRaw}";
+                name = $@"{r1.NameRaw} | {r2.NameRaw}";
             }
-            if (string.IsNullOrWhiteSpace(r1.IntroductionRaw))
+            if (string.IsNullOrWhiteSpace(r1.IntroRaw))
             {
-                intro = r2.IntroductionRaw;
+                intro = r2.IntroRaw;
             }
-            else if (string.IsNullOrWhiteSpace(r2.IntroductionRaw))
+            else if (string.IsNullOrWhiteSpace(r2.IntroRaw))
             {
-                intro = r1.IntroductionRaw;
+                intro = r1.IntroRaw;
             }
             else
             {
-                intro = $"{r1.IntroductionRaw}<hr>{r2.IntroductionRaw}";
+                intro = $"{r1.IntroRaw}<hr>{r2.IntroRaw}";
             }
 
-            return new Record(r1.Original, translated, intro, $"{r1.ExternalLinksRaw} {r2.ExternalLinksRaw}");
+            return new Record(r1.Raw, name, intro, $"{r1.LinksRaw} {r2.LinksRaw}");
         }
 
         [JsonConstructor]
-        public Record(string original, string translated, string introduction, string externalLinks)
+        public Record(string raw, string name, string intro, string links)
         {
-            Original = (original ?? "").Trim().ToLower();
-            TranslatedRaw = (translated ?? "").Trim();
-            IntroductionRaw = (introduction ?? "").Trim();
-            ExternalLinksRaw = (externalLinks ?? "").Trim();
+            Raw = (raw ?? "").Trim().ToLower();
+            NameRaw = (name ?? "").Trim();
+            IntroRaw = (intro ?? "").Trim();
+            LinksRaw = (links ?? "").Trim();
         }
 
-        public string Original { get; }
+        public string Raw { get; }
 
-        [JsonProperty("translated")]
-        public string TranslatedRaw { get; }
-
-        [JsonIgnore]
-        public MarkdownText Translated => new MarkdownText(TranslatedRaw);
-
-        [JsonProperty("introduction")]
-        public string IntroductionRaw { get; }
+        [JsonProperty("name")]
+        public string NameRaw { get; }
 
         [JsonIgnore]
-        public MarkdownText Introduction => new MarkdownText(IntroductionRaw);
+        public MarkdownText Name => new MarkdownText(NameRaw);
 
-        [JsonProperty("externalLinks")]
-        public string ExternalLinksRaw { get; }
+        [JsonProperty("intro")]
+        public string IntroRaw { get; }
 
         [JsonIgnore]
-        public IEnumerable<MarkdownLink> ExternalLinks => new MarkdownText(ExternalLinksRaw).Tokens.OfType<MarkdownLink>();
+        public MarkdownText Intro => new MarkdownText(IntroRaw);
 
-        public override string ToString()
-        {
-            return $"| {escape(Original)} | {escape(TranslatedRaw)} | {escape(IntroductionRaw)} | {escape(ExternalLinksRaw)} |";
-        }
+        [JsonProperty("links")]
+        public string LinksRaw { get; }
+
+        [JsonIgnore]
+        public IEnumerable<MarkdownLink> Links => new MarkdownText(LinksRaw).Tokens.OfType<MarkdownLink>();
+
+        public override string ToString() 
+            => $"| {_Escape(Raw)} | {_Escape(NameRaw)} | {_Escape(IntroRaw)} | {_Escape(LinksRaw)} |";
     }
 }
