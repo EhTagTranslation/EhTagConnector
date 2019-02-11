@@ -121,10 +121,10 @@ namespace EhTagClient
         [JsonConstructor]
         public Record(string original, string translated, string introduction, string externalLinks)
         {
-            this.Original = original.Trim().ToLower();
-            this.TranslatedRaw = translated.Trim();
-            this.IntroductionRaw = introduction.Trim();
-            this.ExternalLinksRaw = externalLinks.Trim();
+            Original = (original ?? "").Trim().ToLower();
+            TranslatedRaw = (translated ?? "").Trim();
+            IntroductionRaw = (introduction ?? "").Trim();
+            ExternalLinksRaw = (externalLinks ?? "").Trim();
         }
 
         public string Original { get; }
