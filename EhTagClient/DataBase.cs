@@ -145,7 +145,7 @@ namespace EhTagClient
 
             var key = record.Raw;
             if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("Invalied record.Original");
+                throw new ArgumentException("Invalied record." + nameof(Record.Raw));
 
             if (MapData.TryGetValue(key, out var index))
             {

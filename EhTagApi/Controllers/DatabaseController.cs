@@ -78,11 +78,11 @@ Current value: {n}";
             return new JsonResult(new { dic.Namespace, dic.Count });
         }
 
-        [HttpHead("{namespace}/{original}")]
-        public IActionResult Head([SingleNamespace] Namespace @namespace, string original)
+        [HttpHead("{namespace}/{raw}")]
+        public IActionResult Head([SingleNamespace] Namespace @namespace, string raw)
         {
             var dic = _Database[@namespace];
-            var rec = dic.Find(original);
+            var rec = dic.Find(raw);
 
             if (rec is null)
                 return NotFound();
@@ -90,11 +90,11 @@ Current value: {n}";
             return NoContent();
         }
 
-        [HttpGet("{namespace}/{original}")]
-        public ActionResult<Record> Get([SingleNamespace] Namespace @namespace, string original)
+        [HttpGet("{namespace}/{raw}")]
+        public ActionResult<Record> Get([SingleNamespace] Namespace @namespace, string raw)
         {
             var dic = _Database[@namespace];
-            var rec = dic.Find(original);
+            var rec = dic.Find(raw);
 
             if (rec is null)
                 return NotFound();
@@ -102,19 +102,19 @@ Current value: {n}";
             return rec;
         }
 
-        [HttpDelete("{namespace}/{original}")]
+        [HttpDelete("{namespace}/{raw}")]
         [ServiceFilter(typeof(GitHubIdentityFilter))]
         public ActionResult<Record> Delete(
             [SingleNamespace] Namespace @namespace,
-            string original,
+            string raw,
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];
-            var found = dic.Find(original);
+            var found = dic.Find(raw);
             if (found is null)
                 return NotFound();
 
-            dic.Remove(original);
+            dic.Remove(raw);
             dic.Save();
 
             _Commit(@namespace, found, null, user);
@@ -132,7 +132,7 @@ Current value: {n}";
             var replaced = dic.Find(record.Raw);
 
             if (replaced != null)
-                return UnprocessableEntity(new { record = "Record with same 'original' is in the wiki, use PUT to update the record." });
+                return UnprocessableEntity(new { record = "Record with same 'raw' is in the wiki, use PUT to update the record." });
 
             dic.AddOrReplace(record);
             dic.Save();
@@ -152,7 +152,7 @@ Current value: {n}";
             var replaced = dic.Find(record.Raw);
 
             if (replaced is null)
-                return NotFound(new { record = "Record with same 'original' is not found in the wiki, use POST to insert the record." });
+                return NotFound(new { record = "Record with same 'raw' is not found in the wiki, use POST to insert the record." });
 
             dic.AddOrReplace(record);
             dic.Save();

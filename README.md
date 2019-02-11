@@ -77,8 +77,8 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
   //数据库内容摘要
   "data": [
     {
-      "namespace": "reclass",
-      "count": 11
+      "namespace": "rows",
+      "count": 9
     },//...
 }
 ```
@@ -134,7 +134,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 ### 查询某一条目是否存在
 
-路径: `HEAD /database/:namespace/:original`
+路径: `HEAD /database/:namespace/:raw`
 
 示例请求：
 ```yml
@@ -153,7 +153,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 ### 查询某一条目的翻译
 
-路径: `GET /database/:namespace/:original`
+路径: `GET /database/:namespace/:raw`
 
 示例请求：
 ```yml
@@ -174,10 +174,10 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 ```js
 {
-  "original": "private",
-  "translated": "私人的",
-  "introduction": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
-  "externalLinks": ""
+  "raw": "private",
+  "name": "私人的",
+  "intro": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
+  "links": ""
 }
 ```
 
@@ -198,10 +198,10 @@ Content-Type: application/json
 
 ```js
 {
-    "original": "gotoubun no hanayome",
-    "translated": "五等分的新娘",
-    "introduction": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
-    "externalLinks": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
+    "raw": "gotoubun no hanayome",
+    "name": "五等分的新娘",
+    "intro": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
+    "links": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
 }
 ```
 
@@ -217,10 +217,10 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 ```js
 {
-    "original": "gotoubun no hanayome",
-    "translated": "五等分的新娘",
-    "introduction": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
-    "externalLinks": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
+    "raw": "gotoubun no hanayome",
+    "name": "五等分的新娘",
+    "intro": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
+    "links": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
 }
 ```
 
@@ -241,10 +241,10 @@ If-Match: "d4553b638098466ef013567b319c034f8ee34950"
 
 ```js
 {
-  "original": "private",
-  "translated": "私人的",
-  "introduction": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
-  "externalLinks": ""
+  "raw": "private",
+  "name": "私人的",
+  "intro": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
+  "links": ""
 }
 ```
 
@@ -259,10 +259,10 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 ```js
 {
-  "original": "private",
-  "translated": "私人的",
-  "introduction": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
-  "externalLinks": ""
+  "raw": "private",
+  "name": "私人的",
+  "intro": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
+  "links": ""
 }
 ```
 
@@ -272,7 +272,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 ### 删除条目
 
-路径: `/database/:namespace/:original`
+路径: `/database/:namespace/:raw`
 
 示例请求：
 ```yml
