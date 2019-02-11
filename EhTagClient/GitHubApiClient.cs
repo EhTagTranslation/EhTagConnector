@@ -37,7 +37,7 @@ namespace EhTagClient
                 Name = $"EhTagConnector Auto Release of {_RepoClient.CurrentSha.Substring(0, 7)}",
             });
 
-            using (var writer = new StreamWriter(new MemoryStream(), Encoding.UTF8, 0, false))
+            using (var writer = new StreamWriter(new MemoryStream(), Encoding.UTF8))
             {
                 var head = _RepoClient.Head;
                 var upload_data = JsonConvert.SerializeObject(new
@@ -56,9 +56,6 @@ namespace EhTagClient
                 writer.Write(upload_data);
                 writer.Flush();
 
-                writer.BaseStream.Position = 0;
-                await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json", "application/json", writer.BaseStream, null));
-
                 using (var gziped = new MemoryStream())
                 {
                     using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
@@ -69,6 +66,9 @@ namespace EhTagClient
                     gziped.Position = 0;
                     await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json.gz", "application/json+gzip", gziped, null));
                 }
+
+                writer.BaseStream.Position = 0;
+                await releaseClient.UploadAsset(release, new ReleaseAssetUpload("db.json", "application/json", writer.BaseStream, null));
             }
         }
     }
