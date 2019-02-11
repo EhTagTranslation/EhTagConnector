@@ -13,15 +13,16 @@ namespace EhTagClient
 {
     public class GitHubApiClient
     {
-        public GitHubApiClient(RepoClient repoClient, Database database)
+        public GitHubApiClient(RepoClient repoClient, Database database, JsonSerializer jsonSerializer)
         {
             _RepoClient = repoClient;
             _Database = database;
+            _JsonSerializer = jsonSerializer;
         }
 
         private readonly RepoClient _RepoClient;
         private readonly Database _Database;
-
+        private readonly JsonSerializer _JsonSerializer;
         private readonly GitHubClient _GitHubClient = new GitHubClient(new Octokit.ProductHeaderValue(Consts.Username, "1.0"))
         {
             Credentials = new Credentials(Consts.Token),
@@ -40,7 +41,7 @@ namespace EhTagClient
             using (var writer = new StreamWriter(new MemoryStream(), Encoding.UTF8))
             {
                 var head = _RepoClient.Head;
-                var upload_data = JsonConvert.SerializeObject(new
+                var uploadData = new
                 {
                     Remote = _RepoClient.RemotePath,
                     Head = new
@@ -52,8 +53,8 @@ namespace EhTagClient
                     },
                     Version = _Database.GetVersion(),
                     Data = _Database.Values,
-                });
-                writer.Write(upload_data);
+                };
+                _JsonSerializer.Serialize(writer, uploadData);
                 writer.Flush();
 
                 using (var gziped = new MemoryStream())

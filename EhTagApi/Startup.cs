@@ -48,16 +48,19 @@ namespace EhTagApi
 
             services.AddHttpsRedirection(options => options.RedirectStatusCode = 301);
 
-            services.AddResponseCompression(options =>
-            {
-                options.EnableForHttps = true;
-            });
+            services.AddResponseCompression(options => options.EnableForHttps = true);
+
+            var jsonSerializerSettings = default(Newtonsoft.Json.JsonSerializerSettings);
+            services.AddSingleton(_ => jsonSerializerSettings);
+            services.AddSingleton(serviceProvider
+                => Newtonsoft.Json.JsonSerializer.Create(serviceProvider.GetRequiredService< Newtonsoft.Json.JsonSerializerSettings>()));
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter(new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy()));
+                    jsonSerializerSettings = options.SerializerSettings;
                 });
         }
 
