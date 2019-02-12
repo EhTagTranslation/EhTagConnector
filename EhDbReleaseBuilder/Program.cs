@@ -11,7 +11,14 @@ namespace EhDbReleaseBuilder
 {
     class Program
     {
-        public static void Main(string[] args) => new GitHubApiClient(args[0], args[1]).Publish();
+        public static void Main(string[] args)
+        {
+            Console.WriteLine($@"EhDbReleaseBuilder started.
+  Source: {args[0]}
+  Target: {args[1]}
+");
+            new GitHubApiClient(args[0], args[1]).Publish();
+        }
     }
 
     class GitHubApiClient
@@ -32,7 +39,8 @@ namespace EhDbReleaseBuilder
         public void Publish()
         {
             Directory.CreateDirectory(_Target);
-            using (var writer = new StreamWriter(new MemoryStream(), new UTF8Encoding(false)))
+            var encoding = new UTF8Encoding(false);
+            using (var writer = new StreamWriter(new MemoryStream(), encoding))
             {
                 var head = _RepoClient.Head;
                 var uploadData = new
@@ -51,29 +59,30 @@ namespace EhDbReleaseBuilder
                 _JsonSerializer.Serialize(writer, uploadData);
                 writer.Flush();
 
+                using (var json = File.OpenWrite(Path.Combine(_Target, "db.json")))
+                {
+                    writer.BaseStream.Position = 0;
+                    writer.BaseStream.CopyTo(json);
+                    Console.WriteLine($"Created: db.json ({json.Position} bytes)");
+                }
+
                 using (var gziped = File.OpenWrite(Path.Combine(_Target, "db.json.gz")))
                 {
                     using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
                     {
                         writer.BaseStream.Position = 0;
                         writer.BaseStream.CopyTo(gzip);
+                        Console.WriteLine($"Created: db.json.gz ({gziped.Position} bytes)");
                     }
                 }
 
-
-                using (var json = File.OpenWrite(Path.Combine(_Target, "db.json")))
-                {
-                    writer.BaseStream.Position = 0;
-                    writer.BaseStream.CopyTo(json);
-                }
-
-
                 using (var jsonp = File.OpenWrite(Path.Combine(_Target, "db.js")))
                 {
-                    jsonp.Write(Encoding.UTF8.GetBytes("load_ehtagtranslation_database("));
+                    jsonp.Write(encoding.GetBytes("load_ehtagtranslation_database("));
                     writer.BaseStream.Position = 0;
                     writer.BaseStream.CopyTo(jsonp);
-                    jsonp.Write(Encoding.UTF8.GetBytes(");"));
+                    jsonp.Write(encoding.GetBytes(");"));
+                    Console.WriteLine($"Created: db.js ({jsonp.Position} bytes)");
                 }
             }
         }
