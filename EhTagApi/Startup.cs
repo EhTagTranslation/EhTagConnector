@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EhTagApi
@@ -26,22 +28,9 @@ namespace EhTagApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Consts.Username = Configuration.GetValue<string>("GitHub:Username");
-            Consts.Password = Configuration.GetValue<string>("GitHub:Password");
-            Consts.Email = Configuration.GetValue<string>("GitHub:Email");
-            Consts.Token = Configuration.GetValue<string>("GitHub:Token");
-
             services.AddSingleton(new RepoClient());
 
-            services.AddSingleton(serviceProvider =>
-            {
-                serviceProvider.GetService<RepoClient>();
-                var db = new Database();
-                db.Load();
-                return db;
-            });
-
-            services.AddSingleton<GitHubApiClient>();
+            services.AddSingleton<Database>();
 
             services.AddScoped<Filters.GitETagFilter>();
             services.AddScoped<Filters.GitHubIdentityFilter>();
@@ -50,17 +39,21 @@ namespace EhTagApi
 
             services.AddResponseCompression(options => options.EnableForHttps = true);
 
-            var jsonSerializerSettings = default(Newtonsoft.Json.JsonSerializerSettings);
-            services.AddSingleton(_ => jsonSerializerSettings);
-            services.AddSingleton(serviceProvider
-                => Newtonsoft.Json.JsonSerializer.Create(serviceProvider.GetRequiredService< Newtonsoft.Json.JsonSerializerSettings>()));
+            services.AddSingleton(Consts.SerializerSettings);
+            services.AddSingleton(serviceProvider 
+                => Newtonsoft.Json.JsonSerializer.Create(serviceProvider.GetRequiredService<Newtonsoft.Json.JsonSerializerSettings>()));
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter(new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy()));
-                    jsonSerializerSettings = options.SerializerSettings;
+                    var serializer = Newtonsoft.Json.JsonSerializer.Create(new Newtonsoft.Json.JsonSerializerSettings
+                    {
+                        TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+                    });
+                    var tw = new StringWriter();
+                    serializer.Serialize(tw, Consts.SerializerSettings);
+                    serializer.Populate(new StringReader(tw.ToString()), options.SerializerSettings);
                 });
         }
 

@@ -11,13 +11,14 @@ namespace EhTagClient
 {
     public class RecordDictionary
     {
-        public RecordDictionary(Namespace ns)
+        public RecordDictionary(Namespace ns, RepoClient repoClient)
         {
             Namespace = ns;
+            FilePath = Path.Combine(repoClient.LocalPath, $"database/{Namespace.ToString().ToLower()}.md");
         }
 
         [JsonIgnore]
-        public string FilePath => $"{Consts.REPO_PATH}/database/{Namespace.ToString().ToLower()}.md";
+        public string FilePath { get; }
 
         public Namespace Namespace { get; }
 
@@ -174,19 +175,22 @@ namespace EhTagClient
 
     public class Database : IReadOnlyDictionary<Namespace, RecordDictionary>
     {
-        public Database()
+        public Database(RepoClient repoClient)
         {
+            _RepoClient = repoClient;
             _Keys = (Namespace[])Enum.GetValues(typeof(Namespace));
             Array.Sort(_Keys);
             _Values = new RecordDictionary[_Keys.Length];
             for (var i = 0; i < _Keys.Length; i++)
             {
-                _Values[i] = new RecordDictionary(_Keys[i]);
+                _Values[i] = new RecordDictionary(_Keys[i], repoClient);
             }
+            Load();
         }
 
         private readonly Namespace[] _Keys;
         private readonly RecordDictionary[] _Values;
+        private readonly RepoClient _RepoClient;
 
         public void Load()
         {
@@ -206,7 +210,8 @@ namespace EhTagClient
 
         public int GetVersion()
         {
-            if (!int.TryParse(File.ReadAllText(Consts.REPO_PATH + "/version"), out var ver))
+            var path = Path.Combine(_RepoClient.LocalPath, $"version");
+            if (!int.TryParse(File.ReadAllText(path), out var ver))
                 return -1;
             return ver;
         }

@@ -10,9 +10,12 @@ namespace EhTagClient
 {
     public class RepoClient
     {
+        public RepoClient(string workingDirectory) => Repo = new Repository(workingDirectory);
+
         public RepoClient() => Init();
 
         public string RemotePath => $"https://github.com/{Consts.OWNER}/{Consts.REPO}.git";
+        public string LocalPath => _Repo.Info.WorkingDirectory;
 
         private string _GitPath;
         private Repository _Repo;

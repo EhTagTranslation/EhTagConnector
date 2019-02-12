@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EhDbReleaseBuilder": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\lzy\\Documents\\Source\\EhTagTranslation\\EhTagConnector\\EhTagApi\\Db\\ C:\\Users\\lzy\\Documents\\Source\\EhTagTranslation\\EhTagConnector\\EhTagApi\\Db\\publish"
+    }
+  }
+}

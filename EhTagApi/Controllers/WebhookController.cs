@@ -15,14 +15,12 @@ namespace EhTagApi.Controllers
     {
         private readonly ILogger logger;
         private readonly RepoClient repoClient;
-        private readonly GitHubApiClient gitHubApiClient;
         private readonly Database database;
 
-        public WebhookController(ILogger<WebhookController> logger, RepoClient repoClient, GitHubApiClient gitHubApiClient, Database database)
+        public WebhookController(ILogger<WebhookController> logger, RepoClient repoClient, Database database)
         {
             this.logger = logger;
             this.repoClient = repoClient;
-            this.gitHubApiClient = gitHubApiClient;
             this.database = database;
         }
 
@@ -57,7 +55,6 @@ namespace EhTagApi.Controllers
                 log = "Already up-to-date.";
             }
 
-            _ = gitHubApiClient.Publish();
             return Ok(log);
         }
     }
