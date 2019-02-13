@@ -26,7 +26,7 @@
 
 进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](https://developer.github.com/apps/building-oauth-apps/) 或 [PAT](https://github.com/settings/tokens) 获取，只用于确认用户信息，不需要除 public access 外的特殊 scope。
 
-认证信息通过 [Authentication Header](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Authentication) 输入（如 `Authorization: token aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。
+认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。
 
 提交的显示效果如下：  
 ![](/DocImages/commit.png)
@@ -191,7 +191,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 ```yml
 POST /api/database/parody
 ---
-Authorization: token aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 If-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 Content-Type: application/json
 ```
@@ -234,7 +234,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 ```yml
 PUT /api/database/reclass
 ---
-Authorization: token aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 Content-Type: application/json
 If-Match: "d4553b638098466ef013567b319c034f8ee34950"
 ```
@@ -278,7 +278,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```yml
 DELETE /api/database/reclass/private
 ---
-Authorization: token aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 ```
 

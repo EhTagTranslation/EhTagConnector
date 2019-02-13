@@ -40,8 +40,19 @@ namespace EhTagApi
             services.AddResponseCompression(options => options.EnableForHttps = true);
 
             services.AddSingleton(Consts.SerializerSettings);
-            services.AddSingleton(serviceProvider 
+            services.AddSingleton(serviceProvider
                 => Newtonsoft.Json.JsonSerializer.Create(serviceProvider.GetRequiredService<Newtonsoft.Json.JsonSerializerSettings>()));
+
+            services.AddCors(options =>
+            {
+
+                options.AddDefaultPolicy(builder => builder
+                    .AllowAnyOrigin()
+                    .WithHeaders("If-Match", "If-None-Match", "Content-Type", "Accept", "Accept-Encoding", "X-Token")
+                    .WithExposedHeaders("E-Tag", "Location")
+                    .WithMethods("HEAD", "GET", "PUT", "POST", "DELETE")
+                    .Build());
+            });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
@@ -70,6 +81,7 @@ namespace EhTagApi
             }
 
             app.UseHttpsRedirection();
+            app.UseCors();
             app.UseResponseCompression();
             app.UseMvc();
         }

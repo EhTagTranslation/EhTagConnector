@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EhTagApi.Filters
@@ -22,24 +23,24 @@ namespace EhTagApi.Filters
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!context.HttpContext.Request.Headers.TryGetValue("Authorization", out var authstr))
+            if (!context.HttpContext.Request.Headers.TryGetValue("X-Token", out var tokenHeader))
             {
-                context.Result = new UnauthorizedObjectResult("No authorization header.");
+                context.Result = new UnauthorizedObjectResult("No X-Token header.");
                 return;
             }
-            if (!System.Net.Http.Headers.AuthenticationHeaderValue.TryParse(authstr.FirstOrDefault(), out var auth))
+            if (tokenHeader.Count != 1)
             {
-                context.Result = new UnauthorizedObjectResult("Invalid authorization header.");
+                context.Result = new UnauthorizedObjectResult("Multiple X-Token header.");
                 return;
             }
-            if (!"token".Equals(auth.Scheme, StringComparison.OrdinalIgnoreCase))
+            var token = tokenHeader[0].Trim();
+            if(string.IsNullOrEmpty(token) || !Regex.IsMatch(token, @"^[a-fA-F0-9]{8,}$"))
             {
-                context.Result = new UnauthorizedObjectResult("Unsupported authorization scheme, only 'token' supported.");
+                context.Result = new UnauthorizedObjectResult("Invalid X-Token header.");
                 return;
             }
             try
             {
-                var token = auth.Parameter.Trim();
                 var client = new GitHubClient(new ProductHeaderValue(Consts.Username, "1.0"))
                 {
                     Credentials = new Credentials(token)
@@ -53,7 +54,7 @@ namespace EhTagApi.Filters
             }
             catch
             {
-                context.Result = new UnauthorizedObjectResult("Invalid token.");
+                context.Result = new UnauthorizedObjectResult("Invalid X-Token header.");
                 return;
             }
         }
