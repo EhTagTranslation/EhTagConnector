@@ -49,7 +49,7 @@ namespace EhTagApi
                 options.AddDefaultPolicy(builder => builder
                     .AllowAnyOrigin()
                     .WithHeaders("If-Match", "If-None-Match", "Content-Type", "Accept", "Accept-Encoding", "X-Token")
-                    .WithExposedHeaders("E-Tag", "Location")
+                    .WithExposedHeaders("ETag", "Location")
                     .WithMethods("HEAD", "GET", "PUT", "POST", "DELETE")
                     .Build());
             });

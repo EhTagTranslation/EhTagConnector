@@ -11,7 +11,7 @@
 ### 版本控制
 使用 [`ETag`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/ETag) 进行版本控制，其值为最新一次 Git commit 的 sha1 值。可以使用[查询数据库数据版本](#查询数据库数据版本) API 进行查询。
 
-+ `ETag` 将随 `HTTP 2XX` 响应返回。
++ `ETag` 将随 `HTTP 2XX` 及 `HTTP 404` 响应返回。
 
 + 对于 `GET` 请求，可以使用 [`If-None-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-None-Match) 控制缓存。
   

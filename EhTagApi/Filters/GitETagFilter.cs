@@ -12,25 +12,22 @@ namespace EhTagApi.Filters
 {
     public class GitETagFilter : IActionFilter
     {
-        private readonly EhTagClient.RepoClient repoClient;
+        private readonly EhTagClient.RepoClient _RepoClient;
 
-        public GitETagFilter(EhTagClient.RepoClient repoClient)
+        public GitETagFilter(EhTagClient.RepoClient repoClient) => _RepoClient = repoClient;
+
+        private string CurrentETag => '"' + _RepoClient.CurrentSha + '"';
+
+        private bool _EqualsCurrentETag(StringValues eTagValue)
         {
-            this.repoClient = repoClient;
-        }
-
-        private string CurrentETag => '"' + repoClient.CurrentSha + '"';
-
-        private bool EqualsCurrentETag(StringValues eTagValue)
-        {
-            var tag = eTagValue.FirstOrDefault();
+            var tag = eTagValue.FirstOrDefault().Trim();
             if (string.IsNullOrEmpty(tag))
                 return false;
             if (tag.Length <= 40)
                 return false;
 
             if (tag.StartsWith("W/"))
-                tag = tag.Substring(2);
+                tag = tag.Substring(2).TrimStart();
 
             return CurrentETag.Equals(tag, StringComparison.OrdinalIgnoreCase);
         }
@@ -43,7 +40,7 @@ namespace EhTagApi.Filters
             case "HEAD":
                 if (!context.HttpContext.Request.Headers.TryGetValue("If-None-Match", out var ifNoneMatch))
                     return;
-                if (!EqualsCurrentETag(ifNoneMatch))
+                if (!_EqualsCurrentETag(ifNoneMatch))
                     return;
                 context.Result = new StatusCodeResult(304);
                 return;
@@ -60,7 +57,7 @@ namespace EhTagApi.Filters
                     });
                     return;
                 }
-                if (!EqualsCurrentETag(ifMatch))
+                if (!_EqualsCurrentETag(ifMatch))
                 {
                     context.Result = new ObjectResult(new
                     {
@@ -75,7 +72,8 @@ namespace EhTagApi.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (context.HttpContext.Response.StatusCode < 300 && context.HttpContext.Response.StatusCode >= 200)
+            var code = context.HttpContext.Response.StatusCode;
+            if ((code < 300 && code >= 200) || code == 404)
                 context.HttpContext.Response.Headers.Add("ETag", new StringValues(CurrentETag));
         }
     }
