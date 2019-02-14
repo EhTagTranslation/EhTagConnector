@@ -25,7 +25,6 @@ namespace EhTagApi.Controllers
 
         private void _Commit(Namespace @namespace, string k, Record o, Record n, User user)
         {
-#if !DEBUG
             var verb = "Modified";
             if (o is null)
                 verb = "Added";
@@ -34,9 +33,10 @@ namespace EhTagApi.Controllers
 
             var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{k}'.
 
-Previous value: {o?.ToString(k)}
-Current value: {n?.ToString(k)}";
+Previous value: {o?.ToString(k) ?? "(nonexistence)"}
+Current value: {n?.ToString(k) ?? "(deleted)"}";
 
+#if !DEBUG
             _RepoClient.Commit(message, user.ToGitIdentity());
             _RepoClient.Push();
 #endif
