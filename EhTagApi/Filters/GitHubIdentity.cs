@@ -23,6 +23,7 @@ namespace EhTagApi.Filters
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
+#if !DEBUG
             if (!context.HttpContext.Request.Headers.TryGetValue("X-Token", out var tokenHeader))
             {
                 context.Result = new UnauthorizedObjectResult("No X-Token header.");
@@ -57,8 +58,10 @@ namespace EhTagApi.Filters
                 context.Result = new UnauthorizedObjectResult("Invalid X-Token header.");
                 return;
             }
+#endif
         }
 
         public void OnActionExecuted(ActionExecutedContext context) { }
+
     }
 }

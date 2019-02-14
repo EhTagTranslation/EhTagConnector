@@ -23,21 +23,23 @@ namespace EhTagApi.Controllers
         private readonly RepoClient _RepoClient;
         private readonly Database _Database;
 
-        private void _Commit(Namespace @namespace, Record o, Record n, User user)
+        private void _Commit(Namespace @namespace, string k, Record o, Record n, User user)
         {
+#if !DEBUG
             var verb = "Modified";
             if (o is null)
                 verb = "Added";
             else if (n is null)
                 verb = "Deleted";
 
-            var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{(o ?? n).Raw}'.
+            var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{k}'.
 
-Previous value: {o}
-Current value: {n}";
+Previous value: {o?.ToString(k)}
+Current value: {n?.ToString(k)}";
 
             _RepoClient.Commit(message, user.ToGitIdentity());
             _RepoClient.Push();
+#endif
         }
 
         public DatabaseController(ILogger<WebhookController> logger, RepoClient repoClient, Database database)
@@ -79,7 +81,9 @@ Current value: {n}";
         }
 
         [HttpHead("{namespace}/{raw}")]
-        public IActionResult Head([SingleNamespace] Namespace @namespace, string raw)
+        public IActionResult Head(
+            [SingleNamespace] Namespace @namespace, 
+            [AcceptableRaw] string raw)
         {
             var dic = _Database[@namespace];
             var rec = dic.Find(raw);
@@ -91,7 +95,9 @@ Current value: {n}";
         }
 
         [HttpGet("{namespace}/{raw}")]
-        public ActionResult<Record> Get([SingleNamespace] Namespace @namespace, string raw)
+        public ActionResult<Record> Get(
+            [SingleNamespace] Namespace @namespace, 
+            [AcceptableRaw] string raw)
         {
             var dic = _Database[@namespace];
             var rec = dic.Find(raw);
@@ -106,7 +112,7 @@ Current value: {n}";
         [ServiceFilter(typeof(GitHubIdentityFilter))]
         public ActionResult<Record> Delete(
             [SingleNamespace] Namespace @namespace,
-            string raw,
+            [AcceptableRaw] string raw,
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];
@@ -117,50 +123,52 @@ Current value: {n}";
             dic.Remove(raw);
             dic.Save();
 
-            _Commit(@namespace, found, null, user);
+            _Commit(@namespace, raw, found, null, user);
             return NoContent();
         }
 
-        [HttpPost("{namespace}")]
+        [HttpPost("{namespace}/{raw}")]
         [ServiceFilter(typeof(GitHubIdentityFilter))]
         public ActionResult<Record> Post(
             [SingleNamespace] Namespace @namespace,
+            [AcceptableRaw] string raw,
             [AcceptableTranslation, FromBody] Record record,
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];
-            var replaced = dic.Find(record.Raw);
+            var replaced = dic.Find(raw);
 
             if (replaced != null)
                 return UnprocessableEntity(new { record = "Record with same 'raw' is in the wiki, use PUT to update the record." });
 
-            dic.AddOrReplace(record);
+            dic.AddOrReplace(raw, record);
             dic.Save();
 
-            _Commit(@namespace, null, record, user);
-            return Created($"api/database/{@namespace.ToString().ToLower()}/{record.Raw}", record);
+            _Commit(@namespace, raw, null, record, user);
+            return Created($"/api/database/{@namespace.ToString().ToLower()}/{raw}", record);
         }
 
-        [HttpPut("{namespace}")]
+        [HttpPut("{namespace}/{raw}")]
         [ServiceFilter(typeof(GitHubIdentityFilter))]
         public ActionResult<Record> Put(
             [SingleNamespace] Namespace @namespace,
+            [AcceptableRaw] string raw,
             [AcceptableTranslation, FromBody] Record record,
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];
-            var replaced = dic.Find(record.Raw);
+            var replaced = dic.Find(raw);
 
             if (replaced is null)
                 return NotFound(new { record = "Record with same 'raw' is not found in the wiki, use POST to insert the record." });
 
-            dic.AddOrReplace(record);
+            dic.AddOrReplace(raw, record);
             dic.Save();
 
-            if (record.ToString() == replaced.ToString())
+            if (record.ToString(raw) == replaced.ToString(raw))
                 return NoContent();
 
-            _Commit(@namespace, replaced, record, user);
+            _Commit(@namespace, raw, replaced, record, user);
             return Ok(record);
         }
     }

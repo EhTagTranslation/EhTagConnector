@@ -16,17 +16,20 @@ namespace EhTagClient
         public static string Email { get; }
         public static string Token { get; }
 
-        public static JsonSerializerSettings SerializerSettings { get; } = new JsonSerializerSettings
+        public static JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
         {
             ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver
             {
-                NamingStrategy= new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy(),
+                NamingStrategy = new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy(),
             },
             Converters =
             {
                 new Newtonsoft.Json.Converters.StringEnumConverter(new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy())
             },
             MaxDepth = 32,
+#if DEBUG
+            Formatting = Formatting.Indented,
+#endif
         };
 
         static Consts()

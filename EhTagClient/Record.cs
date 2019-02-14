@@ -19,23 +19,31 @@ namespace EhTagClient
             if (!(value is Record record))
                 return new ValidationResult($"The value '{value}' is not valid.");
             var failedFields = new List<string>(2);
-            if (string.IsNullOrEmpty(record.Raw))
-                failedFields.Add(validationContext.MemberName + ".raw");
-            if (string.IsNullOrEmpty(record.NameRaw))
-                failedFields.Add(validationContext.MemberName + ".name");
+            if (string.IsNullOrEmpty(record.Name.Text))
+                failedFields.Add(validationContext.MemberName + ".name.text");
             if (failedFields.Count != 0)
                 return new ValidationResult($"Field should not be empty.", failedFields);
             return ValidationResult.Success;
         }
     }
+    public class AcceptableRawAttribute : RegularExpressionAttribute
+    {
+        public AcceptableRawAttribute() : base("^[a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z0-9]$")
+        {
+        }
 
-    [DebuggerDisplay(@"\{{Raw} => {Name.RawString}\}")]
+        public override string FormatErrorMessage(string name)
+            => "Must be a valid tag name.";
+    }
+
     public class Record
     {
+        private static readonly string _Raw = "_Raw";
+
         private static readonly Regex _LineRegex = new Regex(
             $@"
             ^\s*(?<!\\)\|?\s*
-            (?<{nameof(Raw)}>.*?)
+            (?<{nameof(_Raw)}>.*?)
 		    \s*(?<!\\)\|\s*
 		    (?<{nameof(Name)}>.*?)
 		    \s*(?<!\\)\|\s*
@@ -44,110 +52,50 @@ namespace EhTagClient
 		    (?<{nameof(Links)}>.*?)
 		    \s*(?<!\\)\|?\s*$", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace);
 
-        internal static Record TryParse(string line)
+        internal static KeyValuePair<string, Record> TryParse(string line)
         {
             var match = _LineRegex.Match(line);
             if (!match.Success)
             {
-                return null;
+                return default;
             }
 
-            var raw = match.Groups[nameof(Raw)].Value;
+            var raw = match.Groups[nameof(_Raw)].Value.Trim().ToLower();
             var name = match.Groups[nameof(Name)].Value;
             var intro = match.Groups[nameof(Intro)].Value;
             var links = match.Groups[nameof(Links)].Value;
-            return new Record(_Unescape(raw), _Unescape(name), _Unescape(intro), _Unescape(links));
+            return KeyValuePair.Create(raw, new Record(_Unescape(name), _Unescape(intro), _Unescape(links)));
         }
 
         private static string _Unescape(string value)
         {
-            if (value.Contains("<br>") || value.Contains(@"\"))
-            {
-                var sb = new StringBuilder(value);
-                sb.Replace(@"\|", @"|");
-                sb.Replace(@"\~", @"~");
-                sb.Replace(@"\*", @"*");
-                sb.Replace(@"\\", @"\");
-                sb.Replace("<br>", "\n");
-                return sb.ToString();
-            }
-            return value;
+            return value
+                .Replace("<br>", "\n");
         }
 
         private static string _Escape(string value)
         {
             return value
-                .Replace(@"\", @"\\")
-                .Replace(@"|", @"\|")
-                .Replace(@"~", @"\~")
-                .Replace(@"*", @"\*")
                 .Replace("\r\n", "<br>")
                 .Replace("\n", "<br>")
                 .Replace("\r", "<br>");
         }
 
-        internal static Record Combine(Record r1, Record r2)
-        {
-            if (r1.Raw != r2.Raw)
-            {
-                throw new InvalidOperationException();
-            }
-
-            string name, intro;
-            if (r1.NameRaw == r2.NameRaw)
-            {
-                name = r1.NameRaw;
-            }
-            else
-            {
-                name = $@"{r1.NameRaw} | {r2.NameRaw}";
-            }
-            if (string.IsNullOrWhiteSpace(r1.IntroRaw))
-            {
-                intro = r2.IntroRaw;
-            }
-            else if (string.IsNullOrWhiteSpace(r2.IntroRaw))
-            {
-                intro = r1.IntroRaw;
-            }
-            else
-            {
-                intro = $"{r1.IntroRaw}<hr>{r2.IntroRaw}";
-            }
-
-            return new Record(r1.Raw, name, intro, $"{r1.LinksRaw} {r2.LinksRaw}");
-        }
-
         [JsonConstructor]
-        public Record(string raw, string name, string intro, string links)
+        public Record(string name, string intro, string links)
         {
-            Raw = (raw ?? "").Trim().ToLower();
-            NameRaw = (name ?? "").Trim();
-            IntroRaw = (intro ?? "").Trim();
-            LinksRaw = (links ?? "").Trim();
+            Name = new MarkdownText(name);
+            Intro = new MarkdownText(intro);
+            Links = new MarkdownText(links);
         }
 
-        public string Raw { get; }
+        public MarkdownText Name { get; }
 
-        [JsonProperty("name")]
-        public string NameRaw { get; }
+        public MarkdownText Intro { get; }
 
-        [JsonIgnore]
-        public MarkdownText Name => new MarkdownText(NameRaw);
+        public MarkdownText Links { get; }
 
-        [JsonProperty("intro")]
-        public string IntroRaw { get; }
-
-        [JsonIgnore]
-        public MarkdownText Intro => new MarkdownText(IntroRaw);
-
-        [JsonProperty("links")]
-        public string LinksRaw { get; }
-
-        [JsonIgnore]
-        public IEnumerable<MarkdownLink> Links => new MarkdownText(LinksRaw).Tokens.OfType<MarkdownLink>();
-
-        public override string ToString() 
-            => $"| {_Escape(Raw)} | {_Escape(NameRaw)} | {_Escape(IntroRaw)} | {_Escape(LinksRaw)} |";
+        public string ToString(string raw)
+            => $"| {raw} | {_Escape(Name.Raw)} | {_Escape(Intro.Raw)} | {_Escape(Links.Raw)} |";
     }
 }

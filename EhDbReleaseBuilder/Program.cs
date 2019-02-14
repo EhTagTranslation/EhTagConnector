@@ -17,7 +17,58 @@ namespace EhDbReleaseBuilder
   Source: {args[0]}
   Target: {args[1]}
 ");
-            new GitHubApiClient(args[0], args[1]).Publish();
+            var client = new GitHubApiClient(args[0], args[1]);
+            var s = Consts.SerializerSettings;
+            client.Publish(s, "full");
+            var c = new MdConverter();
+            s.Converters.Add(c);
+            c.Type = MdConverter.ConvertType.Html;
+            client.Publish(s, "html");
+            c.Type = MdConverter.ConvertType.Raw;
+            client.Publish(s, "raw");
+            c.Type = MdConverter.ConvertType.Text;
+            client.Publish(s, "text");
+            c.Type = MdConverter.ConvertType.Ast;
+            client.Publish(s, "ast");
+        }
+    }
+
+    internal class MdConverter : JsonConverter
+    {
+        internal ConvertType Type { get; set; } = ConvertType.All;
+
+        public enum ConvertType
+        {
+            Raw,
+            Text,
+            Html,
+            Ast,
+            All,
+        }
+
+        public MdConverter() { }
+
+        public override bool CanConvert(Type objectType) => objectType == typeof(MarkdownText);
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => throw new NotImplementedException();
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            switch (Type)
+            {
+            case ConvertType.Raw:
+                serializer.Serialize(writer, ((MarkdownText)value).Raw);
+                break;
+            case ConvertType.Text:
+                serializer.Serialize(writer, ((MarkdownText)value).Text);
+                break;
+            case ConvertType.Html:
+                serializer.Serialize(writer, ((MarkdownText)value).Html);
+                break;
+            case ConvertType.Ast:
+                serializer.Serialize(writer, ((MarkdownText)value).Ast);
+                break;
+            default:
+                throw new NotImplementedException();
+            }
         }
     }
 
@@ -28,16 +79,15 @@ namespace EhDbReleaseBuilder
             _Target = target;
             _RepoClient = new RepoClient(source);
             _Database = new Database(_RepoClient);
-            _JsonSerializer = JsonSerializer.Create(Consts.SerializerSettings);
         }
 
         private readonly RepoClient _RepoClient;
         private readonly Database _Database;
-        private readonly JsonSerializer _JsonSerializer;
-        private string _Target;
+        private readonly string _Target;
 
-        public void Publish()
+        public void Publish(JsonSerializerSettings settings, string fileModifier)
         {
+            var serializer = JsonSerializer.Create(settings);
             Directory.CreateDirectory(_Target);
             var encoding = new UTF8Encoding(false);
             using (var writer = new StreamWriter(new MemoryStream(), encoding))
@@ -56,33 +106,33 @@ namespace EhDbReleaseBuilder
                     Version = _Database.GetVersion(),
                     Data = _Database.Values,
                 };
-                _JsonSerializer.Serialize(writer, uploadData);
+                serializer.Serialize(writer, uploadData);
                 writer.Flush();
 
-                using (var json = File.OpenWrite(Path.Combine(_Target, "db.json")))
+                using (var json = File.OpenWrite(Path.Combine(_Target, $"db.{fileModifier}.json")))
                 {
                     writer.BaseStream.Position = 0;
                     writer.BaseStream.CopyTo(json);
-                    Console.WriteLine($"Created: db.json ({json.Position} bytes)");
+                    Console.WriteLine($"Created: db.{fileModifier}.json ({json.Position} bytes)");
                 }
 
-                using (var gziped = File.OpenWrite(Path.Combine(_Target, "db.json.gz")))
+                using (var gziped = File.OpenWrite(Path.Combine(_Target, $"db.{fileModifier}.json.gz")))
                 {
                     using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
                     {
                         writer.BaseStream.Position = 0;
                         writer.BaseStream.CopyTo(gzip);
-                        Console.WriteLine($"Created: db.json.gz ({gziped.Position} bytes)");
+                        Console.WriteLine($"Created: db.{fileModifier}.json.gz ({gziped.Position} bytes)");
                     }
                 }
 
-                using (var jsonp = File.OpenWrite(Path.Combine(_Target, "db.js")))
+                using (var jsonp = File.OpenWrite(Path.Combine(_Target, $"db.{fileModifier}.js")))
                 {
                     jsonp.Write(encoding.GetBytes("load_ehtagtranslation_database("));
                     writer.BaseStream.Position = 0;
                     writer.BaseStream.CopyTo(jsonp);
                     jsonp.Write(encoding.GetBytes(");"));
-                    Console.WriteLine($"Created: db.js ({jsonp.Position} bytes)");
+                    Console.WriteLine($"Created: db.{fileModifier}.js ({jsonp.Position} bytes)");
                 }
             }
         }
