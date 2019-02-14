@@ -175,7 +175,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
   "name": {
     "raw": "正太",
     "text": "正太",
-    "html": "<p>正太</p>\n",
+    "html": "<p>正太</p>",
     "ast": [
       {
         "type": "paragraph",
@@ -191,7 +191,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
   "intro": {
     "raw": "小男孩。\n![举例](# \"https://exhentai.org/t/8d/e4/8de4084018d6fd26f7fb8843dfdba5949835ac02-219707-1128-1600-jpg_l.jpg\")![图](# \"https://exhentai.org/t/b4/f2/b4f27457519a0eb55cbc231c34152084d8351cd3-543154-1000-1458-jpg_l.jpg\")![图](# \"https://exhentai.org/t/3a/46/3a466e7dc00e27d80e8d6be4674b08c6b8efb25f-304032-1067-1514-jpg_l.jpg\")",
     "text": "小男孩。",
-    "html": "<p>小男孩。\n<img src=\"https://exhentai.org/t/8d/e4/8de4084018d6fd26f7fb8843dfdba5949835ac02-219707-1128-1600-jpg_l.jpg\" alt=\"举例\" nsfw /><img src=\"https://exhentai.org/t/b4/f2/b4f27457519a0eb55cbc231c34152084d8351cd3-543154-1000-1458-jpg_l.jpg\" alt=\"图\" nsfw /><img src=\"https://exhentai.org/t/3a/46/3a466e7dc00e27d80e8d6be4674b08c6b8efb25f-304032-1067-1514-jpg_l.jpg\" alt=\"图\" nsfw /></p>\n",
+    "html": "<p>小男孩。<br />\n<img src=\"https://exhentai.org/t/8d/e4/8de4084018d6fd26f7fb8843dfdba5949835ac02-219707-1128-1600-jpg_l.jpg\" alt=\"举例\" nsfw /><img src=\"https://exhentai.org/t/b4/f2/b4f27457519a0eb55cbc231c34152084d8351cd3-543154-1000-1458-jpg_l.jpg\" alt=\"图\" nsfw /><img src=\"https://exhentai.org/t/3a/46/3a466e7dc00e27d80e8d6be4674b08c6b8efb25f-304032-1067-1514-jpg_l.jpg\" alt=\"图\" nsfw /></p>",
     "ast": [
       {
         "type": "paragraph",
@@ -286,7 +286,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
   "name": {
     "raw": "五等分的新娘",
     "text": "五等分的新娘",
-    "html": "<p>五等分的新娘</p>\n",
+    "html": "<p>五等分的新娘</p>",
     "ast": [
       {
         "type": "paragraph",
@@ -302,7 +302,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
   "intro": {
     "raw": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
     "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
-    "html": "<p>《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。</p>\n",
+    "html": "<p>《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。</p>",
     "ast": [
       {
         "type": "paragraph",
@@ -318,7 +318,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
   "links": {
     "raw": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (\\*)",
     "text": "维基百科 (*)",
-    "html": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>\n",
+    "html": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>",
     "ast": [
       {
         "type": "paragraph",
@@ -336,11 +336,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
           },
           {
             "type": "text",
-            "text": " ("
-          },
-          {
-            "type": "text",
-            "text": "*)"
+            "text": " (*)"
           }
         ]
       }
@@ -382,7 +378,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
   "name": {
     "raw": "私人的",
     "text": "私人的",
-    "html": "<p>私人的</p>\n",
+    "html": "<p>私人的</p>",
     "ast": [
       {
         "type": "paragraph",
@@ -398,7 +394,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
   "intro": {
     "raw": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要将其作为自己的个人用户画廊，或只是希望自己的朋友前来参观。从私人画廊获得的GP数量减少到上传者通常会收到的金额的10％。要创建私人图库，用户必须拥有铜星或更高星级。",
     "text": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要将其作为自己的个人用户画廊，或只是希望自己的朋友前来参观。从私人画廊获得的GP数量减少到上传者通常会收到的金额的10％。要创建私人图库，用户必须拥有铜星或更高星级。",
-    "html": "<p>私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要将其作为自己的个人用户画廊，或只是希望自己的朋友前来参观。从私人画廊获得的GP数量减少到上传者通常会收到的金额的10％。要创建私人图库，用户必须拥有铜星或更高星级。</p>\n",
+    "html": "<p>私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要将其作为自己的个人用户画廊，或只是希望自己的朋友前来参观。从私人画廊获得的GP数量减少到上传者通常会收到的金额的10％。要创建私人图库，用户必须拥有铜星或更高星级。</p>",
     "ast": [
       {
         "type": "paragraph",

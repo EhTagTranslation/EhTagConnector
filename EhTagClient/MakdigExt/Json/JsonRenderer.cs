@@ -4,6 +4,7 @@ using Markdig.Syntax.Inlines;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -34,7 +35,10 @@ namespace EhTagClient.MakdigExt.Json
                 JsonWriter.WriteStartArray();
             var r = base.Render(markdownObject);
             if (isDoc)
+            {
                 JsonWriter.WriteEndArray();
+                Debug.Assert(!_IsWritingText);
+            }
             return r;
         }
 
@@ -43,6 +47,7 @@ namespace EhTagClient.MakdigExt.Json
             JsonWriter.WritePropertyName("content");
             JsonWriter.WriteStartArray();
             WriteChildren(containerInline);
+            WriteTextEnd();
             JsonWriter.WriteEndArray();
         }
 
@@ -53,12 +58,40 @@ namespace EhTagClient.MakdigExt.Json
                 value = slice.ToString();
             JsonWriter.WriteValue(value);
         }
+
+        private bool _IsWritingText;
+        private readonly StringBuilder _PendingText = new StringBuilder();
+
+        public void WriteTextContent(string content)
+        {
+            if (!_IsWritingText)
+            {
+                Debug.Assert(_PendingText.Length == 0);
+                _IsWritingText = true;
+                JsonWriter.WriteStartObject();
+                WriteProperty("type", "text");
+                JsonWriter.WritePropertyName("text");
+            }
+            _PendingText.Append(content);
+        }
+        public void WriteTextEnd()
+        {
+            if (_IsWritingText)
+            {
+                _IsWritingText = false;
+                JsonWriter.WriteValue(_PendingText.ToString());
+                _PendingText.Clear();
+                JsonWriter.WriteEndObject();
+            }
+        }
+
     }
 
     internal abstract class JsonObjectRenderer<TObject> : MarkdownObjectRenderer<JsonRenderer, TObject> where TObject : MarkdownObject
     {
         protected override void Write(JsonRenderer renderer, TObject obj)
         {
+            renderer.WriteTextEnd();
             renderer.JsonWriter.WriteStartObject();
             renderer.WriteProperty("type", GetType(renderer, obj));
             WriteData(renderer, obj);
@@ -77,6 +110,20 @@ namespace EhTagClient.MakdigExt.Json
                 renderer.WriteContentProperty(containerInline);
             }
         }
+    }
+
+    internal abstract class JsonTextRender<TObject> : JsonObjectRenderer<TObject> where TObject : MarkdownObject
+    {
+        protected override void Write(JsonRenderer renderer, TObject obj)
+        {
+            renderer.WriteTextContent(GetText(renderer, obj));
+        }
+
+        protected sealed override string GetType(JsonRenderer renderer, TObject obj) => "text";
+
+        protected override void WriteData(JsonRenderer renderer, TObject obj) { }
+
+        protected abstract string GetText(JsonRenderer renderer, TObject obj);
     }
 
 
@@ -102,25 +149,22 @@ namespace EhTagClient.MakdigExt.Json
         protected override void WriteContent(JsonRenderer renderer, CodeInline obj) => renderer.WriteProperty("content", obj.Content);
     }
 
-    sealed class DelimiterInlineRenderer : JsonObjectRenderer<DelimiterInline>
+    sealed class DelimiterInlineRenderer : JsonTextRender<DelimiterInline>
     {
-        protected override string GetType(JsonRenderer renderer, DelimiterInline obj) => "text";
+        protected override string GetText(JsonRenderer renderer, DelimiterInline obj) => obj.ToLiteral();
 
         protected override void Write(JsonRenderer renderer, DelimiterInline obj)
         {
-            renderer.JsonWriter.WriteStartObject();
-            renderer.WriteProperty("type", GetType(renderer, obj));
-            renderer.WriteProperty("text", obj.ToLiteral());
-            renderer.JsonWriter.WriteEndObject();
+            base.Write(renderer, obj);
             renderer.WriteChildren(obj);
         }
     }
 
     sealed class EmphasisInlineRenderer : JsonObjectRenderer<EmphasisInline>
     {
-
         protected override string GetType(JsonRenderer renderer, EmphasisInline obj) => obj.IsDouble ? "strong" : "emphasis";
     }
+
     sealed class LineBreakInlineRenderer : JsonObjectRenderer<LineBreakInline>
     {
         protected override string GetType(JsonRenderer renderer, LineBreakInline obj) => "br";
@@ -143,18 +187,14 @@ namespace EhTagClient.MakdigExt.Json
             }
         }
     }
-    sealed class LiteralInlineRenderer : JsonObjectRenderer<LiteralInline>
+    sealed class LiteralInlineRenderer : JsonTextRender<LiteralInline>
     {
-        protected override string GetType(JsonRenderer renderer, LiteralInline obj) => "text";
-        protected override void WriteData(JsonRenderer renderer, LiteralInline obj)
-            => renderer.WriteProperty("text", obj.Content);
+        protected override string GetText(JsonRenderer renderer, LiteralInline obj) => obj.Content.ToString();
     }
 
-    sealed class NormalizeHtmlEntityInlineRenderer : JsonObjectRenderer<HtmlEntityInline>
+    sealed class NormalizeHtmlEntityInlineRenderer : JsonTextRender<HtmlEntityInline>
     {
-        protected override string GetType(JsonRenderer renderer, HtmlEntityInline obj) => "text";
-        protected override void WriteData(JsonRenderer renderer, HtmlEntityInline obj)
-            => renderer.WriteProperty("text", obj.Transcoded);
+        protected override string GetText(JsonRenderer renderer, HtmlEntityInline obj) => obj.Transcoded.ToString();
     }
 
 }

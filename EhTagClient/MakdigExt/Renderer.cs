@@ -56,6 +56,7 @@ namespace EhTagClient.MakdigExt
                     UseNonAsciiNoEscape = true,
                 };
                 htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LinkInlineRenderer>(new Html.EhLinkInlineRenderer());
+                htmlRenderer.ObjectRenderers.Find<Hr.Inlines.LineBreakInlineRenderer>().RenderAsHardlineBreak = true;
                 _Pipeline.Setup(htmlRenderer);
                 htmlRenderer.Render(document);
                 return sw.ToString().Trim();
