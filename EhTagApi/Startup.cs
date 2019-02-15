@@ -59,11 +59,20 @@ namespace EhTagApi
                     var defOutput = options.OutputFormatters.OfType<Microsoft.AspNetCore.Mvc.Formatters.JsonOutputFormatter>().First();
                     defOutput.SupportedMediaTypes.Clear();
                     defOutput.SupportedMediaTypes.Add("application/json");
+                    defOutput.SupportedMediaTypes.Add("application/problem+json");
                     options.OutputFormatters.Add(new Formatters.RawOutputFormatter());
                     options.OutputFormatters.Add(new Formatters.TextOutputFormatter());
                     options.OutputFormatters.Add(new Formatters.HtmlOutputFormatter());
                     options.OutputFormatters.Add(new Formatters.AstOutputFormatter());
                 })
+                .AddFormatterMappings(options =>
+                {
+                    options.SetMediaTypeMappingForFormat("raw.json", "application/raw+json");
+                    options.SetMediaTypeMappingForFormat("text.json", "application/text+json");
+                    options.SetMediaTypeMappingForFormat("html.json", "application/html+json");
+                    options.SetMediaTypeMappingForFormat("ast.json", "application/ast+json");
+                })
+                .AddXmlSerializerFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {

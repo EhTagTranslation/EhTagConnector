@@ -16,7 +16,7 @@ namespace EhTagApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ServiceFilter(typeof(GitETagFilter))]
+    [ServiceFilter(typeof(GitETagFilter)), FormatFilter]
     public class DatabaseController : ControllerBase
     {
         private readonly ILogger _Logger;
@@ -53,12 +53,12 @@ Current value: {n?.ToString(k) ?? "(deleted)"}";
         public IActionResult Head() => NoContent();
 
         [HttpGet]
-        public IActionResult Get()
+        public object Get()
         {
             var repo = _RepoClient.Repo;
             var head = _RepoClient.Head;
 
-            return new JsonResult(new
+            return new
             {
                 Repo = _RepoClient.RemotePath,
                 Head = new
@@ -70,14 +70,14 @@ Current value: {n?.ToString(k) ?? "(deleted)"}";
                 },
                 Version = _Database.GetVersion(),
                 Data = _Database.Values.Select(v => new { v.Namespace, v.Count }),
-            });
+            };
         }
 
         [HttpGet("{namespace}")]
-        public IActionResult Get([SingleNamespace] Namespace @namespace)
+        public object Get([SingleNamespace] Namespace @namespace)
         {
             var dic = _Database[@namespace];
-            return new JsonResult(new { dic.Namespace, dic.Count });
+            return new { dic.Namespace, dic.Count };
         }
 
         [HttpHead("{namespace}/{raw}")]

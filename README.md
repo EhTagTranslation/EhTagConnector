@@ -35,9 +35,9 @@
 
 ### 返回格式
 
-使用 [`Accept`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept) 控制 API 返回 JSON 的格式，可选的值有：
+使用 [`Accept`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept) 头或 `format` 查询参数控制 API 返回 JSON 的格式，可选的值有：
 
-- `application/json`
+- `Accept: application/json` / `?format=json`
   
   默认设置，返回所有信息。
   ```yaml
@@ -90,7 +90,7 @@
     }
   }
   ```
-- `application/raw+json`
+- `Accept: application/raw+json` / `?format=raw.json`
   
   仅返回 `raw` 字段内容。
   ```yaml
@@ -100,7 +100,7 @@
     "links": ""
   }
   ```
-- `application/html+json`
+- `Accept: application/html+json` / `?format=html.json`
   
   仅返回 `html` 字段内容。
   ```yaml
@@ -110,7 +110,7 @@
     "links": ""
   }
   ```
-- `application/text+json`
+- `Accept: application/text+json` / `?format=text.json`
   
   仅返回 `text` 字段内容。
   ```yaml
@@ -120,7 +120,7 @@
     "links": ""
   }
   ```
-- `application/ast+json`
+- `Accept: application/ast+json` / `?format=ast.json`
   
   仅返回 `ast` 字段内容。
   ```yaml
