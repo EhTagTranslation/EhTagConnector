@@ -33,6 +33,132 @@
 提交的显示效果如下：  
 ![](DocImages/commit.png)
 
+### 返回格式
+
+使用 [`Accept`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept) 控制 API 返回 JSON 的格式，可选的值有：
+
+- `application/json`
+  
+  默认设置，返回所有信息。
+  ```yaml
+  {
+    "name": {
+      "raw": "轻音少女",
+      "text": "轻音少女",
+      "html": "<p>轻音少女</p>",
+      "ast": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "轻音少女"
+            }
+          ]
+        }
+      ]
+    },
+    "intro": {
+      "raw": "![图](https://ul.ehgt.org/ee/4f/ee4f3da314a2748030b53b9e495c8d20fd0d6fd5-1465878-5000-3501-jpg_l.jpg)",
+      "text": "",
+      "html": "<p><img src=\"https://ul.ehgt.org/ee/4f/ee4f3da314a2748030b53b9e495c8d20fd0d6fd5-1465878-5000-3501-jpg_l.jpg\" alt=\"图\" /></p>",
+      "ast": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "image",
+              "title": "",
+              "url": "https://ul.ehgt.org/ee/4f/ee4f3da314a2748030b53b9e495c8d20fd0d6fd5-1465878-5000-3501-jpg_l.jpg",
+              "nsfw": false,
+              "content": [
+                {
+                  "type": "text",
+                  "text": "图"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "links": {
+      "raw": "",
+      "text": "",
+      "html": "",
+      "ast": []
+    }
+  }
+  ```
+- `application/raw+json`
+  
+  仅返回 `raw` 字段内容。
+  ```yaml
+  {
+    "name": "轻音少女",
+    "intro": "![图](https://ul.ehgt.org/ee/4f/ee4f3da314a2748030b53b9e495c8d20fd0d6fd5-1465878-5000-3501-jpg_l.jpg)",
+    "links": ""
+  }
+  ```
+- `application/html+json`
+  
+  仅返回 `html` 字段内容。
+  ```yaml
+  {
+    "name": "<p>轻音少女</p>",
+    "intro": "<p><img src=\"https://ul.ehgt.org/ee/4f/ee4f3da314a2748030b53b9e495c8d20fd0d6fd5-1465878-5000-3501-jpg_l.jpg\" alt=\"图\" /></p>",
+    "links": ""
+  }
+  ```
+- `application/text+json`
+  
+  仅返回 `text` 字段内容。
+  ```yaml
+  {
+    "name": "轻音少女",
+    "intro": "",
+    "links": ""
+  }
+  ```
+- `application/ast+json`
+  
+  仅返回 `ast` 字段内容。
+  ```yaml
+  {
+    "name": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "轻音少女"
+          }
+        ]
+      }
+    ],
+    "intro": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "image",
+            "title": "",
+            "url": "https://ul.ehgt.org/ee/4f/ee4f3da314a2748030b53b9e495c8d20fd0d6fd5-1465878-5000-3501-jpg_l.jpg",
+            "nsfw": false,
+            "content": [
+              {
+                "type": "text",
+                "text": "图"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "links": []
+  }
+  ```
+
 ### 查询数据库基本情况
 
 路径: `GET /database`

@@ -54,8 +54,17 @@ namespace EhTagApi
                     .Build());
             });
 
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddMvc(options =>
+                {
+                    var defOutput = options.OutputFormatters.OfType<Microsoft.AspNetCore.Mvc.Formatters.JsonOutputFormatter>().First();
+                    defOutput.SupportedMediaTypes.Clear();
+                    defOutput.SupportedMediaTypes.Add("application/json");
+                    options.OutputFormatters.Add(new Formatters.RawOutputFormatter());
+                    options.OutputFormatters.Add(new Formatters.TextOutputFormatter());
+                    options.OutputFormatters.Add(new Formatters.HtmlOutputFormatter());
+                    options.OutputFormatters.Add(new Formatters.AstOutputFormatter());
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                 {
                     var serializer = Newtonsoft.Json.JsonSerializer.Create(new Newtonsoft.Json.JsonSerializerSettings
