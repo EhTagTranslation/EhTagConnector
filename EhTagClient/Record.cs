@@ -26,14 +26,32 @@ namespace EhTagClient
             return ValidationResult.Success;
         }
     }
-    public class AcceptableRawAttribute : RegularExpressionAttribute
+    public class AcceptableRawAttribute : ValidationAttribute
     {
-        public AcceptableRawAttribute() : base("^[a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z0-9]$")
+        public AcceptableRawAttribute() : base(@"^[-\.a-zA-Z0-9][-\.a-zA-Z0-9 ]*[-\.a-zA-Z0-9]$")
         {
         }
-
-        public override string FormatErrorMessage(string name)
-            => "Must be a valid tag name.";
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            if (!(value is string raw))
+                return new ValidationResult($"The value '{value}' is not a valid tag.");
+            var traw = raw.Trim();
+            if (traw != raw)
+                return new ValidationResult($"The tag starts with or end with whitespaces.");
+            if (string.IsNullOrEmpty(traw))
+                return new ValidationResult($"The tag is too short.");
+            foreach (var ch in traw)
+            {
+                if ((ch >= 'a' && ch <= 'z')
+                    || (ch >= 'A' && ch <= 'Z')
+                    || (ch >= '0' && ch <= '9')
+                    || ch == '.'
+                    || ch == '-')
+                    continue;
+                return new ValidationResult($"The tag included non-alphanumeric characters which are not permitted. Only hyphens, periods, and spaces are allowed in tags.");
+            }
+            return ValidationResult.Success;
+        }
     }
 
     public class Record
@@ -96,6 +114,6 @@ namespace EhTagClient
         public MarkdownText Links { get; }
 
         public string ToString(string raw)
-            => $"| {raw} | {_Escape(Name.Raw)} | {_Escape(Intro.Raw)} | {_Escape(Links.Raw)} |";
+            => $"| {raw.Trim().ToLower()} | {_Escape(Name.Raw)} | {_Escape(Intro.Raw)} | {_Escape(Links.Raw)} |";
     }
 }

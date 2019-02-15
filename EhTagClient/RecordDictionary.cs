@@ -83,7 +83,7 @@ namespace EhTagClient
         [JsonIgnore]
         public List<KVP> RawData { get; } = new List<KVP>();
 
-        private Dictionary<string, int> MapData { get; } = new Dictionary<string, int>();
+        private Dictionary<string, int> MapData { get; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         public void Load()
         {

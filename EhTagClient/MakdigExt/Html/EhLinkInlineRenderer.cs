@@ -49,7 +49,6 @@ namespace EhTagClient.MakdigExt.Html
             }
             if (renderer.EnableHtmlForInline)
             {
-                renderer.Write(" rel=\"nofollow\"");
                 renderer.Write(">");
             }
             renderer.WriteChildren(link);
