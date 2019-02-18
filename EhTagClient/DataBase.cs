@@ -20,6 +20,9 @@ namespace EhTagClient
                 _Values[i] = new RecordDictionary(_Keys[i], repoClient);
             }
             Load();
+#if DEBUG
+            Save();
+#endif
         }
 
         private readonly Namespace[] _Keys;
