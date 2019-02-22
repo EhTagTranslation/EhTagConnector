@@ -19,8 +19,10 @@
   
 + 对于 `POST`, `PUT`, `DELETE` 请求，必须使用 [`If-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Match) 头以防止编辑冲突。  
   
-  当未包含 `If-Match` 头时，将返回 `HTTP 400 Bad Request`；  
-  当 `If-Match` 头的版本与最新版本不匹配时，将返回 `HTTP 412 Precondition Failed`，此时需要使用对应的 `GET` 请求更新 `ETag` 及相应的资源。
+  当未包含 `If-Match` 头时，将返回
+  [`HTTP 428 Precondition Required`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/428)；当
+  `If-Match` 头的版本与最新版本不匹配时，将返回
+  [`HTTP 412 Precondition Failed`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/412)，此时需要使用对应的 `GET` 请求更新 `ETag` 及相应的资源。
   
 > 参考：[HTTP 条件请求](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Conditional_requests)
 
