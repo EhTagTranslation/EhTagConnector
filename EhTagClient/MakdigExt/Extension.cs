@@ -1,86 +1,61 @@
 ﻿using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace EhTagClient.MakdigExt
 {
-    static class Extension
+    internal static class Extension
     {
         public static MarkdownDocument Normalize(MarkdownDocument doc)
         {
             foreach (var link in doc.Descendants().OfType<LinkInline>())
             {
-                var url = formatUrl(link.GetDynamicUrl?.Invoke() ?? link.Url);
-                if (link.IsImage && !isSafeUrl(url))
+                var url = link.GetDynamicUrl?.Invoke() ?? link.Url;
+                var title = link.Title;
+                var (furl, nsfw) = _FormatUrl(url);
+                if (link.IsImage && nsfw)
                 {
-                    link.Title = url;
+                    link.Title = furl;
+                    link.Url = "#";
+                }
+                else if (link.IsImage && url == "#" && !string.IsNullOrEmpty(title))
+                {
+                    (link.Title, _) = _FormatUrl(title);
                     link.Url = "#";
                 }
                 else
-                    link.Url = url;
+                {
+                    link.Url = furl;
+                }
             }
 
             return doc;
+        }
 
-            string formatUrl(string u)
-            {
-                if (!u.StartsWith("http://"))
-                    return u;
+        private static readonly Regex _ThumbUriRegex = new Regex(@"^(http|https)://(ehgt\.org(/t|)|exhentai\.org/t|ul\.ehgt\.org(/t|))/(.+)$", RegexOptions.Compiled | RegexOptions.Singleline);
 
-                if (u.StartsWith("http://exhentai.org"))
-                    return u.Insert(4, "s");
-                if (u.StartsWith("http://e-hentai.org"))
-                    return u.Insert(4, "s");
-                if (u.StartsWith("http://ul.ehgt.org"))
-                    return u.Insert(4, "s");
-                if (u.StartsWith("http://ehgt.org"))
-                    return u.Insert(4, "s");
-                return u;
-            }
+        private static (string formatted, bool isNsfw) _FormatUrl(string url)
+        {
+            var thumbMatch = _ThumbUriRegex.Match(url);
+            if (!thumbMatch.Success)
+                return (url, false);
 
-            bool isSafeUrl(string u)
-            {
-                if (u.StartsWith("https://exhentai.org"))
-                    return false;
+            var tail = thumbMatch.Groups[5].Value;
+            var domain = thumbMatch.Groups[2].Value;
 
-                return true;
-            }
+            var isNsfw = domain.StartsWith("exhentai");
+            return ("https://ul.ehgt.org/" + tail, isNsfw);
         }
 
         public static (string url, string title, bool isNsfw) GetData(this LinkInline link)
         {
-            var url = formatUrl(link.GetDynamicUrl?.Invoke() ?? link.Url);
+            var url = link.GetDynamicUrl?.Invoke() ?? link.Url;
 
             if (link.IsImage && url == "#" && !string.IsNullOrEmpty(link.Title))
                 return (link.Title, "", true);
-            if (link.IsImage)
-                return (url, link.Title, !isSafeUrl(url));
 
             return (url, link.Title, false);
-
-            string formatUrl(string u)
-            {
-                if (!u.StartsWith("http://"))
-                    return u;
-
-                if (u.StartsWith("http://exhentai.org"))
-                    return u.Insert(4, "s");
-                if (u.StartsWith("http://e-hentai.org"))
-                    return u.Insert(4, "s");
-                if (u.StartsWith("http://ul.ehgt.org"))
-                    return u.Insert(4, "s");
-                if (u.StartsWith("http://ehgt.org"))
-                    return u.Insert(4, "s");
-                return u;
-            }
-
-            bool isSafeUrl(string u)
-            {
-                if (u.StartsWith("https://exhentai.org"))
-                    return false;
-
-                return true;
-            }
         }
     }
 }
