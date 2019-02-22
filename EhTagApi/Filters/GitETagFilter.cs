@@ -61,10 +61,11 @@ namespace EhTagApi.Filters
                 }
                 if (!_EqualsCurrentETag(ifMatch))
                 {
-                    context.Result = new ConflictObjectResult(new
+                    context.Result = new ObjectResult(new
                     {
                         IfMatch = "The wiki has been modified, use corresponding GET api to renew the ETag."
-                    });
+                    })
+                    { StatusCode = 412 };
                     return;
                 }
                 return;
