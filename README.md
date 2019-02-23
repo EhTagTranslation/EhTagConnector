@@ -549,7 +549,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 ### 删除条目
 
-路径: `/database/:namespace/:raw`
+路径: `DELETE /database/:namespace/:raw`
 
 示例请求：
 ```yaml
