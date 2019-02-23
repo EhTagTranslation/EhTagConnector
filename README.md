@@ -22,7 +22,7 @@
   当未包含 `If-Match` 头时，将返回
   [`HTTP 428 Precondition Required`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/428)；当
   `If-Match` 头的版本与最新版本不匹配时，将返回
-  [`HTTP 412 Precondition Failed`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/412)，此时需要使用对应的 `GET` 请求更新 `ETag` 及相应的资源。
+  [`HTTP 412 Precondition Failed`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/412)，此时需要使用对应的 `GET` / `HEAD` 请求更新 `ETag` 及相应的资源。
   
 > 参考：[HTTP 条件请求](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Conditional_requests)
 
@@ -30,7 +30,7 @@
 
 进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](https://developer.github.com/apps/building-oauth-apps/) 或 [PAT](https://github.com/settings/tokens) 获取，只用于确认用户信息，不需要除 public access 外的特殊 scope。
 
-认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。
+认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。当缺少此头部或 token 无效时返回 `HTTP 401 Unauthorized`。
 
 提交的显示效果如下：  
 ![](DocImages/commit.png)
