@@ -15,27 +15,29 @@
 
 + `ETag` 将随 `HTTP 2XX` 及 `HTTP 404` 响应返回。
 
-+ 对于 `GET` 请求，可以使用 [`If-None-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-None-Match) 控制缓存。
++ 对于 `HEAD`, `GET` 请求，可以使用 [`If-None-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-None-Match) 控制缓存。
   
-+ 对于 `POST`, `PUT`, `DELETE` 请求，必须使用 [`If-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Match) 头以防止编辑冲突。  
++ 对于 `POST`, `PUT`, `DELETE` 请求，**必须**使用 [`If-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Match) 头以防止编辑冲突。  
   
-  当未包含 `If-Match` 头时，将返回 `HTTP 400 Bad Request`；  
-  当 `If-Match` 头的版本与最新版本不匹配时，将返回 `HTTP 412 Precondition Failed`，此时需要使用对应的 `GET` 请求更新 `ETag` 及相应的资源。
+  当未包含 `If-Match` 头时，将返回
+  [`HTTP 428 Precondition Required`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/428)；当
+  `If-Match` 头的版本与最新版本不匹配时，将返回
+  [`HTTP 412 Precondition Failed`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/412)，此时需要使用对应的 `GET` / `HEAD` 请求更新 `ETag` 及相应的资源。
   
 > 参考：[HTTP 条件请求](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Conditional_requests)
 
 ### 用户认证
 
-进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](https://developer.github.com/apps/building-oauth-apps/) 或 [PAT](https://github.com/settings/tokens) 获取，只用于确认用户信息，不需要除 public access 外的特殊 scope。
+进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](https://developer.github.com/apps/building-oauth-apps/) 或 [PAT](https://github.com/settings/tokens) 获取。该 token 只用于确认用户信息，不需要除 public access 外的特殊 scope。
 
-认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。
+认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。当缺少此头部或 token 无效时返回 `HTTP 401 Unauthorized`，具体错误原因可查询响应内容。
 
 提交的显示效果如下：  
 ![](DocImages/commit.png)
 
 ### 返回格式
 
-使用 [`Accept`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept) 头或 `format` 查询参数控制 API 返回 JSON 的格式，可选的值有：
+使用 [`Accept`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept) 头或 `format` URI 查询参数控制 API 返回 JSON 的格式，可选的值有：
 
 - `Accept: application/json` / `?format=json`
   
@@ -230,7 +232,6 @@ HTTP/2.0 204 No Content
 ---
 ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 ```
-
 
 ### 查询某一分类的信息
 
@@ -548,7 +549,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 ### 删除条目
 
-路径: `/database/:namespace/:raw`
+路径: `DELETE /database/:namespace/:raw`
 
 示例请求：
 ```yaml

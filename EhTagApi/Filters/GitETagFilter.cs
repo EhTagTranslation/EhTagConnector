@@ -52,10 +52,11 @@ namespace EhTagApi.Filters
             case "DELETE":
                 if (!context.HttpContext.Request.Headers.TryGetValue("If-Match", out var ifMatch))
                 {
-                    context.Result = new BadRequestObjectResult(new
+                    context.Result = new ObjectResult(new
                     {
                         IfMatch = "'If-Match' header is not present, use corresponding GET api to retrieve the ETag."
-                    });
+                    })
+                    { StatusCode = 428 };
                     return;
                 }
                 if (!_EqualsCurrentETag(ifMatch))
