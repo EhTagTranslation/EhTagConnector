@@ -45,10 +45,9 @@ namespace EhTagApi
 
             services.AddCors(options =>
             {
-
                 options.AddDefaultPolicy(builder => builder
                     .AllowAnyOrigin()
-                    .WithHeaders("If-Match", "If-None-Match", "Content-Type", "Accept", "Accept-Encoding", "X-Token")
+                    .WithHeaders("If-Match", "If-None-Match", "Content-Type", "X-Token")
                     .WithExposedHeaders("ETag", "Location")
                     .WithMethods("HEAD", "GET", "PUT", "POST", "DELETE")
                     .Build());
