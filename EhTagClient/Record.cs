@@ -46,6 +46,7 @@ namespace EhTagClient
                     || (ch >= 'A' && ch <= 'Z')
                     || (ch >= '0' && ch <= '9')
                     || ch == '.'
+                    || ch == ' '
                     || ch == '-')
                     continue;
                 return new ValidationResult($"The tag included non-alphanumeric characters which are not permitted. Only hyphens, periods, and spaces are allowed in tags.");
