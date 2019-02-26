@@ -49,7 +49,9 @@ namespace EhTagApi
                     .AllowAnyOrigin()
                     .WithHeaders("If-Match", "If-None-Match", "Content-Type", "X-Token")
                     .WithExposedHeaders("ETag", "Location")
-                    .WithMethods("HEAD", "GET", "PUT", "POST", "DELETE")
+                    .WithMethods("OPTIONS", "HEAD", "GET", "PUT", "POST", "DELETE")
+                    .SetPreflightMaxAge(TimeSpan.FromDays(1))
+                    .DisallowCredentials()
                     .Build());
             });
 
