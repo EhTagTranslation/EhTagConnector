@@ -28,9 +28,6 @@ namespace EhTagClient
     }
     public class AcceptableRawAttribute : ValidationAttribute
     {
-        public AcceptableRawAttribute() : base(@"^[-\.a-zA-Z0-9][-\.a-zA-Z0-9 ]*[-\.a-zA-Z0-9]$")
-        {
-        }
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (!(value is string raw))
