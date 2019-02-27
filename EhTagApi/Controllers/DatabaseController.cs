@@ -82,7 +82,7 @@ Current value: {n?.ToString(k) ?? "(deleted)"}";
 
         [HttpHead("{namespace}/{raw}")]
         public IActionResult Head(
-            [SingleNamespace] Namespace @namespace, 
+            [SingleNamespace] Namespace @namespace,
             [AcceptableRaw] string raw)
         {
             var dic = _Database[@namespace];
@@ -96,7 +96,7 @@ Current value: {n?.ToString(k) ?? "(deleted)"}";
 
         [HttpGet("{namespace}/{raw}")]
         public ActionResult<Record> Get(
-            [SingleNamespace] Namespace @namespace, 
+            [SingleNamespace] Namespace @namespace,
             [AcceptableRaw] string raw)
         {
             var dic = _Database[@namespace];
@@ -139,7 +139,7 @@ Current value: {n?.ToString(k) ?? "(deleted)"}";
             var replaced = dic.Find(raw);
 
             if (replaced != null)
-                return UnprocessableEntity(new { record = "Record with same 'raw' is in the wiki, use PUT to update the record." });
+                return Conflict(new { record = "Record with same 'raw' is in the wiki, use PUT to update the record." });
 
             dic.AddOrReplace(raw, record);
             dic.Save();
