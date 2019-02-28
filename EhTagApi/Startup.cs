@@ -35,8 +35,6 @@ namespace EhTagApi
             services.AddScoped<Filters.GitETagFilter>();
             services.AddScoped<Filters.GitHubIdentityFilter>();
 
-            services.AddHttpsRedirection(options => options.RedirectStatusCode = 301);
-
             services.AddResponseCompression(options => options.EnableForHttps = true);
 
             services.AddSingleton(Consts.SerializerSettings);
@@ -45,12 +43,13 @@ namespace EhTagApi
 
             services.AddCors(options =>
             {
-
                 options.AddDefaultPolicy(builder => builder
                     .AllowAnyOrigin()
-                    .WithHeaders("If-Match", "If-None-Match", "Content-Type", "Accept", "Accept-Encoding", "X-Token")
+                    .WithHeaders("If-Match", "If-None-Match", "Content-Type", "X-Token")
                     .WithExposedHeaders("ETag", "Location")
-                    .WithMethods("HEAD", "GET", "PUT", "POST", "DELETE")
+                    .WithMethods("OPTIONS", "HEAD", "GET", "PUT", "POST", "DELETE")
+                    .SetPreflightMaxAge(TimeSpan.FromDays(1))
+                    .DisallowCredentials()
                     .Build());
             });
 
@@ -95,10 +94,8 @@ namespace EhTagApi
             }
             else
             {
-                app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseCors();
             app.UseResponseCompression();
             app.UseMvc();

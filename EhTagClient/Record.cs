@@ -28,9 +28,6 @@ namespace EhTagClient
     }
     public class AcceptableRawAttribute : ValidationAttribute
     {
-        public AcceptableRawAttribute() : base(@"^[-\.a-zA-Z0-9][-\.a-zA-Z0-9 ]*[-\.a-zA-Z0-9]$")
-        {
-        }
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (!(value is string raw))
@@ -46,6 +43,7 @@ namespace EhTagClient
                     || (ch >= 'A' && ch <= 'Z')
                     || (ch >= '0' && ch <= '9')
                     || ch == '.'
+                    || ch == ' '
                     || ch == '-')
                     continue;
                 return new ValidationResult($"The tag included non-alphanumeric characters which are not permitted. Only hyphens, periods, and spaces are allowed in tags.");

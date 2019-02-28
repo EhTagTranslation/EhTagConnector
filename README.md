@@ -475,7 +475,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 }
 ```
 
-> 已有同名条目时将返回 `HTTP 422 Unprocessable Entity`，需改用 `PUT` 请求。
+> 已有同名条目时将返回 `HTTP 409 Conflict`，需改用 `PUT` 请求。
 
 ### 修改条目
 
