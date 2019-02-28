@@ -1,5 +1,8 @@
 ﻿EhTagConnector
 ====
+[![Build Status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector%20-%201%20-%20CI?branchName=master)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=4&branchName=master)
+[![Website](https://img.shields.io/website-up-down-green-red/https/ehtagconnector.azurewebsites.net/api/status.svg)](https://ehtagconnector.azurewebsites.net/api/database)
+
 连接到 [EhTagTransation 数据库](https://github.com/ehtagtranslation/Database)的 RESTful API。
 
 **[WIP] 本程序正在开发阶段，各 API 随时有可能更改！**
