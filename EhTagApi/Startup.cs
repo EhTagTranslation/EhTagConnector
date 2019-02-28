@@ -1,5 +1,4 @@
-﻿using EhTagApi.Middlewares;
-using EhTagClient;
+﻿using EhTagClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -102,7 +101,6 @@ namespace EhTagApi
 
             app.UseHttpsRedirection();
             app.UseCors();
-            app.UseSecurityHeaders();
             app.UseResponseCompression();
             app.UseMvc();
         }
