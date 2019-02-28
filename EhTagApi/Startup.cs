@@ -94,7 +94,6 @@ namespace EhTagApi
             }
             else
             {
-                app.UseHsts();
             }
 
             app.UseCors();
