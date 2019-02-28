@@ -35,8 +35,6 @@ namespace EhTagApi
             services.AddScoped<Filters.GitETagFilter>();
             services.AddScoped<Filters.GitHubIdentityFilter>();
 
-            services.AddHttpsRedirection(options => options.RedirectStatusCode = 301);
-
             services.AddResponseCompression(options => options.EnableForHttps = true);
 
             services.AddSingleton(Consts.SerializerSettings);
@@ -99,7 +97,6 @@ namespace EhTagApi
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseCors();
             app.UseResponseCompression();
             app.UseMvc();
