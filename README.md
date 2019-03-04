@@ -169,7 +169,7 @@
 路径: `GET /database`
 
 示例请求：
-```yaml
+```http
 GET /api/database
 ---
 Accept: application/json
@@ -223,7 +223,7 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 路径: `HEAD /database`
 
 示例请求：
-```yaml
+```http
 HEAD /api/database
 ---
 If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
@@ -241,7 +241,7 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 路径: `GET /database/:namespace`
 
 示例请求：
-```yaml
+```http
 GET /api/database/reclass
 ---
 Accept: application/json
@@ -267,7 +267,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 路径: `HEAD /database/:namespace/:raw`
 
 示例请求：
-```yaml
+```http
 HEAD /api/database/reclass/private
 ---
 ```
@@ -286,7 +286,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 路径: `GET /database/:namespace/:raw`
 
 示例请求：
-```yaml
+```http
 GET /api/database/male/shotacon
 ---
 Accept: application/json
@@ -389,7 +389,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 路径: `POST /database/:namespace/:raw`
 
 示例请求：
-```yaml
+```http
 POST /api/database/parody/gotoubun no hanayome
 ---
 X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -482,7 +482,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 路径: `PUT /database/:namespace/:raw`
 
 示例请求：
-```yaml
+```http
 PUT /api/database/reclass/private
 ---
 X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -555,7 +555,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 路径: `DELETE /database/:namespace/:raw`
 
 示例请求：
-```yaml
+```http
 DELETE /api/database/reclass/private
 ---
 X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
