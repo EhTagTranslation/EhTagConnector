@@ -19,11 +19,10 @@ namespace EhTagApi.Filters
             => new LibGit2Sharp.Identity(user.Login, $"{user.Id}+{user.Login}@users.noreply.github.com");
     }
 
-    public class GitHubIdentityFilter : IActionFilter
+    public class GitHubIdentityFilter : IAsyncActionFilter
     {
-        public void OnActionExecuting(ActionExecutingContext context)
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-#if !DEBUG
             if (!context.HttpContext.Request.Headers.TryGetValue("X-Token", out var tokenHeader))
             {
                 context.Result = new UnauthorizedObjectResult("No X-Token header.");
@@ -35,7 +34,7 @@ namespace EhTagApi.Filters
                 return;
             }
             var token = tokenHeader[0].Trim();
-            if(string.IsNullOrEmpty(token) || !Regex.IsMatch(token, @"^[a-fA-F0-9]{8,}$"))
+            if (string.IsNullOrEmpty(token) || !Regex.IsMatch(token, @"^[a-fA-F0-9]{8,}$"))
             {
                 context.Result = new UnauthorizedObjectResult("Invalid X-Token header.");
                 return;
@@ -46,7 +45,7 @@ namespace EhTagApi.Filters
                 {
                     Credentials = new Credentials(token)
                 };
-                var user = client.User.Current().Result;
+                var user = await client.User.Current();
                 foreach (var item in context.ActionArguments.Keys.ToArray())
                 {
                     if (context.ActionArguments[item] is User)
@@ -55,13 +54,10 @@ namespace EhTagApi.Filters
             }
             catch
             {
-                context.Result = new UnauthorizedObjectResult("Invalid X-Token header.");
+                context.Result = new UnauthorizedObjectResult("Bad X-Token header.");
                 return;
             }
-#endif
+            await next();
         }
-
-        public void OnActionExecuted(ActionExecutedContext context) { }
-
     }
 }

@@ -34,7 +34,6 @@ namespace EhTagApi.Filters
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-#if !DEBUG
             switch (context.HttpContext.Request.Method)
             {
             case "GET":
@@ -70,7 +69,6 @@ namespace EhTagApi.Filters
                 }
                 return;
             }
-#endif
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
