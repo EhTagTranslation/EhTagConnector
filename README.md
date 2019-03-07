@@ -171,7 +171,6 @@
 示例请求：
 ```http
 GET /api/database
----
 Accept: application/json
 Accept-Encoding: gzip, deflate, br
 If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
@@ -180,11 +179,10 @@ If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
----
 Content-Type: application/json; charset=utf-8
 Content-Encoding: br
 ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
----
+
 {
   # Git 地址
   "repo": "https://github.com/ehtagtranslation/Database.git",
@@ -225,14 +223,12 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 示例请求：
 ```http
 HEAD /api/database
----
 If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
 
 示例响应：
 ```yaml
 HTTP/2.0 204 No Content
----
 ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 ```
 
@@ -243,7 +239,6 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 示例请求：
 ```http
 GET /api/database/reclass
----
 Accept: application/json
 Accept-Encoding: gzip, deflate, br
 ```
@@ -251,11 +246,10 @@ Accept-Encoding: gzip, deflate, br
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
----
 Content-Type: application/json; charset=utf-8
 Content-Encoding: br
 ETag: "d4553b638098466ef013567b319c034f8ee34950"
----
+
 {
   "namespace": "reclass",
   "count": 11
@@ -269,13 +263,11 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 示例请求：
 ```http
 HEAD /api/database/reclass/private
----
 ```
 
 示例响应：
 ```yaml
 HTTP/2.0 204 No Content
----
 ETag: "d4553b638098466ef013567b319c034f8ee34950"
 ```
 
@@ -288,19 +280,15 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 示例请求：
 ```http
 GET /api/database/male/shotacon
----
 Accept: application/json
-Accept-Encoding: gzip, deflate, br
 ```
 
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
----
 Content-Type: application/json; charset=utf-8
-Content-Encoding: br
 ETag: "d4553b638098466ef013567b319c034f8ee34950"
----
+
 {
   "name": {
     "raw": "正太",
@@ -391,11 +379,10 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 示例请求：
 ```http
 POST /api/database/parody/gotoubun no hanayome
----
 X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 If-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 Content-Type: application/json
----
+
 {
     "name": "五等分的新娘",
     "intro": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
@@ -406,12 +393,10 @@ Content-Type: application/json
 示例响应：
 ```yaml
 HTTP/2.0 201 Created
----
 Content-Type: application/json; charset=utf-8
-Content-Encoding: gzip
 Location: /api/database/parody/gotoubun no hanayome
 ETag: "d4553b638098466ef013567b319c034f8ee34950"
----
+
 {
   "name": {
     "raw": "五等分的新娘",
@@ -484,11 +469,10 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 示例请求：
 ```http
 PUT /api/database/reclass/private
----
 X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 Content-Type: application/json
 If-Match: "d4553b638098466ef013567b319c034f8ee34950"
----
+
 {
   "name": "私人的",
   "intro": "私人画廊是一个非正式的类别，允许用户不与 E-Hentai 社区其他成员分享他们的内容。他们往往是想要成为自己的个人用户画廊，他们只是希望自己的朋友前来参观。",
@@ -499,11 +483,9 @@ If-Match: "d4553b638098466ef013567b319c034f8ee34950"
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
----
 Content-Type: application/json; charset=utf-8
-Content-Encoding: gzip
 ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
----
+
 {
   "name": {
     "raw": "私人的",
@@ -557,7 +539,6 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 示例请求：
 ```http
 DELETE /api/database/reclass/private
----
 X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 ```
@@ -565,7 +546,6 @@ If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 示例响应：
 ```yaml
 HTTP/2.0 204 No Content
----
 ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
 
@@ -580,9 +560,8 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 示例请求：
 ```http
 POST /api/tools/normalize
----
 Content-Type: application/json
----
+
 {
     "name": "五等分的新娘",
     "intro": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
@@ -593,10 +572,9 @@ Content-Type: application/json
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
----
 Content-Type: application/json; charset=utf-8
 Content-Encoding: gzip
----
+
 {
   "name": {
     "raw": "五等分的新娘",
