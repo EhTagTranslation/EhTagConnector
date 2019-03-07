@@ -17,5 +17,15 @@ namespace EhTagClient.MakdigExt.Html
                 renderer.Write(obj.Transcoded);
         }
     }
+    public class LiteralInlineRenderer : HtmlObjectRenderer<LiteralInline>
+    {
+        protected override void Write(HtmlRenderer renderer, LiteralInline obj)
+        {
+            if (renderer.EnableHtmlForInline)
+                renderer.WriteEscape(obj.Content);
+            else
+                renderer.Write(obj.Content);
+        }
+    }
 
 }

@@ -63,6 +63,7 @@ namespace EhTagClient.MakdigExt
             }
             htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LinkInlineRenderer>(new Html.EhLinkInlineRenderer());
             htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.HtmlEntityInlineRenderer>(new Html.HtmlEntityInlineRenderer());
+            htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LiteralInlineRenderer>(new Html.LiteralInlineRenderer());
             htmlRenderer.ObjectRenderers.Find<Hr.Inlines.LineBreakInlineRenderer>().RenderAsHardlineBreak = true;
             _Pipeline.Setup(htmlRenderer);
             return htmlRenderer;
