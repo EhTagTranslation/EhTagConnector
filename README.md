@@ -1,7 +1,7 @@
 ﻿EhTagConnector
 ====
 [![Build Status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector%20-%201%20-%20CI?branchName=master)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=4&branchName=master)
-[![Website](https://img.shields.io/website-up-down-green-red/https/ehtagconnector.azurewebsites.net/api/status.svg)](https://ehtagconnector.azurewebsites.net/api/database)
+[![Website](https://img.shields.io/website-up-down-green-red/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](https://ehtagconnector.azurewebsites.net/api/database)
 
 连接到 [EhTagTransation 数据库](https://github.com/ehtagtranslation/Database)的 RESTful API。
 
@@ -570,3 +570,92 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
 
 > 条目不存在则返回 `HTTP 404 Not Found`。
+
+### 格式化条目
+
+使用此 API 在不修改数据库的情况下格式化条目。
+
+路径: `POST /tools/normalize`
+
+示例请求：
+```http
+POST /api/tools/normalize
+---
+Content-Type: application/json
+---
+{
+    "name": "五等分的新娘",
+    "intro": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
+    "links": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
+}
+```
+
+示例响应：
+```yaml
+HTTP/2.0 200 OK
+---
+Content-Type: application/json; charset=utf-8
+Content-Encoding: gzip
+---
+{
+  "name": {
+    "raw": "五等分的新娘",
+    "text": "五等分的新娘",
+    "html": "<p>五等分的新娘</p>",
+    "ast": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "五等分的新娘"
+          }
+        ]
+      }
+    ]
+  },
+  "intro": {
+    "raw": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
+    "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
+    "html": "<p>《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。</p>",
+    "ast": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。"
+          }
+        ]
+      }
+    ]
+  },
+  "links": {
+    "raw": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (\\*)",
+    "text": "维基百科 (*)",
+    "html": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>",
+    "ast": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "link",
+            "title": "",
+            "url": "https://zh.wikipedia.org/zh-cn/五等分的新娘",
+            "content": [
+              {
+                "type": "text",
+                "text": "维基百科"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": " (*)"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
