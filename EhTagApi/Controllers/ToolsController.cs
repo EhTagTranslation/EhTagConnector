@@ -14,7 +14,7 @@ namespace EhTagApi.Controllers
     [FormatFilter]
     public class ToolsController : ControllerBase
     {
-        [HttpGet("status")]
+        [HttpHead("status")]
         public IActionResult Status()
         {
             return NoContent();
