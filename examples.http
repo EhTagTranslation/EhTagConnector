@@ -1,3 +1,5 @@
+# https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+
 @base = https://ehtagconnector.azurewebsites.net
 # @base = https://localhost:5001
 
