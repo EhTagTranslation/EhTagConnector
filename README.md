@@ -1,4 +1,4 @@
-﻿EhTagConnector
+﻿EhTagConnector <!-- omit in toc -->
 ====
 [![Build Status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector%20-%201%20-%20CI?branchName=master)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=4&branchName=master)
 [![Website](https://img.shields.io/website/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](https://ehtagconnector.azurewebsites.net/api/database)
@@ -6,6 +6,22 @@
 连接到 [EhTagTransation 数据库](https://github.com/ehtagtranslation/Database)的 RESTful API。
 
 **[WIP] 本程序正在开发阶段，各 API 随时有可能更改！**
+
+- [API 使用](#api-使用)
+  - [API 域名](#api-域名)
+  - [版本控制](#版本控制)
+  - [用户认证](#用户认证)
+  - [返回格式](#返回格式)
+  - [API Endpoints](#api-endpoints)
+    - [查询数据库基本情况](#查询数据库基本情况)
+    - [查询数据库数据版本](#查询数据库数据版本)
+    - [查询某一分类的信息](#查询某一分类的信息)
+    - [查询某一条目是否存在](#查询某一条目是否存在)
+    - [查询某一条目的翻译](#查询某一条目的翻译)
+    - [增加条目](#增加条目)
+    - [修改条目](#修改条目)
+    - [删除条目](#删除条目)
+    - [格式化条目](#格式化条目)
 
 ## API 使用
 
@@ -33,7 +49,7 @@
 
 进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](https://developer.github.com/apps/building-oauth-apps/) 或 [PAT](https://github.com/settings/tokens) 获取。该 token 只用于确认用户信息，不需要除 public access 外的特殊 scope。
 
-认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`）。当缺少此头部或 token 无效时返回 `HTTP 401 Unauthorized`，具体错误原因可查询响应内容。
+认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: e9b35fc3cd731c11d4e535724b1e376bfc2b3104`）。当缺少此头部或 token 无效时返回 `HTTP 401 Unauthorized`，具体错误原因可查询响应内容。
 
 提交的显示效果如下：  
 ![](DocImages/commit.png)
@@ -163,8 +179,11 @@
     "links": []
   }
   ```
+### API Endpoints
 
-### 查询数据库基本情况
+所有示例可参见 [examples.http](/examples.http)。
+
+#### 查询数据库基本情况
 
 路径: `GET /database`
 
@@ -172,7 +191,6 @@
 ```http
 GET /api/database
 Accept: application/json
-Accept-Encoding: gzip, deflate, br
 If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```
 
@@ -180,7 +198,6 @@ If-None-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 ```yaml
 HTTP/2.0 200 OK
 Content-Type: application/json; charset=utf-8
-Content-Encoding: br
 ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 
 {
@@ -214,7 +231,9 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 }
 ```
 
-### 查询数据库数据版本
+> 如需获取数据库全部内容请参考[获取数据库内容](https://github.com/ehtagtranslation/Database#获取数据库内容)。
+
+#### 查询数据库数据版本
 
 如只需获取 `ETag` 信息（即最新一次提交的 sha1），可以使用 `HEAD` 请求。
 
@@ -232,7 +251,7 @@ HTTP/2.0 204 No Content
 ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 ```
 
-### 查询某一分类的信息
+#### 查询某一分类的信息
 
 路径: `GET /database/:namespace`
 
@@ -240,14 +259,12 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 ```http
 GET /api/database/reclass
 Accept: application/json
-Accept-Encoding: gzip, deflate, br
 ```
 
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
 Content-Type: application/json; charset=utf-8
-Content-Encoding: br
 ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 {
@@ -256,7 +273,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 }
 ```
 
-### 查询某一条目是否存在
+#### 查询某一条目是否存在
 
 路径: `HEAD /database/:namespace/:raw`
 
@@ -273,115 +290,42 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 > 条目不存在则返回 `HTTP 404 Not Found`。
 
-### 查询某一条目的翻译
+#### 查询某一条目的翻译
 
 路径: `GET /database/:namespace/:raw`
 
 示例请求：
 ```http
-GET /api/database/male/shotacon
+GET /api/database/male/shotacon?format=raw.json
 Accept: application/json
 ```
 
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/raw+json; charset=utf-8
 ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 {
-  "name": {
-    "raw": "正太",
-    "text": "正太",
-    "html": "<p>正太</p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "正太"
-          }
-        ]
-      }
-    ]
-  },
-  "intro": {
-    "raw": "小男孩。\n![举例](# \"https://exhentai.org/t/8d/e4/8de4084018d6fd26f7fb8843dfdba5949835ac02-219707-1128-1600-jpg_l.jpg\")![图](# \"https://exhentai.org/t/b4/f2/b4f27457519a0eb55cbc231c34152084d8351cd3-543154-1000-1458-jpg_l.jpg\")![图](# \"https://exhentai.org/t/3a/46/3a466e7dc00e27d80e8d6be4674b08c6b8efb25f-304032-1067-1514-jpg_l.jpg\")",
-    "text": "小男孩。",
-    "html": "<p>小男孩。<br />\n<img src=\"https://exhentai.org/t/8d/e4/8de4084018d6fd26f7fb8843dfdba5949835ac02-219707-1128-1600-jpg_l.jpg\" alt=\"举例\" nsfw /><img src=\"https://exhentai.org/t/b4/f2/b4f27457519a0eb55cbc231c34152084d8351cd3-543154-1000-1458-jpg_l.jpg\" alt=\"图\" nsfw /><img src=\"https://exhentai.org/t/3a/46/3a466e7dc00e27d80e8d6be4674b08c6b8efb25f-304032-1067-1514-jpg_l.jpg\" alt=\"图\" nsfw /></p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "小男孩。"
-          },
-          {
-            "type": "br"
-          },
-          {
-            "type": "image",
-            "title": "",
-            "url": "https://exhentai.org/t/8d/e4/8de4084018d6fd26f7fb8843dfdba5949835ac02-219707-1128-1600-jpg_l.jpg",
-            "nsfw": true,
-            "content": [
-              {
-                "type": "text",
-                "text": "举例"
-              }
-            ]
-          },
-          {
-            "type": "image",
-            "title": "",
-            "url": "https://exhentai.org/t/b4/f2/b4f27457519a0eb55cbc231c34152084d8351cd3-543154-1000-1458-jpg_l.jpg",
-            "nsfw": true,
-            "content": [
-              {
-                "type": "text",
-                "text": "图"
-              }
-            ]
-          },
-          {
-            "type": "image",
-            "title": "",
-            "url": "https://exhentai.org/t/3a/46/3a466e7dc00e27d80e8d6be4674b08c6b8efb25f-304032-1067-1514-jpg_l.jpg",
-            "nsfw": true,
-            "content": [
-              {
-                "type": "text",
-                "text": "图"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  "links": {
-    "raw": "",
-    "text": "",
-    "html": "",
-    "ast": []
-  }
+  "name":  "正太",
+  "intro": "小男孩。\n![举例](# \"https://exhentai.org/t/8d/e4/8de4084018d6fd26f7fb8843dfdba5949835ac02-219707-1128-1600-jpg_l.jpg\")![图](# \"https://exhentai.org/t/b4/f2/b4f27457519a0eb55cbc231c34152084d8351cd3-543154-1000-1458-jpg_l.jpg\")![图](# \"https://exhentai.org/t/3a/46/3a466e7dc00e27d80e8d6be4674b08c6b8efb25f-304032-1067-1514-jpg_l.jpg\")",
+  "links": ""
 }
 ```
 
 > 条目不存在则返回 `HTTP 404 Not Found`。
 
-### 增加条目
+#### 增加条目
 
 路径: `POST /database/:namespace/:raw`
 
 示例请求：
 ```http
-POST /api/database/parody/gotoubun no hanayome
-X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+POST /api/database/parody/gotoubun%20no%20hanayome
+X-Token: e9b35fc3cd731c11d4e535724b1e376bfc2b3104
 If-Match: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 Content-Type: application/json
+Accept: application/html+json
 
 {
     "name": "五等分的新娘",
@@ -393,83 +337,27 @@ Content-Type: application/json
 示例响应：
 ```yaml
 HTTP/2.0 201 Created
-Content-Type: application/json; charset=utf-8
+Content-Type: application/html+json; charset=utf-8
 Location: /api/database/parody/gotoubun no hanayome
 ETag: "d4553b638098466ef013567b319c034f8ee34950"
 
 {
-  "name": {
-    "raw": "五等分的新娘",
-    "text": "五等分的新娘",
-    "html": "<p>五等分的新娘</p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "五等分的新娘"
-          }
-        ]
-      }
-    ]
-  },
-  "intro": {
-    "raw": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
-    "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
-    "html": "<p>《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。</p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。"
-          }
-        ]
-      }
-    ]
-  },
-  "links": {
-    "raw": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (\\*)",
-    "text": "维基百科 (*)",
-    "html": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "link",
-            "title": "",
-            "url": "https://zh.wikipedia.org/zh-cn/五等分的新娘",
-            "content": [
-              {
-                "type": "text",
-                "text": "维基百科"
-              }
-            ]
-          },
-          {
-            "type": "text",
-            "text": " (*)"
-          }
-        ]
-      }
-    ]
-  }
+  "name": "<p>五等分的新娘</p>",
+  "intro": "<p>《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。</p>",
+  "links": "html": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>"
 }
 ```
 
 > 已有同名条目时将返回 `HTTP 409 Conflict`，需改用 `PUT` 请求。
 
-### 修改条目
+#### 修改条目
 
 路径: `PUT /database/:namespace/:raw`
 
 示例请求：
 ```http
 PUT /api/database/reclass/private
-X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+X-Token: e9b35fc3cd731c11d4e535724b1e376bfc2b3104
 Content-Type: application/json
 If-Match: "d4553b638098466ef013567b319c034f8ee34950"
 
@@ -483,7 +371,7 @@ If-Match: "d4553b638098466ef013567b319c034f8ee34950"
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
-Content-Type: application/json; charset=utf-8
+Content-Type: application/ast+json; charset=utf-8
 ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 {
@@ -532,14 +420,14 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 > 条目不存在则返回 `HTTP 404 Not Found`，需改用 `POST` 请求。
 
-### 删除条目
+#### 删除条目
 
 路径: `DELETE /database/:namespace/:raw`
 
 示例请求：
 ```http
 DELETE /api/database/reclass/private
-X-Token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+X-Token: e9b35fc3cd731c11d4e535724b1e376bfc2b3104
 If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 ```
 
@@ -551,7 +439,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 > 条目不存在则返回 `HTTP 404 Not Found`。
 
-### 格式化条目
+#### 格式化条目
 
 使用此 API 在不修改数据库的情况下格式化条目。
 
@@ -559,7 +447,7 @@ ETag: "5bd33aed633b18d5bca6b2d8c66dcf6b56bd75b1"
 
 示例请求：
 ```http
-POST /api/tools/normalize
+POST /api/tools/normalize?format=ast.json
 Content-Type: application/json
 
 {
@@ -572,68 +460,52 @@ Content-Type: application/json
 示例响应：
 ```yaml
 HTTP/2.0 200 OK
-Content-Type: application/json; charset=utf-8
-Content-Encoding: gzip
+Content-Type: application/ast+json; charset=utf-8
 
 {
-  "name": {
-    "raw": "五等分的新娘",
-    "text": "五等分的新娘",
-    "html": "<p>五等分的新娘</p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "五等分的新娘"
-          }
-        ]
-      }
-    ]
-  },
-  "intro": {
-    "raw": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
-    "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
-    "html": "<p>《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。</p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。"
-          }
-        ]
-      }
-    ]
-  },
-  "links": {
-    "raw": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (\\*)",
-    "text": "维基百科 (*)",
-    "html": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>",
-    "ast": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "link",
-            "title": "",
-            "url": "https://zh.wikipedia.org/zh-cn/五等分的新娘",
-            "content": [
-              {
-                "type": "text",
-                "text": "维基百科"
-              }
-            ]
-          },
-          {
-            "type": "text",
-            "text": " (*)"
-          }
-        ]
-      }
-    ]
-  }
+  "name": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "五等分的新娘"
+        }
+      ]
+    }
+  ],
+  "intro": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "link",
+          "title": "",
+          "url": "https://zh.wikipedia.org/zh-cn/五等分的新娘",
+          "content": [
+            {
+              "type": "text",
+              "text": "维基百科"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " (*)"
+        }
+      ]
+    }
+  ]
 }
 ```
