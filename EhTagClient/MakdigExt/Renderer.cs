@@ -6,12 +6,28 @@ using Nr = Markdig.Renderers.Normalize;
 using Jr = EhTagClient.MakdigExt.Json;
 using Markdig;
 using System.Linq;
+using System.Text;
 
 namespace EhTagClient.MakdigExt
 {
 
     static class Renderer
     {
+        public static StringBuilder TrimEnd(this StringBuilder sb)
+        {
+            if (sb is null || sb.Length == 0) return sb;
+
+            var i = sb.Length - 1;
+            for (; i >= 0; i--)
+                if (!char.IsWhiteSpace(sb[i]))
+                    break;
+
+            if (i < sb.Length - 1)
+                sb.Length = i + 1;
+
+            return sb;
+        }
+
         static Renderer()
         {
             _NormalizeOptions = new Nr.NormalizeOptions
@@ -31,19 +47,36 @@ namespace EhTagClient.MakdigExt
         public static MarkdownDocument Parse(string markdown)
             => Extension.Normalize(Markdown.Parse(markdown, _Pipeline));
 
+        private static HtmlRenderer _CreateHtmlRenderer(TextWriter writer, bool enableHtml)
+        {
+            var htmlRenderer = new HtmlRenderer(writer)
+            {
+                UseNonAsciiNoEscape = true
+            };
+            if (enableHtml)
+            {
+            }
+            else
+            {
+                htmlRenderer.EnableHtmlForBlock = false;
+                htmlRenderer.EnableHtmlForInline = false;
+            }
+            htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LinkInlineRenderer>(new Html.EhLinkInlineRenderer());
+            htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.HtmlEntityInlineRenderer>(new Html.HtmlEntityInlineRenderer());
+            htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LiteralInlineRenderer>(new Html.LiteralInlineRenderer());
+            htmlRenderer.ObjectRenderers.Find<Hr.Inlines.LineBreakInlineRenderer>().RenderAsHardlineBreak = true;
+            _Pipeline.Setup(htmlRenderer);
+            return htmlRenderer;
+        }
+
         public static string ToPlainText(MarkdownDocument document)
         {
             using (var sw = new StringWriter())
             {
-                var htmlRenderer = new HtmlRenderer(sw)
-                {
-                    EnableHtmlForBlock = false,
-                    EnableHtmlForInline = false,
-                };
-                htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LinkInlineRenderer>(new Html.EhLinkInlineRenderer());
-                _Pipeline.Setup(htmlRenderer);
+                var htmlRenderer = _CreateHtmlRenderer(sw, false);
                 htmlRenderer.Render(document);
-                return System.Web.HttpUtility.HtmlDecode(sw.ToString().Trim());
+                sw.GetStringBuilder().TrimEnd();
+                return sw.ToString();
             }
         }
 
@@ -51,15 +84,10 @@ namespace EhTagClient.MakdigExt
         {
             using (var sw = new StringWriter())
             {
-                var htmlRenderer = new HtmlRenderer(sw)
-                {
-                    UseNonAsciiNoEscape = true,
-                };
-                htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LinkInlineRenderer>(new Html.EhLinkInlineRenderer());
-                htmlRenderer.ObjectRenderers.Find<Hr.Inlines.LineBreakInlineRenderer>().RenderAsHardlineBreak = true;
-                _Pipeline.Setup(htmlRenderer);
+                var htmlRenderer = _CreateHtmlRenderer(sw, true);
                 htmlRenderer.Render(document);
-                return sw.ToString().Trim();
+                sw.GetStringBuilder().TrimEnd();
+                return sw.ToString();
             }
         }
 

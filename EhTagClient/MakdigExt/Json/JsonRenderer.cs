@@ -136,10 +136,13 @@ namespace EhTagClient.MakdigExt.Json
 
     sealed class AutolinkInlineRenderer : JsonObjectRenderer<AutolinkInline>
     {
-        protected override string GetType(JsonRenderer renderer, AutolinkInline obj) => "autolink";
+        protected override string GetType(JsonRenderer renderer, AutolinkInline obj) => "link";
 
-
-        protected override void WriteData(JsonRenderer renderer, AutolinkInline obj) => renderer.WriteProperty("url", obj.Url);
+        protected override void WriteData(JsonRenderer renderer, AutolinkInline obj)
+        {
+            renderer.WriteProperty("title", obj.Url);
+            renderer.WriteProperty("url", obj.IsEmail ? "mailto:" + obj.Url : obj.Url);
+        }
     }
 
     sealed class CodeInlineRenderer : JsonObjectRenderer<CodeInline>
@@ -162,7 +165,7 @@ namespace EhTagClient.MakdigExt.Json
 
     sealed class EmphasisInlineRenderer : JsonObjectRenderer<EmphasisInline>
     {
-        protected override string GetType(JsonRenderer renderer, EmphasisInline obj) => obj.IsDouble ? "strong" : "emphasis";
+        protected override string GetType(JsonRenderer renderer, EmphasisInline obj) => obj.DelimiterCount > 1 ? "strong" : "emphasis";
     }
 
     sealed class LineBreakInlineRenderer : JsonObjectRenderer<LineBreakInline>
