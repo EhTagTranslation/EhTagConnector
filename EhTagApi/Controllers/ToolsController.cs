@@ -19,7 +19,7 @@ namespace EhTagApi.Controllers
         [HttpHead("status")]
         public IActionResult Status()
         {
-            return NoContent();
+            return Ok();
         }
 
         [HttpPost("normalize")]
