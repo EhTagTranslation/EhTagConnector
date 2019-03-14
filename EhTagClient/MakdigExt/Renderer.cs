@@ -32,7 +32,7 @@ namespace EhTagClient.MakdigExt
         {
             _NormalizeOptions = new Nr.NormalizeOptions
             {
-                ListItemCharacter = '-'
+                ListItemCharacter = '-',
             };
             var builder = new MarkdownPipelineBuilder();
             builder.DisableHtml();

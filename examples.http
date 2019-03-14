@@ -1,7 +1,13 @@
-# https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+# 推荐使用 VS Code 插件 https://marketplace.visualstudio.com/items?itemName=humao.rest-client 调试本文件
 
+#remote server
 @base = https://ehtagconnector.azurewebsites.net
+
+# local test server
 # @base = https://localhost:5001
+
+### 查询网站状态
+HEAD {{base}}/api/tools/status
 
 ### 查询数据库基本情况
 GET {{base}}/api/database
@@ -55,7 +61,7 @@ X-Token: e9b35fc3cd731c11d4e535724b1e376bfc2b3104
 If-Match: "3b24693f057ccb422ce76a3334be549c66139309"
 
 ### 格式化条目
-POST {{base}}/api/tools/normalize?format=ast.json
+POST {{base}}/api/tools/normalize?format=html.json
 Content-Type: application/json
 
 {

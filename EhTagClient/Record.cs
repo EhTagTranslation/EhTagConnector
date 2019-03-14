@@ -86,7 +86,9 @@ namespace EhTagClient
         private static string _Unescape(string value)
         {
             return value
-                .Replace("<br>", "\n");
+                .Replace("<br>", "\n")
+                .Replace("<br/>", "\n")
+                .Replace("<br />", "\n");
         }
 
         private static string _Escape(string value)

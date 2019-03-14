@@ -18,6 +18,7 @@ namespace EhDbReleaseBuilder
   Target: {args[1]}
 ");
             var client = new GitHubApiClient(args[0], args[1]);
+            client.Normalize();
             var s = Consts.SerializerSettings;
             client.Publish(s, "full");
             var c = new MdConverter();
@@ -45,6 +46,11 @@ namespace EhDbReleaseBuilder
         private readonly RepoClient _RepoClient;
         private readonly Database _Database;
         private readonly string _Target;
+
+        public void Normalize()
+        {
+            _Database.Save();
+        }
 
         public void Publish(JsonSerializerSettings settings, string fileModifier)
         {
