@@ -20,6 +20,10 @@ namespace EhTagApi
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseKestrel(options =>
+                {
+                    options.Limits.MaxRequestBodySize = 100000;
+                })
                 .UseStartup<Startup>();
     }
 }

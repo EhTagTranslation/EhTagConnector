@@ -22,6 +22,8 @@
     - [修改条目](#修改条目)
     - [删除条目](#删除条目)
     - [格式化条目](#格式化条目)
+    - [序列化条目](#序列化条目)
+    - [解析 MarkDown 条目](#解析-markdown-条目)
 
 ## API 使用
 
@@ -507,5 +509,61 @@ Content-Type: application/ast+json; charset=utf-8
       ]
     }
   ]
+}
+```
+
+#### 序列化条目
+
+使用此 API 在不修改数据库的情况下将条目序列化为 MarkDown 表格行。
+
+路径: `POST /tools/serialize/:raw`
+
+示例请求：
+```http
+POST /api/tools/serialize/gotoubun%20no%20hanayome
+Content-Type: application/json
+
+{
+    "name": "五等分的新娘",
+    "intro": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 ",
+    "links": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
+}
+```
+
+示例响应：
+```yaml
+HTTP/2.0 200 OK
+Content-Type: text/plain; charset=utf-8
+
+| gotoubun no hanayome | 五等分的新娘 | 《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 | [维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*) |
+```
+
+#### 解析 MarkDown 条目
+
+使用此 API 解析数据库中的 MarkDown 表格行。
+
+路径: `POST /tools/parse`
+
+示例请求：
+```http
+POST /api/tools/parse
+Accept: application/raw+json
+Content-Type: text/plain
+
+| gotoubun no hanayome | 五等分的新娘 | 《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 | [维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*) |
+```
+
+示例响应：
+```yaml
+HTTP/2.0 200 OK
+Content-Type: application/raw+json; charset=utf-8
+
+{
+  "key": "gotoubun no hanayome",
+  "value": {
+    "name": "五等分的新娘",
+    "intro": "《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。",
+    "links": "[维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*)"
+  }
 }
 ```

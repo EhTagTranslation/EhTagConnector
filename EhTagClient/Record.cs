@@ -68,7 +68,7 @@ namespace EhTagClient
 		    (?<{nameof(Links)}>.*?)
 		    \s*(?<!\\)\|?\s*$", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace);
 
-        internal static KeyValuePair<string, Record> TryParse(string line)
+        public static KeyValuePair<string, Record> TryParse(string line)
         {
             var match = _LineRegex.Match(line);
             if (!match.Success)
@@ -83,20 +83,18 @@ namespace EhTagClient
             return KeyValuePair.Create(raw, new Record(_Unescape(name), _Unescape(intro), _Unescape(links)));
         }
 
+        private static readonly Regex _UnescapeRe = new Regex(@"<br\s*/?>", RegexOptions.Compiled);
         private static string _Unescape(string value)
         {
-            return value
-                .Replace("<br>", "\n")
-                .Replace("<br/>", "\n")
-                .Replace("<br />", "\n");
+            return _UnescapeRe.Replace(value, "\n");
         }
 
+        private static readonly Regex _EscapeRe1 = new Regex(@"(\r\n|\r|\n)", RegexOptions.Compiled);
+        private static readonly Regex _EscapeRe2 = new Regex(@"(?<!\\)(\\\\)*\|", RegexOptions.Compiled);
         private static string _Escape(string value)
         {
-            return value
-                .Replace("\r\n", "<br>")
-                .Replace("\n", "<br>")
-                .Replace("\r", "<br>");
+            value = _EscapeRe1.Replace(value, "<br>");
+            return _EscapeRe2.Replace(value, c => '\\' + c.Value);
         }
 
         [JsonConstructor]

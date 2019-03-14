@@ -63,6 +63,8 @@ namespace EhTagApi
                     options.OutputFormatters.Add(new Formatters.TextOutputFormatter());
                     options.OutputFormatters.Add(new Formatters.HtmlOutputFormatter());
                     options.OutputFormatters.Add(new Formatters.AstOutputFormatter());
+
+                    options.InputFormatters.Add(new Formatters.TextFormatter());
                 })
                 .AddFormatterMappings(options =>
                 {
