@@ -30,7 +30,7 @@ namespace EhTagApi.Controllers
 
         [HttpPost("serialize/{raw}")]
         public IActionResult Serialize(
-            [AcceptableRaw] string raw,
+            [AcceptableRaw, Required] string raw,
             [FromBody] Record record)
         {
             return Ok(record.ToString(raw));

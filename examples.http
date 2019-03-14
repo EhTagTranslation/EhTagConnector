@@ -4,7 +4,7 @@
 @base = https://ehtagconnector.azurewebsites.net
 
 # local test server
-@base = https://localhost:5001
+# @base = https://localhost:5001
 
 ### 查询网站状态
 HEAD {{base}}/api/tools/status
