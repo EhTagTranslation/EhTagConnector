@@ -45,7 +45,7 @@ namespace EhTagClient.MakdigExt
             var domain = thumbMatch.Groups[2].Value;
 
             var isNsfw = domain.StartsWith("exhentai");
-            return ("https://ul.ehgt.org/" + tail, isNsfw);
+            return ("https://ehgt.org/" + tail, isNsfw);
         }
 
         public static (string url, string title, bool isNsfw) GetData(this LinkInline link)
