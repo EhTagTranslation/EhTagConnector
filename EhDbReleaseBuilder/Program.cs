@@ -100,6 +100,8 @@ namespace EhDbReleaseBuilder
             await _PublishOne(release, "raw");
             await _PublishOne(release, "text");
             await _PublishOne(release, "ast");
+
+            Environment.SetEnvironmentVariable("GITHUB_RELEASE_MESSAGE", $"{_RepoClient.Head.Sha}...{release.TargetCommitish}", EnvironmentVariableTarget.Machine);
         }
 
         private async Task _PublishOne(Octokit.Release oldRelease, string mid)
