@@ -102,7 +102,7 @@ namespace EhDbReleaseBuilder
             await _PublishOne(release, "text");
             await _PublishOne(release, "ast");
 
-            Process.Start("appveyor", $"SetVariable -Name GITHUB_RELEASE_MESSAGE -Value {_RepoClient.Head.Sha}...{release.TargetCommitish}").WaitForExit();
+            Process.Start("appveyor", $"SetVariable -Name GITHUB_RELEASE_MESSAGE -Value {release.TargetCommitish}...{_RepoClient.Head.Sha}").WaitForExit();
         }
 
         private async Task _PublishOne(Octokit.Release oldRelease, string mid)
