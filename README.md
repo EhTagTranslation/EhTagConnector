@@ -183,7 +183,7 @@
   ```
 ### API Endpoints
 
-所有示例可参见 [examples.http](/examples.http)。
+所有示例可参见 [examples.http](/examples.http)，返回 JSON 对象的定义可参见 [interface.d.ts](https://github.com/EhTagTranslation/Database/blob/master/tools/interface.d.ts)。
 
 #### 查询数据库基本情况
 
