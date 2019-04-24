@@ -6,8 +6,6 @@ Website: [![Website Build Status](https://dev.azure.com/opportunityliu/EhTagConn
 
 连接到 [EhTagTransation 数据库](https://github.com/EhTagTranslation/Database)的 RESTful API。
 
-**[WIP] 本程序正在开发阶段，各 API 随时有可能更改！**
-
 - [API 使用](#api-使用)
   - [API 域名](#api-域名)
   - [版本控制](#版本控制)
