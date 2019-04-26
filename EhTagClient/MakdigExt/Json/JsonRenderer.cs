@@ -149,7 +149,7 @@ namespace EhTagClient.MakdigExt.Json
     {
         protected override string GetType(JsonRenderer renderer, CodeInline obj) => "code";
 
-        protected override void WriteContent(JsonRenderer renderer, CodeInline obj) => renderer.WriteProperty("content", obj.Content);
+        protected override void WriteContent(JsonRenderer renderer, CodeInline obj) => renderer.WriteProperty("text", obj.Content);
     }
 
     sealed class DelimiterInlineRenderer : JsonTextRender<DelimiterInline>

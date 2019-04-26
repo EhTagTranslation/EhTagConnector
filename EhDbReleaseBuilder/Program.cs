@@ -61,7 +61,7 @@ namespace EhDbReleaseBuilder
                 public string Sha { get; set; }
                 public string Message { get; set; }
             }
-            public string Remote { get; set; }
+            public string Repo { get; set; }
             public JRaw Data { get; set; }
         }
 
@@ -102,7 +102,8 @@ namespace EhDbReleaseBuilder
             await _PublishOne(release, "text");
             await _PublishOne(release, "ast");
 
-            Process.Start("appveyor", $"SetVariable -Name GITHUB_RELEASE_MESSAGE -Value {release.TargetCommitish}...{_RepoClient.Head.Sha}").WaitForExit();
+            if (Environment.GetEnvironmentVariable("APPVEYOR") != null)
+                Process.Start("appveyor", $"SetVariable -Name GITHUB_RELEASE_MESSAGE -Value {release.TargetCommitish}...{_RepoClient.Head.Sha}").WaitForExit();
         }
 
         private async Task _PublishOne(Octokit.Release oldRelease, string mid)
@@ -166,14 +167,14 @@ namespace EhDbReleaseBuilder
             var olddataStr = old.Data.ToString();
             var fullUpData = new FullUploadData
             {
-                Remote = _RepoClient.RemotePath,
+                Repo = _RepoClient.RemotePath,
                 Version = _Database.GetVersion(),
                 Head = newHead,
                 Data = new JRaw(newdataStr),
             };
             var patchUpData = new PatchUploadData
             {
-                Remote = _RepoClient.RemotePath,
+                Repo = _RepoClient.RemotePath,
                 NewVersion = _Database.GetVersion(),
                 OldVersion = old.Version,
                 NewHead = newHead,

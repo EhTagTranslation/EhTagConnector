@@ -1,11 +1,10 @@
 ﻿EhTagConnector <!-- omit in toc -->
 ====
-[![Build Status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector%20-%201%20-%20CI?branchName=master)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=4&branchName=master)
+Tool: [![Tool Build status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector-Tool-CI)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=5)  
+Website: [![Website Build Status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector%20-%201%20-%20CI?branchName=master)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=4&branchName=master)
 [![Website Status](https://img.shields.io/website/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](https://ehtagconnector.azurewebsites.net/api/database)
 
-连接到 [EhTagTransation 数据库](https://github.com/ehtagtranslation/Database)的 RESTful API。
-
-**[WIP] 本程序正在开发阶段，各 API 随时有可能更改！**
+连接到 [EhTagTransation 数据库](https://github.com/EhTagTranslation/Database)的 RESTful API。
 
 - [API 使用](#api-使用)
   - [API 域名](#api-域名)
@@ -183,7 +182,7 @@
   ```
 ### API Endpoints
 
-所有示例可参见 [examples.http](/examples.http)。
+所有示例可参见 [examples.http](/examples.http)，返回 JSON 对象的定义可参见 [interface.d.ts](https://github.com/EhTagTranslation/Database/blob/master/tools/interface.d.ts)。
 
 #### 查询数据库基本情况
 
@@ -233,7 +232,7 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 }
 ```
 
-> 如需获取数据库全部内容请参考[获取数据库内容](https://github.com/ehtagtranslation/Database#获取数据库内容)。
+> 如需获取数据库全部内容请参考[获取数据库内容](https://github.com/EhTagTranslation/Database#获取数据库内容)。
 
 #### 查询数据库数据版本
 
