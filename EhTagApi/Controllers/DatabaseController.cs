@@ -33,8 +33,8 @@ namespace EhTagApi.Controllers
 
             var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{k}'.
 
-Previous value: {o?.ToString(k) ?? "(nonexistence)"}
-Current value: {n?.ToString(k) ?? "(deleted)"}";
+Prev value: {o?.ToString(k) ?? "(nonexistence)"}
+Curr value: {n?.ToString(k) ?? "(deleted)"}";
 
 #if !DEBUG
             _RepoClient.Commit(message, user.ToGitIdentity());
