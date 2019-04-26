@@ -83,10 +83,12 @@ namespace EhTagClient
             return KeyValuePair.Create(raw, new Record(_Unescape(name), _Unescape(intro), _Unescape(links)));
         }
 
-        private static readonly Regex _UnescapeRe = new Regex(@"<br\s*/?>", RegexOptions.Compiled);
+        private static readonly Regex _UnescapeRe1 = new Regex(@"<br\s*/?>", RegexOptions.Compiled);
+        private static readonly Regex _UnescapeRe2 = new Regex(@"(?<!\\)((?:\\\\)*)\\\|", RegexOptions.Compiled);
         private static string _Unescape(string value)
         {
-            return _UnescapeRe.Replace(value, "\n");
+            value = _UnescapeRe1.Replace(value, "\n");
+            return _UnescapeRe2.Replace(value, "$1|");
         }
 
         private static readonly Regex _EscapeRe1 = new Regex(@"(\r\n|\r|\n)", RegexOptions.Compiled);
@@ -94,7 +96,7 @@ namespace EhTagClient
         private static string _Escape(string value)
         {
             value = _EscapeRe1.Replace(value, "<br>");
-            return _EscapeRe2.Replace(value, c => '\\' + c.Value);
+            return _EscapeRe2.Replace(value, @"\$&");
         }
 
         [JsonConstructor]
