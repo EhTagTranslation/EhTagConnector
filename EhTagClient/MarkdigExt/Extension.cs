@@ -9,7 +9,8 @@ namespace EhTagClient.MarkdigExt
 {
     internal static class Extension
     {
-        static readonly byte[] _HexChars = "0123456789ABCDEF".Select(c => (byte)c).ToArray();
+        private static readonly byte[] _HexChars = "0123456789ABCDEF".Select(c => (byte)c).ToArray();
+        private const int UTF8_MAX_LEN = 6;
 
         public static string NormalizeUri(string url)
         {
@@ -25,7 +26,7 @@ namespace EhTagClient.MarkdigExt
                     var ch = uri[i];
                     if ("()".IndexOf(ch) >= 0 || char.IsWhiteSpace(ch) || char.IsControl(ch))
                     {
-                        var b = (Span<byte>)stackalloc byte[12];
+                        var b = (Span<byte>)stackalloc byte[3 * UTF8_MAX_LEN];
                         var l = encodeChar(uri.Slice(i, 1), b);
                         buf.Write(b.Slice(0, l));
                     }
@@ -37,7 +38,7 @@ namespace EhTagClient.MarkdigExt
                             || char.IsControl((char)bc)
                             || char.IsWhiteSpace((char)bc)))
                         {
-                            var b = (Span<byte>)stackalloc byte[4 * 3];
+                            var b = (Span<byte>)stackalloc byte[3 * UTF8_MAX_LEN];
                             var l = enc.GetBytes(uri.Slice(i, 3), b);
                             buf.Write(b.Slice(0, l));
                         }
@@ -49,7 +50,7 @@ namespace EhTagClient.MarkdigExt
                     }
                     else
                     {
-                        var b = (Span<byte>)stackalloc byte[4];
+                        var b = (Span<byte>)stackalloc byte[UTF8_MAX_LEN];
                         var l = enc.GetBytes(uri.Slice(i, 1), b);
                         buf.Write(b.Slice(0, l));
                     }
@@ -66,7 +67,7 @@ namespace EhTagClient.MarkdigExt
 
             int encodeChar(ReadOnlySpan<char> chars, Span<byte> bytes)
             {
-                var chbytes = (Span<byte>)stackalloc byte[4];
+                var chbytes = (Span<byte>)stackalloc byte[UTF8_MAX_LEN];
                 var chlen = enc.GetBytes(chars, chbytes);
                 for (var i = 0; i < chlen; i++)
                 {
