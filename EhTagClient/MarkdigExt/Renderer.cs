@@ -3,12 +3,12 @@ using Markdig.Syntax;
 using System.IO;
 using Hr = Markdig.Renderers.Html;
 using Nr = Markdig.Renderers.Normalize;
-using Jr = EhTagClient.MakdigExt.Json;
+using Jr = EhTagClient.MarkdigExt.Json;
 using Markdig;
 using System.Linq;
 using System.Text;
 
-namespace EhTagClient.MakdigExt
+namespace EhTagClient.MarkdigExt
 {
 
     static class Renderer

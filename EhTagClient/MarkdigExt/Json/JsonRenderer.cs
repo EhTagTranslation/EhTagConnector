@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace EhTagClient.MakdigExt.Json
+namespace EhTagClient.MarkdigExt.Json
 {
     internal sealed class JsonRenderer : TextRendererBase<JsonRenderer>
     {

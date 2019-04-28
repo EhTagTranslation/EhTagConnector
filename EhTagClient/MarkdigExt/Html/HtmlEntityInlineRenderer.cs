@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EhTagClient.MakdigExt.Html
+namespace EhTagClient.MarkdigExt.Html
 {
     public class HtmlEntityInlineRenderer : HtmlObjectRenderer<HtmlEntityInline>
     {

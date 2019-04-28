@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Markdig;
+using MS = Markdig.Syntax;
+using MSI = Markdig.Syntax.Inlines;
 
 namespace EhTagClient
 {
@@ -13,11 +15,11 @@ namespace EhTagClient
         public MarkdownText(string rawString)
         {
             Raw = (rawString ?? "").Trim();
-            var ast = MakdigExt.Renderer.Parse(Raw);
-            Text = MakdigExt.Renderer.ToPlainText(ast);
-            Raw = MakdigExt.Renderer.ToNormalizedMarkdown(ast);
-            Html = MakdigExt.Renderer.ToHtml(ast);
-            Ast = new Newtonsoft.Json.Linq.JRaw(MakdigExt.Renderer.ToJson(ast));
+            var ast = MarkdigExt.Renderer.Parse(Raw);
+            Text = MarkdigExt.Renderer.ToPlainText(ast);
+            Raw = MarkdigExt.Renderer.ToNormalizedMarkdown(ast);
+            Html = MarkdigExt.Renderer.ToHtml(ast);
+            Ast = new Newtonsoft.Json.Linq.JRaw(MarkdigExt.Renderer.ToJson(ast));
         }
 
         public string Raw { get; }
