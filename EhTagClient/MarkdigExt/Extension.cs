@@ -23,7 +23,7 @@ namespace EhTagClient.MarkdigExt
                 for (var i = 0; i < uri.Length; i++)
                 {
                     var ch = uri[i];
-                    if (char.IsWhiteSpace(ch) || "()".IndexOf(ch) >= 0)
+                    if ("()".IndexOf(ch) >= 0 || char.IsWhiteSpace(ch) || char.IsControl(ch))
                     {
                         var b = (Span<byte>)stackalloc byte[12];
                         var l = encodeChar(uri.Slice(i, 1), b);
@@ -32,7 +32,10 @@ namespace EhTagClient.MarkdigExt
                     else if (ch == '%' && i + 2 < uri.Length && isHexChar(uri[i + 1]) && isHexChar(uri[i + 2]))
                     {
                         var bc = byte.Parse(uri.Slice(i + 1, 2), System.Globalization.NumberStyles.HexNumber);
-                        if ("\\\"!*'();:@&=+$,/?#[]".IndexOf((char)bc) >= 0 || char.IsWhiteSpace((char)bc))
+                        if (bc < 128 &&
+                            ("\\\"!*'();:@&=+$,/?#[]".IndexOf((char)bc) >= 0
+                            || char.IsControl((char)bc)
+                            || char.IsWhiteSpace((char)bc)))
                         {
                             var b = (Span<byte>)stackalloc byte[4 * 3];
                             var l = enc.GetBytes(uri.Slice(i, 3), b);
