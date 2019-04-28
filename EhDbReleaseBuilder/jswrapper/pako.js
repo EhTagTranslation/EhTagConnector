@@ -11,6 +11,9 @@ if (typeof window !== 'undefined') {
 } else {
   gThis = this;
 }
+if (typeof _DEBUG_ === 'undefined') {
+  console.log(gThis);
+}
 var callback = gThis[d.c];
 var data;
 if (typeof gThis.atob === 'function') {
@@ -3327,6 +3330,8 @@ var pako =
 }).inflate;
 var json = pako(data, { to: 'string' });
 var obj = JSON.parse(json);
-console.log(obj);
+if (typeof _DEBUG_ === 'undefined') {
+  console.log(obj);
+}
 callback(obj);
 
