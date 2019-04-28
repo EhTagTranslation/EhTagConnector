@@ -1,7 +1,17 @@
 //(function (d) {
 var gThis;
-if (typeof window === 'undefined') {
+if (typeof window !== 'undefined') {
+  gThis = window;
+} else if (typeof self !== 'undefined') {
+  gThis = self;
+} else if (typeof global !== 'undefined') {
+  gThis = global;
+} else if (typeof globalThis !== 'undefined') {
   gThis = globalThis;
+} else {
+  gThis = this;
+}
+if (typeof gThis.atob !== 'function') {
   gThis.atob = require('atob');
 }
 
