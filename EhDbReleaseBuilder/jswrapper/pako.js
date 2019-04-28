@@ -1,4 +1,5 @@
-//d = ({ c: "12", d: "H4sIAAAAAAAAC7SRzWrDMBCEX6Xo2sSWZFv+OYWmkARKAiXtpe1hba1jgS0bW24IIe/eNT00vZRcehOa0ezspzNra71G0Cw7Mxhd1fbTyUKDLGO7rmt7N1rjTk9mZDOGDZiahPZHWNTmEz1jST1WaEmUXKRzHs6l2oskEyoTwT1PMs7ZZcaKtmmMc/jPY4YKyIJxWEotgXMOZaqVytNEIag8L2Ml0ySI6DrNQwptcBjgMLUZOw0O74ylkiUU+G6nQML0iv1gWhodzZjF4y3UrnbZ3b6LpF3U38hWxq3H/Cretj129WlxMK4ac4/e3Jj+TYqXKiiElDwSoSqlLESiFT3TQSTiOFIgUIdSqV+klj1OpJa77f558/Cy32xXXqOnUMJzTYuqteSvnOuGzPd/OvpYOTi4HuxQgyO7/wgOchjQIxMNo6+gem8fly8AAAD//wMA/Pw2DKkCAAA=" });
+//var input = typeof d === 'object' && 'c' in d ? d : ({ c: "12", d: "H4sIAAAAAAAAC7SRzWrDMBCEX6Xo2sSWZFv+OYWmkARKAiXtpe1hba1jgS0bW24IIe/eNT00vZRcehOa0ezspzNra71G0Cw7Mxhd1fbTyUKDLGO7rmt7N1rjTk9mZDOGDZiahPZHWNTmEz1jST1WaEmUXKRzHs6l2oskEyoTwT1PMs7ZZcaKtmmMc/jPY4YKyIJxWEotgXMOZaqVytNEIag8L2Ml0ySI6DrNQwptcBjgMLUZOw0O74ylkiUU+G6nQML0iv1gWhodzZjF4y3UrnbZ3b6LpF3U38hWxq3H/Cretj129WlxMK4ac4/e3Jj+TYqXKiiElDwSoSqlLESiFT3TQSTiOFIgUIdSqV+klj1OpJa77f558/Cy32xXXqOnUMJzTYuqteSvnOuGzPd/OvpYOTi4HuxQgyO7/wgOchjQIxMNo6+gem8fly8AAAD//wMA/Pw2DKkCAAA=" });
+var input = d;
 var gThis;
 if (typeof window !== 'undefined') {
   gThis = window;
@@ -11,19 +12,17 @@ if (typeof window !== 'undefined') {
 } else {
   gThis = this;
 }
-if (typeof _DEBUG_ === 'undefined') {
-  console.log(gThis);
-}
-var callback = gThis[d.c];
+
+var callback = gThis[input.c];
 var data;
 if (typeof gThis.atob === 'function') {
-  var bin = gThis.atob(d.d);
+  var bin = gThis.atob(input.d);
   data = new Uint8Array(new ArrayBuffer(bin.length));
   for (var i = 0; i < bin.length; i++) {
     data[i] = bin.charCodeAt(i);
   }
 } else {
-  data = Buffer.from(d.d, 'base64');
+  data = Buffer.from(input.d, 'base64');
 }
 var pako =
   /* pako 1.0.10 nodeca/pako */(function (f) { return f(); })(function () {
@@ -3330,8 +3329,6 @@ var pako =
 }).inflate;
 var json = pako(data, { to: 'string' });
 var obj = JSON.parse(json);
-if (typeof _DEBUG_ === 'undefined') {
-  console.log(obj);
-}
+console.log(obj);
 callback(obj);
 
