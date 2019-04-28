@@ -1,0 +1,17 @@
+{
+  "name": "jswrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "pako.js",
+  "dependencies": {
+    "atob": "^2.1.2",
+    "ts-node": "^8.1.0",
+    "uglify-js": "^3.5.9"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "uglifyjs pako.js -cm --wrap d -o pako.min.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

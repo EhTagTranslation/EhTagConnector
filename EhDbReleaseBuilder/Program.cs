@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using EhTagClient;
@@ -198,22 +199,41 @@ namespace EhDbReleaseBuilder
                 }
             case "json.gz":
                 using (var gziped = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.json.gz")))
+                using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
                 {
-                    using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
-                    {
-                        gzip.Write(jsonData);
-                        gzip.Flush();
-                        gziped.Flush();
-                        Console.WriteLine($"Created: {pre}.{mid}.json.gz ({gziped.Position} bytes)");
-                        return;
-                    }
+                    gzip.Write(jsonData);
+                    gzip.Flush();
+                    gziped.Flush();
+                    Console.WriteLine($"Created: {pre}.{mid}.json.gz ({gziped.Position} bytes)");
+                    return;
                 }
             case "js":
                 using (var jsonp = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.js")))
                 {
-                    jsonp.Write(_Encoding.GetBytes($"load_ehtagtranslation_{pre}_{mid}("));
-                    jsonp.Write(jsonData);
-                    jsonp.Write(_Encoding.GetBytes(");"));
+                    if (pre == "diff")
+                    {
+                        jsonp.Write(_Encoding.GetBytes($"load_ehtagtranslation_{pre}_{mid}("));
+                        jsonp.Write(jsonData);
+                        jsonp.Write(_Encoding.GetBytes(");"));
+                    }
+                    else
+                    {
+                        jsonp.Write(_Encoding.GetBytes($"(function(){{var d={{c:'load_ehtagtranslation_{pre}_{mid}',d:'"));
+                        using (var gziped = new MemoryStream())
+                        using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
+                        {
+                            gzip.Write(jsonData);
+                            gzip.Flush();
+                            gziped.Flush();
+                            jsonp.Write(_Encoding.GetBytes(Convert.ToBase64String(gziped.GetBuffer(), 0, (int)gziped.Length, Base64FormattingOptions.None)));
+                        }
+                        jsonp.Write(_Encoding.GetBytes($"'}};"));
+                        using (var pako = Assembly.GetExecutingAssembly().GetManifestResourceStream("EhDbReleaseBuilder.jswrapper.pako.min.js"))
+                        {
+                            pako.CopyTo(jsonp);
+                        }
+                        jsonp.Write(_Encoding.GetBytes("})();"));
+                    }
                     jsonp.Flush();
                     Console.WriteLine($"Created: {pre}.{mid}.js ({jsonp.Position} bytes)");
                     return;
