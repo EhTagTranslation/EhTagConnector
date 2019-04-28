@@ -1,4 +1,4 @@
-//(function (d) {
+//d = ({ c: "12", d: "H4sIAAAAAAAAC7SRzWrDMBCEX6Xo2sSWZFv+OYWmkARKAiXtpe1hba1jgS0bW24IIe/eNT00vZRcehOa0ezspzNra71G0Cw7Mxhd1fbTyUKDLGO7rmt7N1rjTk9mZDOGDZiahPZHWNTmEz1jST1WaEmUXKRzHs6l2oskEyoTwT1PMs7ZZcaKtmmMc/jPY4YKyIJxWEotgXMOZaqVytNEIag8L2Ml0ySI6DrNQwptcBjgMLUZOw0O74ylkiUU+G6nQML0iv1gWhodzZjF4y3UrnbZ3b6LpF3U38hWxq3H/Cretj129WlxMK4ac4/e3Jj+TYqXKiiElDwSoSqlLESiFT3TQSTiOFIgUIdSqV+klj1OpJa77f558/Cy32xXXqOnUMJzTYuqteSvnOuGzPd/OvpYOTi4HuxQgyO7/wgOchjQIxMNo6+gem8fly8AAAD//wMA/Pw2DKkCAAA=" });
 var gThis;
 if (typeof window !== 'undefined') {
   gThis = window;
@@ -11,10 +11,17 @@ if (typeof window !== 'undefined') {
 } else {
   gThis = this;
 }
-if (typeof gThis.atob !== 'function') {
-  gThis.atob = require('atob');
+var callback = gThis[d.c];
+var data;
+if (typeof gThis.atob === 'function') {
+  var bin = gThis.atob(d.d);
+  data = new Uint8Array(new ArrayBuffer(bin.length));
+  for (var i = 0; i < bin.length; i++) {
+    data[i] = bin.charCodeAt(i);
+  }
+} else {
+  data = Buffer.from(d.d, 'base64');
 }
-
 var pako =
   /* pako 1.0.10 nodeca/pako */(function (f) { return f(); })(function () {
   var define, module, exports; return (function () { function r(e, n, t) { function o(i, f) { if (!n[i]) { if (!e[i]) { var c = "function" == typeof require && require; if (!f && c) return c(i, !0); if (u) return u(i, !0); var a = new Error("Cannot find module '" + i + "'"); throw a.code = "MODULE_NOT_FOUND", a } var p = n[i] = { exports: {} }; e[i][0].call(p.exports, function (r) { var n = e[i][1][r]; return o(n || r) }, p, p.exports, r, e, n, t) } return n[i].exports } for (var u = "function" == typeof require && require, i = 0; i < t.length; i++)o(t[i]); return o } return r })()({
@@ -3318,14 +3325,8 @@ var pako =
     }, { "./utils/common": 1, "./utils/strings": 2, "./zlib/constants": 4, "./zlib/gzheader": 6, "./zlib/inflate": 8, "./zlib/messages": 10, "./zlib/zstream": 11 }]
   }, {}, [])("/lib/inflate.js")
 }).inflate;
-var bin = gThis.atob(d.d);
-var binarr = new Uint8Array(new ArrayBuffer(bin.length));
-for (var i = 0; i < bin.length; i++) {
-  binarr[i] = bin.charCodeAt(i);
-}
-var json = pako(binarr, { to: 'string' });
+var json = pako(data, { to: 'string' });
 var obj = JSON.parse(json);
 console.log(obj);
-gThis[d.c](obj);
-//})
-//({c:"12",d: "H4sIAAAAAAAAC7SRzWrDMBCEX6Xo2sSWZFv+OYWmkARKAiXtpe1hba1jgS0bW24IIe/eNT00vZRcehOa0ezspzNra71G0Cw7Mxhd1fbTyUKDLGO7rmt7N1rjTk9mZDOGDZiahPZHWNTmEz1jST1WaEmUXKRzHs6l2oskEyoTwT1PMs7ZZcaKtmmMc/jPY4YKyIJxWEotgXMOZaqVytNEIag8L2Ml0ySI6DrNQwptcBjgMLUZOw0O74ylkiUU+G6nQML0iv1gWhodzZjF4y3UrnbZ3b6LpF3U38hWxq3H/Cretj129WlxMK4ac4/e3Jj+TYqXKiiElDwSoSqlLESiFT3TQSTiOFIgUIdSqV+klj1OpJa77f558/Cy32xXXqOnUMJzTYuqteSvnOuGzPd/OvpYOTi4HuxQgyO7/wgOchjQIxMNo6+gem8fly8AAAD//wMA/Pw2DKkCAAA="})
+callback(obj);
+
