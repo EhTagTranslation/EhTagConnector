@@ -11,6 +11,7 @@ namespace EhTagClient.MarkdigExt
     {
         private static readonly byte[] _HexChars = "0123456789ABCDEF".Select(c => (byte)c).ToArray();
         private const int UTF8_MAX_LEN = 6;
+        private readonly static System.Text.Encoding _Encoding = new System.Text.UTF8Encoding(false, false);
 
         public static string NormalizeUri(string url)
         {
@@ -18,45 +19,47 @@ namespace EhTagClient.MarkdigExt
                 return "";
             url = url.Trim();
             var uri = url.AsSpan();
-            var enc = System.Text.Encoding.UTF8;
-            using (var buf = new MemoryStream(uri.Length * 2))
+            var bufroot = uri.Length * UTF8_MAX_LEN > 4096
+                ? new byte[uri.Length * UTF8_MAX_LEN]
+                : stackalloc byte[uri.Length * UTF8_MAX_LEN];
+            var bufrem = bufroot;
+            for (var i = 0; i < uri.Length; i++)
             {
-                for (var i = 0; i < uri.Length; i++)
+                var ch = uri[i];
+                if ("()".IndexOf(ch) >= 0 || char.IsWhiteSpace(ch) || char.IsControl(ch))
                 {
-                    var ch = uri[i];
-                    if ("()".IndexOf(ch) >= 0 || char.IsWhiteSpace(ch) || char.IsControl(ch))
+                    // encode special chars
+                    var l = encodeChar(uri.Slice(i, 1), bufrem);
+                    bufrem = bufrem.Slice(l);
+                }
+                else if (ch == '%' && i + 2 < uri.Length && isHexChar(uri[i + 1]) && isHexChar(uri[i + 2]))
+                {
+                    // %xx format
+                    var bc = byte.Parse(uri.Slice(i + 1, 2), System.Globalization.NumberStyles.HexNumber);
+                    if (bc < 128 &&
+                        ("\\\"!*'();:@&=+$,/?#[]".IndexOf((char)bc) >= 0
+                        || char.IsControl((char)bc)
+                        || char.IsWhiteSpace((char)bc)))
                     {
-                        var b = (Span<byte>)stackalloc byte[3 * UTF8_MAX_LEN];
-                        var l = encodeChar(uri.Slice(i, 1), b);
-                        buf.Write(b.Slice(0, l));
-                    }
-                    else if (ch == '%' && i + 2 < uri.Length && isHexChar(uri[i + 1]) && isHexChar(uri[i + 2]))
-                    {
-                        var bc = byte.Parse(uri.Slice(i + 1, 2), System.Globalization.NumberStyles.HexNumber);
-                        if (bc < 128 &&
-                            ("\\\"!*'();:@&=+$,/?#[]".IndexOf((char)bc) >= 0
-                            || char.IsControl((char)bc)
-                            || char.IsWhiteSpace((char)bc)))
-                        {
-                            var b = (Span<byte>)stackalloc byte[3 * UTF8_MAX_LEN];
-                            var l = enc.GetBytes(uri.Slice(i, 3), b);
-                            buf.Write(b.Slice(0, l));
-                        }
-                        else
-                        {
-                            buf.WriteByte(bc);
-                        }
-                        i += 2;
+                        // DO NOT decode special chars, write its %xx format
+                        var l = _Encoding.GetBytes(uri.Slice(i, 3), bufrem);
+                        bufrem = bufrem.Slice(l);
                     }
                     else
                     {
-                        var b = (Span<byte>)stackalloc byte[UTF8_MAX_LEN];
-                        var l = enc.GetBytes(uri.Slice(i, 1), b);
-                        buf.Write(b.Slice(0, l));
+                        // decode
+                        bufrem[0] = bc;
+                        bufrem = bufrem.Slice(1);
                     }
+                    i += 2;
                 }
-                return enc.GetString(buf.GetBuffer(), 0, (int)buf.Length);
+                else
+                {
+                    var l = _Encoding.GetBytes(uri.Slice(i, 1), bufrem);
+                    bufrem = bufrem.Slice(l);
+                }
             }
+            return _Encoding.GetString(bufroot.Slice(0, bufroot.Length - bufrem.Length));
 
             bool isHexChar(char ch)
             {
@@ -68,13 +71,13 @@ namespace EhTagClient.MarkdigExt
             int encodeChar(ReadOnlySpan<char> chars, Span<byte> bytes)
             {
                 var chbytes = (Span<byte>)stackalloc byte[UTF8_MAX_LEN];
-                var chlen = enc.GetBytes(chars, chbytes);
+                var chlen = _Encoding.GetBytes(chars, chbytes);
                 for (var i = 0; i < chlen; i++)
                 {
                     var b = chbytes[i];
                     bytes[3 * i] = (byte)'%';
                     bytes[3 * i + 1] = _HexChars[b >> 4];
-                    bytes[3 * i + 2] = _HexChars[b & 0b00001111];
+                    bytes[3 * i + 2] = _HexChars[b & 0x0F];
                 }
                 return chlen * 3;
             }
