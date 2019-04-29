@@ -21,8 +21,8 @@ namespace EhTagApi.Formatters
         public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
         {
             var request = context.HttpContext.Request;
-            var content = Microsoft.Net.Http.Headers.MediaTypeHeaderValue.Parse(request.ContentType);
-            using (var reader = context.ReaderFactory(request.Body, content.Encoding ?? Encoding.UTF8))
+            Microsoft.Net.Http.Headers.MediaTypeHeaderValue.TryParse(request.ContentType, out var content);
+            using (var reader = context.ReaderFactory(request.Body, content?.Encoding ?? Encoding.UTF8))
             {
                 return await InputFormatterResult.SuccessAsync(await reader.ReadToEndAsync());
             }

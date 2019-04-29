@@ -71,7 +71,7 @@ Content-Type: application/json
 }
 
 ### 序列化条目
-POST {{base}}/api/tools/serialize/gotoubun%20no%20hanayome
+POST {{base}}/api/tools/serialize/gotoubun no hanayome
 Content-Type: application/json
 
 {
@@ -83,6 +83,6 @@ Content-Type: application/json
 ### 解析 MarkDown 条目
 POST {{base}}/api/tools/parse
 Accept: application/raw+json
-Content-Type: text/plain
+Content-Type: text/markdown
 
 | gotoubun no hanayome | 五等分的新娘 | 《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。 | [维基百科](https://zh.wikipedia.org/zh-cn/五等分的新娘) (*) |
