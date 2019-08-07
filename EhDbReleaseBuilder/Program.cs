@@ -228,7 +228,7 @@ namespace EhDbReleaseBuilder
                             jsonp.Write(_Encoding.GetBytes(Convert.ToBase64String(gziped.GetBuffer(), 0, (int)gziped.Length, Base64FormattingOptions.None)));
                         }
                         jsonp.Write(_Encoding.GetBytes($"'}};"));
-                        using (var pako = Assembly.GetExecutingAssembly().GetManifestResourceStream("EhDbReleaseBuilder.jswrapper.pako.min.js"))
+                        using (var pako = Assembly.GetExecutingAssembly().GetManifestResourceStream("EhDbReleaseBuilder.pako.min.js"))
                         {
                             pako.CopyTo(jsonp);
                         }

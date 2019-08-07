@@ -345,7 +345,7 @@ ETag: "d4553b638098466ef013567b319c034f8ee34950"
 {
   "name": "<p>五等分的新娘</p>",
   "intro": "<p>《五等分的新娘》（日语：五等分の花嫁）是由日本漫画家春场葱所创作的少年漫画作品。于《周刊少年Magazine》2017年第36・37合并号开始正式连载中。</p>",
-  "links": "html": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>"
+  "links": "<p><a href=\"https://zh.wikipedia.org/zh-cn/五等分的新娘\" rel=\"nofollow\">维基百科</a> (*)</p>"
 }
 ```
 
