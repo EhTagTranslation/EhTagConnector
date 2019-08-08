@@ -203,7 +203,7 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 
 {
   # Git 地址
-  "repo": "https://github.com/ehtagtranslation/Database.git",
+  "repo": "https://github.com/EhTagTranslation/Database.git",
   # 最新一次提交信息
   "head": {
     "author": {
