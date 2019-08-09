@@ -23,6 +23,27 @@ namespace EhTagApi.Controllers
         private readonly RepoClient _RepoClient;
         private readonly Database _Database;
 
+        private static object _MakeBadge(string label, string message, bool error = false)
+        {
+            if (string.IsNullOrWhiteSpace(label))
+            {
+                error = true;
+                label = "no-label";
+            }
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                error = true;
+                message = "no-message";
+            }
+            return new
+            {
+                schemaVersion = 1,
+                label,
+                message,
+                isError = error,
+            };
+        }
+
         private void _Commit(Namespace @namespace, string k, Record o, Record n, User user)
         {
             var verb = "Modified";
@@ -71,6 +92,31 @@ Curr value: {n?.ToString(k) ?? "(deleted)"}";
                 Version = _Database.GetVersion(),
                 Data = _Database.Values.Select(v => new { v.Namespace, v.Count }),
             };
+        }
+
+        [HttpGet("~badge")]
+        public object GetBadge()
+        {
+            var head = _RepoClient.Head;
+            return _MakeBadge("database", head.Sha.Substring(0, 8));
+        }
+
+        [HttpGet("~badge/{namespace}")]
+        public object GetBadgeNs([SingleNamespace] Namespace @namespace)
+        {
+            var dic = _Database[@namespace];
+            return _MakeBadge(@namespace.ToSearchString(), dic.Count.ToString());
+        }
+
+        [HttpGet("~badge/all")]
+        public object GetBadgeNs()
+        {
+            var count = 0;
+            foreach (var item in _Database.Values)
+            {
+                count += item.Count;
+            }
+            return _MakeBadge("all records", count.ToString());
         }
 
         [HttpGet("{namespace}")]
