@@ -105,7 +105,7 @@ Curr value: {n?.ToString(k) ?? "(deleted)"}";
         public object GetBadgeNs([SingleNamespace] Namespace @namespace)
         {
             var dic = _Database[@namespace];
-            return _MakeBadge(@namespace.ToSearchString(), dic.Count.ToString());
+            return _MakeBadge(@namespace.ToSearchString() ?? "misc", dic.Count.ToString());
         }
 
         [HttpGet("~badge/all")]
