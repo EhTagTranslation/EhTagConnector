@@ -134,7 +134,7 @@ namespace EhTagClient.MarkdigExt
                 if (url == "#")
                     return (title, "", "R18");
                 else if (url == "##")
-                    return (title, "", "R18");
+                    return (title, "", "R18G");
                 else
                     return (title, "", url.Substring(1).Trim());
             }
