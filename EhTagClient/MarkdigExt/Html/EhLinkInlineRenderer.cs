@@ -29,8 +29,12 @@ namespace EhTagClient.MarkdigExt.Html
                     renderer.WriteChildren(link);
                     renderer.EnableHtmlForInline = true;
                     renderer.Write("\"");
-                    if(nsfw)
-                        renderer.Write(" nsfw");
+                    if (nsfw != null)
+                    {
+                        renderer.Write(" nsfw=\"");
+                        renderer.WriteEscape(nsfw);
+                        renderer.Write("\"");
+                    }
                 }
             }
             if (renderer.EnableHtmlForInline && !string.IsNullOrEmpty(title))

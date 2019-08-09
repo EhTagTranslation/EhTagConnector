@@ -186,7 +186,10 @@ namespace EhTagClient.MarkdigExt.Json
             renderer.WriteProperty("url", url);
             if (obj.IsImage)
             {
-                renderer.WriteProperty("nsfw", nsfw);
+                if (nsfw is null)
+                    renderer.WriteProperty("nsfw", false);
+                else
+                    renderer.WriteProperty("nsfw", nsfw);
             }
         }
     }

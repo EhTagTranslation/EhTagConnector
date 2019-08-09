@@ -124,14 +124,22 @@ namespace EhTagClient.MarkdigExt
             return ("https://ehgt.org/" + tail, isNsfw);
         }
 
-        public static (string url, string title, bool isNsfw) GetData(this LinkInline link)
+        public static (string url, string title, string isNsfw) GetData(this LinkInline link)
         {
-            var url = link.GetDynamicUrl?.Invoke() ?? link.Url;
+            var url = (link.GetDynamicUrl?.Invoke() ?? link.Url).Trim();
+            var title = (link.Title ?? "").Trim();
 
-            if (link.IsImage && url == "#" && !string.IsNullOrEmpty(link.Title))
-                return (link.Title, "", true);
+            if (link.IsImage && url.StartsWith("#") && !string.IsNullOrEmpty(title))
+            {
+                if (url == "#")
+                    return (title, "", "R18");
+                else if (url == "##")
+                    return (title, "", "R18");
+                else
+                    return (title, "", url.Substring(1).Trim());
+            }
 
-            return (url, link.Title, false);
+            return (url, title, null);
         }
     }
 }
