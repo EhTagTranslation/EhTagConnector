@@ -15,10 +15,7 @@ namespace EhTagClient
         public MarkdownText(string rawString, bool singleLine)
         {
             rawString = (rawString ?? "").Trim();
-            if (singleLine)
-            {
-                rawString = Regex.Replace(rawString, "(\r\n|\r|\n)", " ");
-            }
+            rawString = Regex.Replace(rawString, "(\r\n|\r|\n)", singleLine ? " " : "\n").Trim();
             Raw = rawString;
             var ast = MarkdigExt.Renderer.Parse(Raw);
             Text = MarkdigExt.Renderer.ToPlainText(ast);
