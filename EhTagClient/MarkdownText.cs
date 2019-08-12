@@ -12,9 +12,14 @@ namespace EhTagClient
     [System.Diagnostics.DebuggerDisplay(@"MD{Raw}")]
     public sealed class MarkdownText
     {
-        public MarkdownText(string rawString)
+        public MarkdownText(string rawString, bool singleLine)
         {
-            Raw = (rawString ?? "").Trim();
+            rawString = (rawString ?? "").Trim();
+            if (singleLine)
+            {
+                rawString = Regex.Replace(rawString, "(\r\n|\r|\n)", " ");
+            }
+            Raw = rawString;
             var ast = MarkdigExt.Renderer.Parse(Raw);
             Text = MarkdigExt.Renderer.ToPlainText(ast);
             Raw = MarkdigExt.Renderer.ToNormalizedMarkdown(ast);

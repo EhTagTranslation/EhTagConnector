@@ -102,9 +102,9 @@ namespace EhTagClient
         [JsonConstructor]
         public Record(string name, string intro, string links)
         {
-            Name = new MarkdownText(name);
-            Intro = new MarkdownText(intro);
-            Links = new MarkdownText(links);
+            Name = new MarkdownText(name, true);
+            Intro = new MarkdownText(intro, false);
+            Links = new MarkdownText(links, false);
         }
 
         public MarkdownText Name { get; }
