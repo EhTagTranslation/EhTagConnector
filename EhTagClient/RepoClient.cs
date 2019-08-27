@@ -5,11 +5,21 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyModel;
 
 namespace EhTagClient
 {
     public class RepoClient
     {
+        static RepoClient()
+        {
+            var runtimeLib = DependencyContext.Default.RuntimeLibraries.Single(t => t.Name == "LibGit2Sharp.NativeBinaries");
+            var rid = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment.GetRuntimeIdentifier();
+            var runtimefile = runtimeLib.GetRuntimeNativeAssets(DependencyContext.Default, rid).First();
+            LibGit2Sharp.GlobalSettings.NativeLibraryPath = Path.GetDirectoryName(runtimefile);
+            var a = AppContext.BaseDirectory;
+        }
+
         public RepoClient(string workingDirectory) => Repo = new Repository(workingDirectory);
 
         public RepoClient() => Init();
