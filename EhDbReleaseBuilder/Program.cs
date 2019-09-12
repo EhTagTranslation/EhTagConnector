@@ -104,8 +104,6 @@ namespace EhDbReleaseBuilder
             await _PublishOne(release, "ast");
 
             var message = $"{release.TargetCommitish}...{_RepoClient.Head.Sha}";
-            if (Environment.GetEnvironmentVariable("APPVEYOR") != null)
-                Process.Start("appveyor", $"SetVariable -Name GITHUB_RELEASE_MESSAGE -Value {message}").WaitForExit();
             if (Environment.GetEnvironmentVariable("GITHUB_ACTION") != null)
                 File.WriteAllText(Path.Join(_Target, ".github", "message.md"), message);
         }
