@@ -105,7 +105,10 @@ namespace EhDbReleaseBuilder
 
             var message = $"{release.TargetCommitish}...{_RepoClient.Head.Sha}";
             if (Environment.GetEnvironmentVariable("GITHUB_ACTION") != null)
+            {
+                Directory.CreateDirectory(Path.Join(_Target, ".github"));
                 File.WriteAllText(Path.Join(_Target, ".github", "message.md"), message);
+            }
         }
 
         private async Task _PublishOne(Octokit.Release oldRelease, string mid)
