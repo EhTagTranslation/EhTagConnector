@@ -105,9 +105,9 @@ namespace EhDbReleaseBuilder
 
             var message = $"{release.TargetCommitish}...{_RepoClient.Head.Sha}";
             if (Environment.GetEnvironmentVariable("APPVEYOR") != null)
-                Process.Start("appveyor", $"SetVariable -Name GITHUB_RELEASE_MESSAGE -Value '{message}'").WaitForExit();
+                Process.Start("appveyor", $"SetVariable -Name GITHUB_RELEASE_MESSAGE -Value {message}").WaitForExit();
             if (Environment.GetEnvironmentVariable("GITHUB_ACTION") != null)
-                File.WriteAllText(Path.Join(_Target, "message.md"), message);
+                File.WriteAllText(Path.Join(_Target, ".github", "message.md"), message);
         }
 
         private async Task _PublishOne(Octokit.Release oldRelease, string mid)
