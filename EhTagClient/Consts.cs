@@ -47,7 +47,7 @@ namespace EhTagClient
                 ?? Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
 
             if (string.IsNullOrEmpty(ev))
-                throw new ArgumentException($"Environment variable `{key}` not found.");
+                Console.WriteLine($"Environment variable `{key}` not found.");
             return ev;
         }
     }
