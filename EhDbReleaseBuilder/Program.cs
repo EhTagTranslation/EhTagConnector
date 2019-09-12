@@ -40,8 +40,6 @@ namespace EhDbReleaseBuilder
         private readonly Database _Database;
         private readonly string _Target;
         private static readonly Encoding _Encoding = new UTF8Encoding(false);
-        private static readonly JsonDiffPatch.JsonDiffer _JsonDiffer = new JsonDiffPatch.JsonDiffer();
-        private static readonly HttpClient _HttpClient = new HttpClient();
 
         private class UploadData
         {
@@ -72,14 +70,6 @@ namespace EhDbReleaseBuilder
             public int Version { get; set; }
         };
 
-        private class PatchUploadData : UploadData
-        {
-            public HeadData OldHead { get; set; }
-            public int OldVersion { get; set; }
-            public HeadData NewHead { get; set; }
-            public int NewVersion { get; set; }
-        }
-
         public void Normalize()
         {
             _Database.Save();
@@ -91,19 +81,14 @@ namespace EhDbReleaseBuilder
             {
                 item.Delete();
             }
-            var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("EhDbReleaseBuilder"))
-            {
-                // Credentials = new Octokit.Credentials(_GithubToken)
-            };
-            var release = await client.Repository.Release.GetLatest("EhTagTranslation", "Database");
 
-            await _PublishOne(release, "full");
-            await _PublishOne(release, "html");
-            await _PublishOne(release, "raw");
-            await _PublishOne(release, "text");
-            await _PublishOne(release, "ast");
+            await _PublishOne("full");
+            await _PublishOne("html");
+            await _PublishOne("raw");
+            await _PublishOne("text");
+            await _PublishOne("ast");
 
-            var message = $"{release.TargetCommitish}...{_RepoClient.Head.Sha}";
+            var message = $"{_RepoClient.Head.Sha}";
             if (Environment.GetEnvironmentVariable("GITHUB_ACTION") != null)
             {
                 Directory.CreateDirectory(Path.Join(_Target, ".github"));
@@ -111,35 +96,16 @@ namespace EhDbReleaseBuilder
             }
         }
 
-        private async Task _PublishOne(Octokit.Release oldRelease, string mid)
+        private async Task _PublishOne(string mid)
         {
-            var downName = $"db.{mid}.json.gz";
-            var uri = oldRelease.Assets.First(a => a.Name == downName).BrowserDownloadUrl;
-            Console.WriteLine($"Downloading old {downName}");
-            var res = await _HttpClient.GetAsync(uri);
-            using (var stream = new GZipStream(await res.Content.ReadAsStreamAsync(), CompressionMode.Decompress, false))
-            using (var reader = new StreamReader(stream, _Encoding))
-            {
-                var oldData = JsonConvert.DeserializeObject<FullUploadData>(reader.ReadToEnd());
-                Console.WriteLine($"Downloaded old {downName}");
-
-                var (fulldata, patchdata) = _Serialize(oldData, mid);
-                {
-                    var byteData = _Encoding.GetBytes(fulldata);
-                    _WriteFile(byteData, "db", mid, "json");
-                    _WriteFile(byteData, "db", mid, "json.gz");
-                    _WriteFile(byteData, "db", mid, "js");
-                }
-                {
-                    var byteData = _Encoding.GetBytes(patchdata);
-                    _WriteFile(byteData, "diff", mid, "json");
-                    _WriteFile(byteData, "diff", mid, "json.gz");
-                    _WriteFile(byteData, "diff", mid, "js");
-                }
-            }
+            var fulldata = _Serialize(mid);
+            var byteData = _Encoding.GetBytes(fulldata);
+            _WriteFile(byteData, "db", mid, "json");
+            _WriteFile(byteData, "db", mid, "json.gz");
+            _WriteFile(byteData, "db", mid, "js");
         }
 
-        private (string full, string patch) _Serialize(FullUploadData old, string mid)
+        private string _Serialize(string mid)
         {
             var settings = Consts.SerializerSettings;
             switch (mid)
@@ -169,7 +135,6 @@ namespace EhDbReleaseBuilder
                 Message = _RepoClient.Head.Message,
             };
             var newdataStr = JsonConvert.SerializeObject(_Database.Values, settings);
-            var olddataStr = old.Data.ToString();
             var fullUpData = new FullUploadData
             {
                 Repo = _RepoClient.RemotePath,
@@ -177,16 +142,7 @@ namespace EhDbReleaseBuilder
                 Head = newHead,
                 Data = new JRaw(newdataStr),
             };
-            var patchUpData = new PatchUploadData
-            {
-                Repo = _RepoClient.RemotePath,
-                NewVersion = _Database.GetVersion(),
-                OldVersion = old.Version,
-                NewHead = newHead,
-                OldHead = old.Head,
-                Data = new JRaw(_JsonDiffer.Diff(JToken.Parse(olddataStr), JToken.Parse(newdataStr), false).ToString(settings.Formatting)),
-            };
-            return (JsonConvert.SerializeObject(fullUpData, settings), JsonConvert.SerializeObject(patchUpData, settings));
+            return JsonConvert.SerializeObject(fullUpData, settings);
         }
 
         private void _WriteFile(byte[] jsonData, string pre, string mid, string suf)

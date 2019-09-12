@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonDiffPatch" Version="2.0.49" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EhTagClient\EhTagClient.csproj" />
   </ItemGroup>
   
