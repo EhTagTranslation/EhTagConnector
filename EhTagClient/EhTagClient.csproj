@@ -9,7 +9,7 @@
     <PackageReference Include="LibGit2Sharp" Version="0.26.1" />
     <PackageReference Include="Markdig" Version="0.17.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Octokit" Version="0.32.0" />
+    <PackageReference Include="Octokit" Version="0.33.0" />
   </ItemGroup>
 
 </Project>
