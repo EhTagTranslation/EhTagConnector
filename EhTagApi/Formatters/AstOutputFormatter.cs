@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace EhTagApi.Formatters
 {
-    public class AstOutputFormatter : NewtonsoftJsonOutputFormatter
+    public class AstOutputFormatter : JsonOutputFormatter
     {
-        public AstOutputFormatter(Microsoft.AspNetCore.Mvc.MvcOptions mvcOptions) : base(Consts.SerializerSettings, ArrayPool<char>.Shared, mvcOptions)
+        public AstOutputFormatter() : base(Consts.SerializerSettings, ArrayPool<char>.Shared)
         {
             SerializerSettings.Converters.Add(new MdConverter(MdConverter.ConvertType.Ast));
             SupportedMediaTypes.Clear();

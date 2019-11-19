@@ -4,13 +4,15 @@ using System.Buffers;
 
 namespace EhTagApi.Formatters
 {
-    public class RawOutputFormatter : NewtonsoftJsonOutputFormatter
+    public class RawOutputFormatter : JsonOutputFormatter
     {
-        public RawOutputFormatter(Microsoft.AspNetCore.Mvc.MvcOptions mvcOptions) : base(Consts.SerializerSettings, ArrayPool<char>.Shared, mvcOptions)
+        public RawOutputFormatter() : base(Consts.SerializerSettings, ArrayPool<char>.Shared)
         {
             SerializerSettings.Converters.Add(new MdConverter(MdConverter.ConvertType.Raw));
             SupportedMediaTypes.Clear();
             SupportedMediaTypes.Add("application/raw+json");
         }
+
+        public override bool CanWriteResult(OutputFormatterCanWriteContext context) => base.CanWriteResult(context);
     }
 }

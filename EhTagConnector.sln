@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EhDbReleaseBuilder", "EhDbReleaseBuilder\EhDbReleaseBuilder.csproj", "{44D148EC-770A-4A99-A882-5464C0C9CE1A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EhDbReleaseBuilder", "EhDbReleaseBuilder\EhDbReleaseBuilder.csproj", "{44D148EC-770A-4A99-A882-5464C0C9CE1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

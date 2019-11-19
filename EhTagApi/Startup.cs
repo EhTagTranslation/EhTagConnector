@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -54,24 +53,18 @@ namespace EhTagApi
                     .Build());
             });
 
-            services.AddControllers(options =>
+            services.AddMvc(options =>
                 {
-                    options.OutputFormatters.Add(new Formatters.FullOutputFormatter(options));
-                    options.OutputFormatters.Add(new Formatters.RawOutputFormatter(options));
-                    options.OutputFormatters.Add(new Formatters.TextOutputFormatter(options));
-                    options.OutputFormatters.Add(new Formatters.HtmlOutputFormatter(options));
-                    options.OutputFormatters.Add(new Formatters.AstOutputFormatter(options));
+                    var defOutput = options.OutputFormatters.OfType<Microsoft.AspNetCore.Mvc.Formatters.JsonOutputFormatter>().First();
+                    defOutput.SupportedMediaTypes.Clear();
+                    defOutput.SupportedMediaTypes.Add("application/json");
+                    defOutput.SupportedMediaTypes.Add("application/problem+json");
+                    options.OutputFormatters.Add(new Formatters.RawOutputFormatter());
+                    options.OutputFormatters.Add(new Formatters.TextOutputFormatter());
+                    options.OutputFormatters.Add(new Formatters.HtmlOutputFormatter());
+                    options.OutputFormatters.Add(new Formatters.AstOutputFormatter());
 
                     options.InputFormatters.Add(new Formatters.TextFormatter());
-                }).AddNewtonsoftJson(options =>
-                {
-                    var serializer = Newtonsoft.Json.JsonSerializer.Create(new Newtonsoft.Json.JsonSerializerSettings
-                    {
-                        TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-                    });
-                    var tw = new StringWriter();
-                    serializer.Serialize(tw, Consts.SerializerSettings);
-                    serializer.Populate(new StringReader(tw.ToString()), options.SerializerSettings);
                 })
                 .AddFormatterMappings(options =>
                 {
@@ -81,11 +74,21 @@ namespace EhTagApi
                     options.SetMediaTypeMappingForFormat("ast.json", "application/ast+json");
                 })
                 .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(options =>
+                {
+                    var serializer = Newtonsoft.Json.JsonSerializer.Create(new Newtonsoft.Json.JsonSerializerSettings
+                    {
+                        TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+                    });
+                    var tw = new StringWriter();
+                    serializer.Serialize(tw, Consts.SerializerSettings);
+                    serializer.Populate(new StringReader(tw.ToString()), options.SerializerSettings);
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -94,14 +97,10 @@ namespace EhTagApi
             else
             {
             }
-            app.UseHttpsRedirection();
+
             app.UseCors();
-            app.UseRouting();
             app.UseResponseCompression();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseMvc();
         }
     }
 }
