@@ -13,12 +13,10 @@ jobs:
       with:
         dotnet-version: 3.0.100
     - name: make
-      run: dotnet publish .\EhDbReleaseBuilder\ --configuration Release -o ./publish
-    - name: Zip Release
-      uses: TheDoctor0/zip-release@v0.2.0
-      with:
-        filename: release.zip
-        path: ./publish
+      shell: powershell
+      run: |
+        dotnet publish .\EhDbReleaseBuilder\ --configuration Release -o ./publish
+        Compress-Archive .\publish\* release.zip -Force
     - uses: ncipollo/release-action@v1
       with:
         artifacts: release.zip
