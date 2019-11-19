@@ -13,12 +13,9 @@ jobs:
       with:
         dotnet-version: 2.2.402
     - name: make
-      run: dotnet publish ./EhDbReleaseBuilder --configuration Release -o ./publish
+      run: dotnet publish ./EhDbReleaseBuilder --configuration Release -o $GITHUB_WORKSPACE/publish
     - name: archive Release
-      uses: TheDoctor0/zip-release@v0.2.0
-      with:
-        filename: release.zip
-        path: ./publish
+      run: 7za a ./release.zip './publish/*'
     - uses: ncipollo/release-action@v1
       with:
         artifacts: release.zip
