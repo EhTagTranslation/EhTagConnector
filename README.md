@@ -1,7 +1,8 @@
-﻿EhTagConnector <!-- omit in toc -->
+EhTagConnector <!-- omit in toc -->
 ====
-Tool: [![Tool Build status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector-Tool-CI)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=5)  
-Website: [![Website Build Status](https://dev.azure.com/opportunityliu/EhTagConnector/_apis/build/status/EhTagConnector%20-%201%20-%20CI?branchName=master)](https://dev.azure.com/opportunityliu/EhTagConnector/_build/latest?definitionId=4&branchName=master)
+
+[![Tool Build status](https://github.com/EhTagTranslation/EhTagConnector/workflows/build%20tool/badge.svg)](https://github.com/EhTagTranslation/EhTagConnector/actions?query=workflow%3A%22build+tool%22)
+[![Website Build status](https://github.com/EhTagTranslation/EhTagConnector/workflows/build%20website/badge.svg)](https://github.com/EhTagTranslation/EhTagConnector/actions?query=workflow%3A%22build+website%22)
 [![Website Status](https://img.shields.io/website/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](https://ehtagconnector.azurewebsites.net/api/database)
 
 连接到 [EhTagTranslation 数据库](https://github.com/EhTagTranslation/Database)的 RESTful API。
