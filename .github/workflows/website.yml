@@ -11,11 +11,11 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.0.100
+        dotnet-version: 2.2.x
     - name: make
       shell: powershell
       run: |
-        dotnet publish .\EhTagApi\ --self-contained -r win-x86 --configuration Release -o ./publish
+        dotnet publish .\EhTagApi\ --configuration Release -o ./publish
         Compress-Archive .\publish\* release.zip -Force
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
