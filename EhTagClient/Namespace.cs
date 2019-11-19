@@ -22,7 +22,7 @@ namespace EhTagClient
         Misc = 256
     }
 
-    public class SingleNamespaceAttribute : ValidationAttribute
+    public sealed class SingleNamespaceAttribute : ValidationAttribute
     {
         public override bool RequiresValidationContext => true;
 

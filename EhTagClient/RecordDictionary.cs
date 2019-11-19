@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using KVP = System.Collections.Generic.KeyValuePair<string, EhTagClient.Record>;
 
@@ -21,6 +22,8 @@ namespace EhTagClient
 
         public Namespace Namespace { get; }
 
+        public IDictionary<string, object> FrontMatters { get; set; }
+
         [JsonIgnore]
         public string Prefix { get; set; }
 
@@ -35,7 +38,7 @@ namespace EhTagClient
 
             internal DataDic(RecordDictionary parent) => _Parent = parent;
 
-            public Record this[string key] =>_Parent.Find(key);
+            public Record this[string key] => _Parent.Find(key);
 
             public IEnumerable<string> Keys
             {
@@ -90,8 +93,10 @@ namespace EhTagClient
             RawData.Clear();
 
             var state = 0;
+            var sep = default(string);
             var prefix = new StringBuilder();
             var suffix = new StringBuilder();
+            var frontMatters = new StringBuilder();
 
             using (var sr = new StreamReader(FilePath))
             {
@@ -104,30 +109,57 @@ namespace EhTagClient
                     {
                     case 0:
                         prefix.AppendLine(line);
-                        if (record.Key is null)
-                            continue;
-                        else
+                        if (record.Key != null)
                         {
                             state = 1;
                             continue;
                         }
-                    case 1:
-                        prefix.AppendLine(line);
-                        if (record.Key is null)
+                        else if (line.All(c => c == '-'))
                         {
-                            state = 0;
+                            state = 1;
+                            sep = line;
                             continue;
                         }
                         else
+                            continue;
+                    case 1:
+                        prefix.AppendLine(line);
+                        if (line == sep)
                         {
                             state = 2;
                             continue;
                         }
+                        else
+                        {
+                            frontMatters.AppendLine(line);
+                            continue;
+                        }
                     case 2:
+                        prefix.AppendLine(line);
+                        if (record.Key != null)
+                        {
+                            state = 3;
+                            continue;
+                        }
+                        else
+                            continue;
+                    case 3:
+                        prefix.AppendLine(line);
+                        if (record.Key is null)
+                        {
+                            state = 2;
+                            continue;
+                        }
+                        else
+                        {
+                            state = 4;
+                            continue;
+                        }
+                    case 4:
                         if (record.Key is null)
                         {
                             suffix.AppendLine(line);
-                            state = 3;
+                            state = 5;
                             continue;
                         }
                         else

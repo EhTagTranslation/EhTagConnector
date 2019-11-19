@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace EhTagClient
 {
-    public class AcceptableTranslationAttribute : ValidationAttribute
+    public sealed class AcceptableTranslationAttribute : ValidationAttribute
     {
         public override bool RequiresValidationContext => true;
 
@@ -26,7 +26,7 @@ namespace EhTagClient
             return ValidationResult.Success;
         }
     }
-    public class AcceptableRawAttribute : ValidationAttribute
+    public sealed class AcceptableRawAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
