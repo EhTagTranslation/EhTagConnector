@@ -1,0 +1,20 @@
+name: build website
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.100
+    - name: make
+      shell: powershell
+      run: |
+        dotnet publish .\EhTagApi\ --self-contained -r win-x86 --configuration Release -o ./publish
+        Compress-Archive .\publish\* release.zip -Force
+
