@@ -1,0 +1,28 @@
+name: build tool
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.*
+    - name: make
+      run: dotnet publish .\EhDbReleaseBuilder\ --configuration Release -o ./publish
+    - name: Zip Release
+      uses: TheDoctor0/zip-release@v0.2.0
+      with:
+        filename: release.zip
+        path: ./publish
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: release.zip
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit: ${{ github.sha }}
+        tag: ${{ format('v-{0}', github.sha) }}
+        name: ${{ github.event.head_commit.message }}
