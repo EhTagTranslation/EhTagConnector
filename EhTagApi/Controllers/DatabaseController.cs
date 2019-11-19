@@ -90,7 +90,7 @@ Curr value: {n?.ToString(k) ?? "(deleted)"}";
                     head.Message,
                 },
                 Version = _Database.GetVersion(),
-                Data = _Database.Values.Select(v => new { v.Namespace, v.Count }),
+                Data = _Database.Values.Select(v => new { v.Namespace, v.Count, v.FrontMatters }),
             };
         }
 
@@ -123,7 +123,7 @@ Curr value: {n?.ToString(k) ?? "(deleted)"}";
         public object Get([SingleNamespace] Namespace @namespace)
         {
             var dic = _Database[@namespace];
-            return new { dic.Namespace, dic.Count };
+            return new { dic.Namespace, dic.Count, dic.FrontMatters };
         }
 
         [HttpHead("{namespace}/{raw}")]

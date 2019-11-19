@@ -22,7 +22,7 @@ namespace EhTagClient
 
         public Namespace Namespace { get; }
 
-        public IDictionary<string, object> FrontMatters { get; set; }
+        public FrontMatters FrontMatters { get; set; }
 
         [JsonIgnore]
         public string Prefix { get; set; }
@@ -176,6 +176,7 @@ namespace EhTagClient
 
             Prefix = prefix.ToString();
             Suffix = suffix.ToString();
+            FrontMatters = FrontMatters.Parse(frontMatters.ToString());
 
             MapData.Clear();
 
@@ -190,17 +191,15 @@ namespace EhTagClient
 
         public void Save()
         {
-            using (var sw = new StreamWriter(FilePath))
+            using var sw = new StreamWriter(FilePath);
+            sw.Write(Prefix);
+            foreach (var item in RawData)
             {
-                sw.Write(Prefix);
-                foreach (var item in RawData)
-                {
-                    if (item.Key is null)
-                        continue;
-                    sw.WriteLine(item.Value.ToString(item.Key));
-                }
-                sw.Write(Suffix);
+                if (item.Key is null)
+                    continue;
+                sw.WriteLine(item.Value.ToString(item.Key));
             }
+            sw.Write(Suffix);
         }
 
         public Record Find(string key)
