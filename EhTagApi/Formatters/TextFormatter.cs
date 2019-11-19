@@ -22,9 +22,11 @@ namespace EhTagApi.Formatters
         {
             var request = context.HttpContext.Request;
             Microsoft.Net.Http.Headers.MediaTypeHeaderValue.TryParse(request.ContentType, out var content);
-            using var reader = new StreamReader(request.Body, content?.Encoding ?? Encoding.UTF8);
-            var data = await reader.ReadToEndAsync();
-            return await InputFormatterResult.SuccessAsync(data);
+            using (var reader = new StreamReader(request.Body, content?.Encoding ?? Encoding.UTF8))
+            {
+                var data = await reader.ReadToEndAsync();
+                return await InputFormatterResult.SuccessAsync(data);
+            }
         }
     }
 }

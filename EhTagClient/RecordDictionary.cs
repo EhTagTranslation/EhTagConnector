@@ -191,15 +191,17 @@ namespace EhTagClient
 
         public void Save()
         {
-            using var sw = new StreamWriter(FilePath);
-            sw.Write(Prefix);
-            foreach (var item in RawData)
+            using (var sw = new StreamWriter(FilePath))
             {
-                if (item.Key is null)
-                    continue;
-                sw.WriteLine(item.Value.ToString(item.Key));
+                sw.Write(Prefix);
+                foreach (var item in RawData)
+                {
+                    if (item.Key is null)
+                        continue;
+                    sw.WriteLine(item.Value.ToString(item.Key));
+                }
+                sw.Write(Suffix);
             }
-            sw.Write(Suffix);
         }
 
         public Record Find(string key)

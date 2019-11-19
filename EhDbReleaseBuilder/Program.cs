@@ -150,54 +150,54 @@ namespace EhDbReleaseBuilder
             switch (suf)
             {
             case "json":
-            {
-                using var json = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.json"));
-                json.Write(jsonData);
-                json.Flush();
-                Console.WriteLine($"Created: {pre}.{mid}.json ({json.Position} bytes)");
-                return;
-            }
+                using (var json = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.json")))
+                {
+                    json.Write(jsonData);
+                    json.Flush();
+                    Console.WriteLine($"Created: {pre}.{mid}.json ({json.Position} bytes)");
+                    return;
+                }
             case "json.gz":
-            {
-                using var gziped = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.json.gz"));
-                using var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true);
-                gzip.Write(jsonData);
-                gzip.Flush();
-                gziped.Flush();
-                Console.WriteLine($"Created: {pre}.{mid}.json.gz ({gziped.Position} bytes)");
-                return;
-            }
+                using (var gziped = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.json.gz")))
+                using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
+                {
+                    gzip.Write(jsonData);
+                    gzip.Flush();
+                    gziped.Flush();
+                    Console.WriteLine($"Created: {pre}.{mid}.json.gz ({gziped.Position} bytes)");
+                    return;
+                }
             case "js":
-            {
-                using var jsonp = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.js"));
-                if (pre == "diff")
+                using (var jsonp = File.OpenWrite(Path.Combine(_Target, $"{pre}.{mid}.js")))
                 {
-                    jsonp.Write(_Encoding.GetBytes($"load_ehtagtranslation_{pre}_{mid}("));
-                    jsonp.Write(jsonData);
-                    jsonp.Write(_Encoding.GetBytes(");"));
-                }
-                else
-                {
-                    jsonp.Write(_Encoding.GetBytes($"(function(){{var d={{c:'load_ehtagtranslation_{pre}_{mid}',d:'"));
-                    using (var gziped = new MemoryStream())
-                    using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
+                    if (pre == "diff")
                     {
-                        gzip.Write(jsonData);
-                        gzip.Flush();
-                        gziped.Flush();
-                        jsonp.Write(_Encoding.GetBytes(Convert.ToBase64String(gziped.GetBuffer(), 0, (int)gziped.Length, Base64FormattingOptions.None)));
+                        jsonp.Write(_Encoding.GetBytes($"load_ehtagtranslation_{pre}_{mid}("));
+                        jsonp.Write(jsonData);
+                        jsonp.Write(_Encoding.GetBytes(");"));
                     }
-                    jsonp.Write(_Encoding.GetBytes($"'}};"));
-                    using (var pako = Assembly.GetExecutingAssembly().GetManifestResourceStream("EhDbReleaseBuilder.pako.min.js"))
+                    else
                     {
-                        pako.CopyTo(jsonp);
+                        jsonp.Write(_Encoding.GetBytes($"(function(){{var d={{c:'load_ehtagtranslation_{pre}_{mid}',d:'"));
+                        using (var gziped = new MemoryStream())
+                        using (var gzip = new GZipStream(gziped, CompressionLevel.Optimal, true))
+                        {
+                            gzip.Write(jsonData);
+                            gzip.Flush();
+                            gziped.Flush();
+                            jsonp.Write(_Encoding.GetBytes(Convert.ToBase64String(gziped.GetBuffer(), 0, (int)gziped.Length, Base64FormattingOptions.None)));
+                        }
+                        jsonp.Write(_Encoding.GetBytes($"'}};"));
+                        using (var pako = Assembly.GetExecutingAssembly().GetManifestResourceStream("EhDbReleaseBuilder.pako.min.js"))
+                        {
+                            pako.CopyTo(jsonp);
+                        }
+                        jsonp.Write(_Encoding.GetBytes("})();"));
                     }
-                    jsonp.Write(_Encoding.GetBytes("})();"));
+                    jsonp.Flush();
+                    Console.WriteLine($"Created: {pre}.{mid}.js ({jsonp.Position} bytes)");
+                    return;
                 }
-                jsonp.Flush();
-                Console.WriteLine($"Created: {pre}.{mid}.js ({jsonp.Position} bytes)");
-                return;
-            }
             default:
                 throw new ArgumentException("Unsupported suffix.");
             }

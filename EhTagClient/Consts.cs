@@ -7,7 +7,7 @@ namespace EhTagClient
 {
     public static class Consts
     {
-        internal const string REPO_PATH = "./Db";
+        internal const string REPO_PATH = "../EHTT-DB";
         internal const string OWNER = "EhTagTranslation";
         internal const string REPO = "Database";
 
