@@ -25,6 +25,6 @@ jobs:
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v1
       with: 
-        app-name: mydotnetcoreapp # Replace with your app name
+        app-name: EhTagConnector # Replace with your app name
         publish-profile: ${{ secrets.AzureWebAppPublishProfile }} # Define secret variable in repository settings as per action documentation
         package: './publish' 
