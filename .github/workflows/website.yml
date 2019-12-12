@@ -21,6 +21,7 @@ jobs:
         path: ./publish    
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v1
+      if: github.ref == 'master'
       with: 
         app-name: EhTagConnector
         publish-profile: ${{ secrets.AzureWebAppPublishProfile }}
