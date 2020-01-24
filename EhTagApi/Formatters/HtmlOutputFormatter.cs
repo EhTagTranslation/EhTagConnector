@@ -4,9 +4,9 @@ using System.Buffers;
 
 namespace EhTagApi.Formatters
 {
-    public class HtmlOutputFormatter : JsonOutputFormatter
+    public class HtmlOutputFormatter : NewtonsoftJsonOutputFormatter
     {
-        public HtmlOutputFormatter() : base(Consts.SerializerSettings, ArrayPool<char>.Shared)
+        public HtmlOutputFormatter(Microsoft.AspNetCore.Mvc.MvcOptions options) : base(Consts.SerializerSettings, ArrayPool<char>.Shared, options)
         {
             SerializerSettings.Converters.Add(new MdConverter(MdConverter.ConvertType.Html));
             SupportedMediaTypes.Clear();
