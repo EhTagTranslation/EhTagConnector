@@ -16,9 +16,9 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.100
+        dotnet-version: 3.1.101
     - name: make
-      run: dotnet publish ./EhTagApi --configuration Release -o $GITHUB_WORKSPACE/publish
+      run: dotnet publish ./EhTagApi --configuration Release -o $GITHUB_WORKSPACE/publish -r win10-x86 --self-contained
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
