@@ -14,6 +14,8 @@ jobs:
         dotnet-version: 3.1.101
     - name: make
       run: dotnet publish ./EhTagApi --configuration Release -o $GITHUB_WORKSPACE/publish
+    - name: debug
+      run: echo ${{toJSON(github)}}
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
