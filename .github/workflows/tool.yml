@@ -17,7 +17,7 @@ jobs:
     - name: archive Release
       run: 7za a ./release.zip './publish/*'
     - uses: ncipollo/release-action@v1
-      if: github.ref == 'master'
+      if: github.ref == 'refs/heads/master'
       with:
         artifacts: release.zip
         token: ${{ secrets.GITHUB_TOKEN }}

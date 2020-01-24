@@ -8,14 +8,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: debug
+      run: |
+        echo <<< GITHUB_JSONDATA
+        ${{toJSON(github)}}'
+        GITHUB_JSONDATA
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
     - name: make
       run: dotnet publish ./EhTagApi --configuration Release -o $GITHUB_WORKSPACE/publish
-    - name: debug
-      run: echo ${{toJSON(github)}}
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
@@ -23,7 +26,7 @@ jobs:
         path: ./publish    
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v1
-      if: github.ref == 'master'
+      if: github.ref == 'refs/heads/master'
       with: 
         app-name: EhTagConnector
         publish-profile: ${{ secrets.AzureWebAppPublishProfile }}
