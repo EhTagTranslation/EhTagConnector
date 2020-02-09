@@ -71,16 +71,14 @@ namespace EhTagClient
 
         public void Pull()
         {
-            Commands.Pull(Repo, new Signature(CommandIdentity, DateTimeOffset.Now), new PullOptions
+            var remote = Repo.Network.Remotes["origin"];
+            var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+            Commands.Fetch(Repo, remote.Name, refSpecs, new FetchOptions
             {
-                FetchOptions = new FetchOptions
-                {
-                    CredentialsProvider = CredentialsProvider
-                },
-                MergeOptions = new MergeOptions
-                {
-                }
-            });
+                CredentialsProvider = CredentialsProvider
+            }, ""); 
+            var originMaster = Repo.Branches["origin/master"];
+            Repo.Reset(ResetMode.Hard, originMaster.Tip);
         }
 
         public void Commit(string message, Identity author)
