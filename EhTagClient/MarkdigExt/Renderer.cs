@@ -37,6 +37,7 @@ namespace EhTagClient.MarkdigExt
             var builder = new MarkdownPipelineBuilder();
             builder.DisableHtml();
             builder.BlockParsers.RemoveAll(bp => !(bp is Markdig.Parsers.ParagraphBlockParser));
+            builder.UseAutoLinks();
             _Pipeline = builder.Build();
         }
 

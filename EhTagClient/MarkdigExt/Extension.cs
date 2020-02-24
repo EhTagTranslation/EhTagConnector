@@ -4,6 +4,7 @@ using System.IO;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace EhTagClient.MarkdigExt
 {
@@ -87,26 +88,70 @@ namespace EhTagClient.MarkdigExt
         {
             foreach (var link in doc.Descendants().OfType<LinkInline>())
             {
-                var url = link.GetDynamicUrl?.Invoke() ?? link.Url;
-                var title = link.Title;
-                var (furl, nsfw) = _FormatUrl(url);
-                if (link.IsImage && nsfw)
-                {
-                    link.Title = furl;
-                    link.Url = "#";
-                }
-                else if (link.IsImage && url == "#" && !string.IsNullOrEmpty(title))
-                {
-                    (link.Title, _) = _FormatUrl(title);
-                    link.Url = "#";
-                }
-                else
-                {
-                    link.Url = furl;
-                }
+                _NormalizeLink(link);
             }
 
             return doc;
+        }
+
+        private static readonly Dictionary<string, string> _KnownHosts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["moegirl.org"] = "萌娘百科",
+            ["wikipedia.org"] = "维基百科",
+            ["pixiv.net"] = "pixiv",
+            ["instagram.com"] = "Instagram",
+            ["facebook.com"] = "脸书",
+            ["twitter.com"] = "Twitter",
+            ["weibo.com"] = "微博",
+        };
+
+        private static void _NormalizeLink(LinkInline link)
+        {
+            var url = link.GetDynamicUrl?.Invoke() ?? link.Url;
+            var title = link.Title;
+            var nsfwmark = default(string);
+
+            if (url != null && url.StartsWith("#") && !string.IsNullOrWhiteSpace(title))
+            {
+                // nsfw link
+                nsfwmark = url;
+                url = title;
+            }
+
+            var (furl, nsfw) = _FormatUrl(url);
+            if (nsfw && nsfwmark == null)
+            {
+                nsfwmark = "#";
+            }
+
+            if (link.IsImage)
+            {
+                if (nsfwmark == null)
+                {
+                    link.Url = furl;
+                }
+                else
+                {
+                    link.Title = furl;
+                    link.Url = nsfwmark;
+                }
+            }
+            else
+            {
+                if (link.IsAutoLink
+                    && link.FirstChild == link.LastChild && link.FirstChild is LiteralInline content
+                    && Uri.TryCreate(url, UriKind.Absolute, out var purl))
+                {
+                    foreach (var item in _KnownHosts)
+                    {
+                        if (purl.Host.EndsWith(item.Key))
+                        {
+                            content.Content = new Markdig.Helpers.StringSlice(item.Value);
+                        }
+                    }
+                }
+                link.Url = furl;
+            }
         }
 
         private static readonly Regex _ThumbUriRegex = new Regex(@"^(http|https)://(ehgt\.org(/t|)|exhentai\.org/t|ul\.ehgt\.org(/t|))/(.+)$", RegexOptions.Compiled | RegexOptions.Singleline);
