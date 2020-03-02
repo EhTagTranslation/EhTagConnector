@@ -52,7 +52,7 @@ namespace EhTagApi.Controllers
             else if (n is null)
                 verb = "删除";
 
-            var message = $@"{verb} {@namespace.ToString().ToLower()}: '{k}' - '{o.Name.Raw}'.
+            var message = $@"{verb} {@namespace.ToString().ToLower()}: '{k}' - '{(n ?? o).Name.Raw}'.
 
 |     | 原始标签 | 名称 | 描述 | 外部链接 |
 | --- | -------- | ---- | ---- | -------- |
