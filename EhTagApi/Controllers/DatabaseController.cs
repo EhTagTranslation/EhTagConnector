@@ -46,16 +46,18 @@ namespace EhTagApi.Controllers
 
         private void _Commit(Namespace @namespace, string k, Record o, Record n, User user)
         {
-            var verb = "Modified";
+            var verb = "修改";
             if (o is null)
-                verb = "Added";
+                verb = "添加";
             else if (n is null)
-                verb = "Deleted";
+                verb = "删除";
 
             var message = $@"In {@namespace.ToString().ToLower()}: {verb} '{k}'.
 
-Prev value: {o?.ToString(k) ?? "(nonexistence)"}
-Curr value: {n?.ToString(k) ?? "(deleted)"}";
+|     | 原始标签 | 名称 | 描述 | 外部链接 |
+| --- | -------- | ---- | ---- | -------- |
+| 修改前 {o?.ToString(k) ?? "| | | | |"}
+| 修改后 {n?.ToString(k) ?? "| | | | |"}";
 
 #if !DEBUG
             _RepoClient.Commit(message, user.ToGitIdentity());
