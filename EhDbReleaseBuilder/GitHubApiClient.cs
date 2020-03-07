@@ -48,6 +48,8 @@ namespace EhDbReleaseBuilder
             public JRaw Data { get; set; }
         }
 
+        public Task CheckAsync(Namespace checkTags) => TagChecker.CheckAsync(_Database, checkTags);
+
         private class FullUploadData : UploadData
         {
             public HeadData Head { get; set; }
@@ -57,78 +59,6 @@ namespace EhDbReleaseBuilder
         public void Normalize()
         {
             _Database.Save();
-        }
-
-        private void _LogFailed(RecordDictionary db, string key, Record value, Namespace newNs, string newKey)
-        {
-            db.AddOrReplace(key, new Record(value.Name.Raw, value.Intro.Raw, value.Links.Raw 
-                + $"\nNow should be {newNs}:{newKey}"));
-            Console.WriteLine(" -> Failed");
-        }
-
-        public async Task CheckAsync(Namespace checkTags)
-        {
-            try
-            {
-                // skip rows & reclass
-                foreach (var db in _Database.Values.Where(v => v.Namespace > Namespace.Reclass && checkTags.HasFlag(v.Namespace)))
-                {
-                    var ns = db.Namespace;
-                    Console.WriteLine($"Checking namespace {ns} with {db.RawData.Count} items");
-                    for (var i = 0; i < db.RawData.Count; i++)
-                    {
-                        var data = db.RawData[i];
-                        Console.Write($"[{i,6}/{db.RawData.Count}] {data.Key}");
-                        if (string.IsNullOrWhiteSpace(data.Key))
-                        {
-                            Console.WriteLine(" -> Skipped empty tag");
-                            continue;
-                        }
-                        var (newNs, newKey) = await TagChecker.CheckAsync(ns, data.Key);
-                        if (newKey is null)
-                        {
-                            db.Remove(data.Key, false);
-                            Console.WriteLine(" -> Delete");
-                        }
-                        else if (newNs != ns)
-                        {
-                            Console.Write($" -> Move to {newNs}:{newKey}");
-                            try
-                            {
-                                _Database[newNs].Add(newKey, data.Value);
-                                db.Remove(data.Key, true);
-                                Console.WriteLine(" -> Succeed");
-                            }
-                            catch
-                            {
-                                _LogFailed(db, data.Key, data.Value, newNs, newKey);
-                            }
-                        }
-                        else if (newKey != data.Key)
-                        {
-                            Console.Write($" -> Rename to {newKey}");
-                            try
-                            {
-                                db.Rename(data.Key, newKey);
-                                Console.WriteLine(" -> Succeed");
-                            }
-                            catch
-                            {
-                                _LogFailed(db, data.Key, data.Value, newNs, newKey);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine(" -> Valid");
-                        }
-                    }
-                    _Database.Save();
-                }
-            }
-            finally
-            {
-                _Database.Save();
-            }
         }
 
         public void Publish()

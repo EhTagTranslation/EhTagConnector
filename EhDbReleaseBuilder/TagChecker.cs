@@ -51,7 +51,35 @@ namespace EhDbReleaseBuilder
             return tag;
         }
 
-        public static async Task<(Namespace, string)> CheckAsync(Namespace ns, string raw)
+        private static async Task<TagSuggest> _PostApiAsync(Namespace? ns, string raw)
+        {
+            var text = raw.Length > 50 ? raw.Substring(0, 50) : raw;
+            if (ns != null)
+                text = ns + ":" + raw;
+            var response = await _HttpClient.PostAsync("https://api.e-hentai.org/api.php", new StringContent(JsonConvert.SerializeObject(new
+            {
+                method = "tagsuggest",
+                text,
+            })));
+            var resultStr = await response.Content.ReadAsStringAsync();
+            if (resultStr.Contains("{\"tags\":[]}"))
+            {
+                if (raw.Contains('.'))
+                {
+                    return await _PostApiAsync(ns, raw.Substring(0, raw.IndexOf('.') - 1));
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            var result = JsonConvert.DeserializeObject<TagSuggest>(resultStr);
+            _FillCache(result);
+            return result;
+        }
+
+        public static async Task<(Namespace, string)> _CheckTagAsync(Namespace ns, string raw)
         {
             if (raw.Length <= 2)
                 return (ns, raw);
@@ -60,22 +88,26 @@ namespace EhDbReleaseBuilder
 
             if (match is null)
             {
-                var response = await _HttpClient.PostAsync("https://api.e-hentai.org/api.php", new StringContent(JsonConvert.SerializeObject(new
+                var result = await _PostApiAsync(null, raw);
+                if (result != null)
                 {
-                    method = "tagsuggest",
-                    text = $"{(raw.Length > 50 ? raw.Substring(0, 50) : raw)}",
-                })));
-                var resultStr = await response.Content.ReadAsStringAsync();
-                if (!resultStr.Contains("{\"tags\":[]}"))
-                {
-                    var result = JsonConvert.DeserializeObject<TagSuggest>(resultStr);
-                    _FillCache(result);
                     // check exact match first
                     match = result.tags.Values.FirstOrDefault(tag => tag.ns == ns && tag.tn == raw)
                         // find from misc ns and master in this ns
                         ?? result.tags.Values.FirstOrDefault(tag => tag.ns == Namespace.Misc && tag.tn == raw && tag.mns == ns);
                 }
+            }
 
+            if (match is null)
+            {
+                var result = await _PostApiAsync(ns, raw);
+                if (result != null)
+                {
+                    // check exact match first
+                    match = result.tags.Values.FirstOrDefault(tag => tag.ns == ns && tag.tn == raw)
+                        // find from misc ns and master in this ns
+                        ?? result.tags.Values.FirstOrDefault(tag => tag.ns == Namespace.Misc && tag.tn == raw && tag.mns == ns);
+                }
             }
 
             if (match is null)
@@ -83,6 +115,82 @@ namespace EhDbReleaseBuilder
             if (match.mid is null)
                 return (ns, raw);
             return (match.mns ?? Namespace.Misc, match.mtn);
+        }
+
+        private static void _LogFailed(RecordDictionary db, string key, Record value, Namespace newNs, string newKey)
+        {
+            db.AddOrReplace(key, new Record(value.Name.Raw, value.Intro.Raw, value.Links.Raw
+                + $"\nNow should be {newNs}:{newKey}"));
+            Console.WriteLine(" -> Failed");
+        }
+        private static async Task _CheckNsAsync(Database database, Namespace ns)
+        {
+            var db = database[ns];
+            Console.WriteLine($"Checking namespace {ns} with {db.RawData.Count} lines");
+            for (var i = 0; i < db.RawData.Count; i++)
+            {
+                var data = db.RawData[i];
+                Console.Write($"  [{i,4}/{db.RawData.Count}] {data.Key}");
+                if (string.IsNullOrWhiteSpace(data.Key))
+                {
+                    Console.WriteLine(" -> Skipped empty tag");
+                    continue;
+                }
+                var (newNs, newKey) = await _CheckTagAsync(ns, data.Key);
+                if (newKey is null)
+                {
+                    db.Remove(data.Key, false);
+                    Console.WriteLine(" -> Delete");
+                }
+                else if (newNs != ns)
+                {
+                    Console.Write($" -> Move to {newNs}:{newKey}");
+                    try
+                    {
+                        database[newNs].Add(newKey, data.Value);
+                        db.Remove(data.Key, true);
+                        Console.WriteLine(" -> Succeed");
+                    }
+                    catch
+                    {
+                        _LogFailed(db, data.Key, data.Value, newNs, newKey);
+                    }
+                }
+                else if (newKey != data.Key)
+                {
+                    Console.Write($" -> Rename to {newKey}");
+                    try
+                    {
+                        db.Rename(data.Key, newKey);
+                        Console.WriteLine(" -> Succeed");
+                    }
+                    catch
+                    {
+                        _LogFailed(db, data.Key, data.Value, newNs, newKey);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(" -> Valid");
+                }
+            }
+        }
+
+        public static async Task CheckAsync(Database database, Namespace checkTags)
+        {
+            try
+            {
+                // skip rows & reclass
+                foreach (var ns in database.Keys.Where(v => v > Namespace.Reclass && checkTags.HasFlag(v)))
+                {
+                    await _CheckNsAsync(database, ns);
+                    database.Save();
+                }
+            }
+            finally
+            {
+                database.Save();
+            }
         }
     }
 }

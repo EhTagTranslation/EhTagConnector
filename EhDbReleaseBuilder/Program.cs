@@ -21,7 +21,7 @@ namespace EhDbReleaseBuilder
             Console.WriteLine($@"EhDbReleaseBuilder started.
   Source: {source}
   Target: {target}
-  Check tags: {checkTags}
+  Check tags: {(checkTags > Namespace.Reclass ? checkTags.ToString() : "<Disabled>")}
 ");
             var client = new GitHubApiClient(source, target);
             if (checkTags > Namespace.Reclass)
