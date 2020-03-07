@@ -107,69 +107,69 @@ namespace EhTagClient
 
                     switch (state)
                     {
-                    case 0:
-                        prefix.AppendLine(line);
-                        if (record.Key != null)
-                        {
-                            state = 1;
-                            continue;
-                        }
-                        else if (line.All(c => c == '-'))
-                        {
-                            state = 1;
-                            sep = line;
-                            continue;
-                        }
-                        else
-                            continue;
-                    case 1:
-                        prefix.AppendLine(line);
-                        if (line == sep)
-                        {
-                            state = 2;
-                            continue;
-                        }
-                        else
-                        {
-                            frontMatters.AppendLine(line);
-                            continue;
-                        }
-                    case 2:
-                        prefix.AppendLine(line);
-                        if (record.Key != null)
-                        {
-                            state = 3;
-                            continue;
-                        }
-                        else
-                            continue;
-                    case 3:
-                        prefix.AppendLine(line);
-                        if (record.Key is null)
-                        {
-                            state = 2;
-                            continue;
-                        }
-                        else
-                        {
-                            state = 4;
-                            continue;
-                        }
-                    case 4:
-                        if (record.Key is null)
-                        {
+                        case 0:
+                            prefix.AppendLine(line);
+                            if (record.Key != null)
+                            {
+                                state = 1;
+                                continue;
+                            }
+                            else if (line.All(c => c == '-'))
+                            {
+                                state = 1;
+                                sep = line;
+                                continue;
+                            }
+                            else
+                                continue;
+                        case 1:
+                            prefix.AppendLine(line);
+                            if (line == sep)
+                            {
+                                state = 2;
+                                continue;
+                            }
+                            else
+                            {
+                                frontMatters.AppendLine(line);
+                                continue;
+                            }
+                        case 2:
+                            prefix.AppendLine(line);
+                            if (record.Key != null)
+                            {
+                                state = 3;
+                                continue;
+                            }
+                            else
+                                continue;
+                        case 3:
+                            prefix.AppendLine(line);
+                            if (record.Key is null)
+                            {
+                                state = 2;
+                                continue;
+                            }
+                            else
+                            {
+                                state = 4;
+                                continue;
+                            }
+                        case 4:
+                            if (record.Key is null)
+                            {
+                                suffix.AppendLine(line);
+                                state = 5;
+                                continue;
+                            }
+                            else
+                            {
+                                RawData.Add(record);
+                                continue;
+                            }
+                        default:
                             suffix.AppendLine(line);
-                            state = 5;
                             continue;
-                        }
-                        else
-                        {
-                            RawData.Add(record);
-                            continue;
-                        }
-                    default:
-                        suffix.AppendLine(line);
-                        continue;
                     }
                 }
             }
@@ -211,9 +211,23 @@ namespace EhTagClient
             return RawData[index].Value;
         }
 
+        public void Add(string key, Record record)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key));
+            if (record is null)
+                throw new ArgumentNullException(nameof(record));
+            _Add(key, record);
+        }
+
+        private void _Add(string key, Record record)
+        {
+            MapData.Add(key, RawData.Count);
+            RawData.Add(KeyValuePair.Create(key, record));
+        }
+
         public Record AddOrReplace(string key, Record record)
         {
-            key = key?.Trim();
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
             if (record is null)
@@ -227,18 +241,28 @@ namespace EhTagClient
             }
             else
             {
-                MapData.Add(key, RawData.Count);
-                RawData.Add(KeyValuePair.Create(key, record));
+                _Add(key, record);
                 return null;
             }
         }
 
-        public bool Remove(string key)
+        public void Rename(string oldKey, string newKey)
+        {
+            if (string.IsNullOrEmpty(oldKey))
+                throw new ArgumentNullException(nameof(oldKey));
+            if (string.IsNullOrEmpty(newKey))
+                throw new ArgumentNullException(nameof(newKey));
+            var index = MapData[oldKey];
+            MapData.Add(newKey, index);
+            MapData.Remove(oldKey);
+        }
+
+        public bool Remove(string key, bool deleteTransation)
         {
             if (!MapData.TryGetValue(key, out var index))
                 return false;
             MapData.Remove(key);
-            RawData[index] = default;
+            RawData[index] = deleteTransation ? default : KeyValuePair.Create("", RawData[index].Value);
 
             return true;
         }

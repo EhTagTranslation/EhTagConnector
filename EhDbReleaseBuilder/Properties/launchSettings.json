@@ -2,7 +2,7 @@
   "profiles": {
     "EhDbReleaseBuilder": {
       "commandName": "Project",
-      "commandLineArgs": "C:/Users/lzy/Documents/Source/EhTagTranslation/EhTagConnector/EHTT-DB/ C:/Users/lzy/Documents/Source/EhTagTranslation/EhTagConnector/EHTT-DB/publish"
+      "commandLineArgs": "--source C:/Users/lzy/Documents/Source/EhTagTranslation/EhTagConnector/EHTT-DB/ --target C:/Users/lzy/Documents/Source/EhTagTranslation/EhTagConnector/EHTT-DB/publish --check-tags Misc,Male,Female,Parody,Character,Group,Artist"
     }
   }
 }

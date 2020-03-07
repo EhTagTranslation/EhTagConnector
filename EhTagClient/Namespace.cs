@@ -51,7 +51,7 @@ namespace EhTagClient
 
     public static class NamespaceExtention
     {
-        private static readonly Dictionary<string, Namespace> parsingDic
+        private static readonly Dictionary<string, Namespace> _ParsingDic
             = new Dictionary<string, Namespace>(StringComparer.OrdinalIgnoreCase)
             {
                 ["R"] = Namespace.Reclass,
@@ -73,11 +73,12 @@ namespace EhTagClient
                 ["Artist"] = Namespace.Artist,
                 ["M"] = Namespace.Male,
                 ["Male"] = Namespace.Male,
+                ["Misc"] = Namespace.Misc,
                 ["F"] = Namespace.Female,
                 ["Female"] = Namespace.Female
             };
 
-        private static readonly Dictionary<Namespace, string> searchDic
+        private static readonly Dictionary<Namespace, string> _SearchDic
             = new Dictionary<Namespace, string>()
             {
                 [Namespace.Reclass] = "reclass",
@@ -92,14 +93,14 @@ namespace EhTagClient
 
         public static string ToSearchString(this Namespace that)
         {
-            if (searchDic.TryGetValue(that, out var r))
+            if (_SearchDic.TryGetValue(that, out var r))
                 return r;
             return null;
         }
 
         public static string ToShortString(this Namespace that)
         {
-            if (searchDic.TryGetValue(that, out var r))
+            if (_SearchDic.TryGetValue(that, out var r))
                 return r.Substring(0, 1);
             return null;
         }
@@ -119,12 +120,12 @@ namespace EhTagClient
                 return true;
             }
             str = str.Trim();
-            if (parsingDic.TryGetValue(str, out result))
+            if (_ParsingDic.TryGetValue(str, out result))
                 return true;
             var f = str.FirstOrDefault(char.IsLetter);
             if (f == default(char))
                 return false;
-            if (parsingDic.TryGetValue(f.ToString(), out result))
+            if (_ParsingDic.TryGetValue(f.ToString(), out result))
                 return true;
             return false;
         }

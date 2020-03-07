@@ -168,7 +168,7 @@ namespace EhTagApi.Controllers
             if (found is null)
                 return NotFound();
 
-            dic.Remove(raw);
+            dic.Remove(raw, true);
             dic.Save();
 
             _Commit(@namespace, raw, found, null, user);
