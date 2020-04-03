@@ -1,11 +1,11 @@
 EhTagConnector <!-- omit in toc -->
 ====
 
-[![Tool Build status](https://github.com/EhTagTranslation/EhTagConnector/workflows/build%20tool/badge.svg)](https://github.com/EhTagTranslation/EhTagConnector/actions?query=workflow%3A%22build+tool%22)
-[![Website Build status](https://github.com/EhTagTranslation/EhTagConnector/workflows/build%20website/badge.svg)](https://github.com/EhTagTranslation/EhTagConnector/actions?query=workflow%3A%22build+website%22)
-[![Website Status](https://img.shields.io/website/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](https://ehtagconnector.azurewebsites.net/api/database)
+[![Tool Build status](../../workflows/build%20tool/badge.svg)](../../actions?query=workflow%3A%22build+tool%22)
+[![Website Build status](../../workflows/build%20website/badge.svg)](../../actions?query=workflow%3A%22build+website%22)
+[![Website Status](//img.shields.io/website/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](//ehtagconnector.azurewebsites.net/api/database)
 
-连接到 [EhTagTranslation 数据库](https://github.com/EhTagTranslation/Database)的 RESTful API。
+连接到 [EhTagTranslation 数据库](../../../Database)的 RESTful API。
 
 - [API 使用](#api-使用)
   - [API 域名](#api-域名)
@@ -32,24 +32,24 @@ EhTagConnector <!-- omit in toc -->
 <https://ehtagconnector.azurewebsites.net/api/>
 
 ### 版本控制
-使用 [`ETag`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/ETag) 进行版本控制，其值为最新一次 Git commit 的 sha1 值。可以使用[查询数据库数据版本](#查询数据库数据版本) API 进行查询。
+使用 [`ETag`](//developer.mozilla.org/docs/Web/HTTP/Headers/ETag) 进行版本控制，其值为最新一次 Git commit 的 sha1 值。可以使用[查询数据库数据版本](#查询数据库数据版本) API 进行查询。
 
 + `ETag` 将随 `HTTP 2XX` 及 `HTTP 404` 响应返回。
 
-+ 对于 `HEAD`, `GET` 请求，可以使用 [`If-None-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-None-Match) 控制缓存。
++ 对于 `HEAD`, `GET` 请求，可以使用 [`If-None-Match`](//developer.mozilla.org/docs/Web/HTTP/Headers/If-None-Match) 控制缓存。
   
-+ 对于 `POST`, `PUT`, `DELETE` 请求，**必须**使用 [`If-Match`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/If-Match) 头以防止编辑冲突。  
++ 对于 `POST`, `PUT`, `DELETE` 请求，**必须**使用 [`If-Match`](//developer.mozilla.org/docs/Web/HTTP/Headers/If-Match) 头以防止编辑冲突。  
   
   当未包含 `If-Match` 头时，将返回
-  [`HTTP 428 Precondition Required`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/428)；当
+  [`HTTP 428 Precondition Required`](//developer.mozilla.org/docs/Web/HTTP/Status/428)；当
   `If-Match` 头的版本与最新版本不匹配时，将返回
-  [`HTTP 412 Precondition Failed`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/412)，此时需要使用对应的 `GET` / `HEAD` 请求更新 `ETag` 及相应的资源。
+  [`HTTP 412 Precondition Failed`](//developer.mozilla.org/docs/Web/HTTP/Status/412)，此时需要使用对应的 `GET` / `HEAD` 请求更新 `ETag` 及相应的资源。
   
-> 参考：[HTTP 条件请求](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Conditional_requests)
+> 参考：[HTTP 条件请求](//developer.mozilla.org/docs/Web/HTTP/Conditional_requests)
 
 ### 用户认证
 
-进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](https://developer.github.com/apps/building-oauth-apps/) 或 [PAT](https://github.com/settings/tokens) 获取。该 token 只用于确认用户信息，不需要除 public access 外的特殊 scope。
+进行数据库修改（`POST`, `PUT`, `DELETE` 请求）时需要进行用户认证，需要的信息为用户的 GitHub token，可通过 [OAuth](//developer.github.com/apps/building-oauth-apps/) 或 [PAT](//github.com/settings/tokens) 获取。该 token 只用于确认用户信息，不需要除 public access 外的特殊 scope。
 
 认证信息通过 `X-Token` HTTP 头输入（如 `X-Token: e9b35fc3cd731c11d4e535724b1e376bfc2b3104`）。当缺少此头部或 token 无效时返回 `HTTP 401 Unauthorized`，具体错误原因可查询响应内容。
 
@@ -58,7 +58,7 @@ EhTagConnector <!-- omit in toc -->
 
 ### 返回格式
 
-使用 [`Accept`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Accept) 头或 `format` URI 查询参数控制 API 返回 JSON 的格式，可选的值有：
+使用 [`Accept`](//developer.mozilla.org/docs/Web/HTTP/Headers/Accept) 头或 `format` URI 查询参数控制 API 返回 JSON 的格式，可选的值有：
 
 - `Accept: application/json` / `?format=json`
   
@@ -183,7 +183,7 @@ EhTagConnector <!-- omit in toc -->
   ```
 ### API Endpoints
 
-所有示例可参见 [examples.http](/examples.http)，返回 JSON 对象的定义可参见 [interface.d.ts](https://github.com/EhTagTranslation/Database/blob/master/tools/interface.d.ts)。
+所有示例可参见 [examples.http](examples.http)，返回 JSON 对象的定义可参见 [interface.d.ts](../../../Database/blob/master/tools/interface.d.ts)。
 
 #### 查询数据库基本情况
 
@@ -238,7 +238,7 @@ ETag: "10ee33e7a348bf5842433944baa196da53eaa0df"
 }
 ```
 
-> 如需获取数据库全部内容请参考[获取数据库内容](https://github.com/EhTagTranslation/Database#获取数据库内容)。
+> 如需获取数据库全部内容请参考[获取数据库内容](../../../Database#获取数据库内容)。
 
 #### 查询数据库数据版本
 
