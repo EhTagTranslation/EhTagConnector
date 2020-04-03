@@ -3,7 +3,7 @@ EhTagConnector <!-- omit in toc -->
 
 [![Tool Build status](../../workflows/build%20tool/badge.svg)](../../actions?query=workflow%3A%22build+tool%22)
 [![Website Build status](../../workflows/build%20website/badge.svg)](../../actions?query=workflow%3A%22build+website%22)
-[![Website Status](//img.shields.io/website/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](//ehtagconnector.azurewebsites.net/api/database)
+[![Website Status](https://img.shields.io/website/https/ehtagconnector.azurewebsites.net/api/tools/status.svg)](//ehtagconnector.azurewebsites.net/api/database)
 
 连接到 [EhTagTranslation 数据库](../../../Database)的 RESTful API。
 
