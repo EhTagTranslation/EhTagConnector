@@ -38,21 +38,26 @@ namespace EhTagClient.MarkdigExt
 
             return (url, title, null);
         }
-        public static Record GetTag(string tag, Namespace ns)
+        public static string GetTagName(string tag, Namespace ns)
         {
             var table = Context.Database[ns];
-            return table.Data[tag];
+            var record = table.Find(tag, true);
+            if (record == null)
+                return null;
+            if (record.Name.Text == null)
+                record.Name.Render();
+            return record.Name.Text;
         }
 
-        public static Record GetTag(string tag)
+        public static string GetTagName(string tag)
         {
-            var record = GetTag(tag, Context.Namespace);
+            var record = GetTagName(tag, Context.Namespace);
             if (record != null) return record;
             foreach (var item in Context.Database.Keys)
             {
                 if (item != Context.Namespace)
                 {
-                    record = GetTag(tag, item);
+                    record = GetTagName(tag, item);
                     if (record != null) return record;
                 }
             }

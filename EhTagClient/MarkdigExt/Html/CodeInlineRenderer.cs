@@ -10,12 +10,12 @@ namespace EhTagClient.MarkdigExt.Html
         protected override void Write(HtmlRenderer renderer, CodeInline obj)
         {
             var content = obj.Content;
-            var tag = Extension.GetTag(content);
+            var tag = Extension.GetTagName(content);
             if (renderer.EnableHtmlForInline)
                 renderer.Write("<ruby>");
             if (tag != null)
             {
-                renderer.WriteEscape(tag.Name.Text);
+                renderer.WriteEscape(tag);
                 if (renderer.EnableHtmlForInline)
                 {
                     renderer.Write("<rp>(</rp><rt>");

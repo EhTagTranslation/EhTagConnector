@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using KVP = System.Collections.Generic.KeyValuePair<string, EhTagClient.Record>;
 
 namespace EhTagClient
 {
+    [DebuggerDisplay(@"Namespace={Namespace} Count={Count}")]
     public class RecordDictionary
     {
         public RecordDictionary(Namespace ns, RepoClient repoClient)
@@ -38,7 +40,7 @@ namespace EhTagClient
 
             internal DataDic(RecordDictionary parent) => _Parent = parent;
 
-            public Record this[string key] => _Parent.Find(key);
+            public Record this[string key] => _Parent.Find(key, false);
 
             public IEnumerable<string> Keys
             {
@@ -66,7 +68,7 @@ namespace EhTagClient
 
             public bool TryGetValue(string key, out Record value)
             {
-                value = _Parent.Find(key);
+                value = _Parent.Find(key, false);
                 return !(value is null);
 
             }
@@ -108,7 +110,8 @@ namespace EhTagClient
                     switch (state)
                     {
                         case 0:
-                            prefix.AppendLine(line);
+                            prefix.Append(line);
+                            prefix.Append('\n');
                             if (record.Key != null)
                             {
                                 state = 1;
@@ -123,7 +126,8 @@ namespace EhTagClient
                             else
                                 continue;
                         case 1:
-                            prefix.AppendLine(line);
+                            prefix.Append(line);
+                            prefix.Append('\n');
                             if (line == sep)
                             {
                                 state = 2;
@@ -131,11 +135,13 @@ namespace EhTagClient
                             }
                             else
                             {
-                                frontMatters.AppendLine(line);
+                                frontMatters.Append(line);
+                                frontMatters.Append('\n');
                                 continue;
                             }
                         case 2:
-                            prefix.AppendLine(line);
+                            prefix.Append(line);
+                            prefix.Append('\n');
                             if (record.Key != null)
                             {
                                 state = 3;
@@ -144,7 +150,8 @@ namespace EhTagClient
                             else
                                 continue;
                         case 3:
-                            prefix.AppendLine(line);
+                            prefix.Append(line);
+                            prefix.Append('\n');
                             if (record.Key is null)
                             {
                                 state = 2;
@@ -158,7 +165,8 @@ namespace EhTagClient
                         case 4:
                             if (record.Key is null)
                             {
-                                suffix.AppendLine(line);
+                                suffix.Append(line);
+                                suffix.Append('\n');
                                 state = 5;
                                 continue;
                             }
@@ -168,7 +176,8 @@ namespace EhTagClient
                                 continue;
                             }
                         default:
-                            suffix.AppendLine(line);
+                            suffix.Append(line);
+                            suffix.Append('\n');
                             continue;
                     }
                 }
@@ -216,13 +225,16 @@ namespace EhTagClient
             }
         }
 
-        public Record Find(string key)
+        public Record Find(string key, bool skipRender)
         {
             if (!MapData.TryGetValue(key, out var index))
                 return null;
-            Context.Namespace = Namespace;
             var record = RawData[index].Value;
-            record.Render(key);
+            if (!skipRender)
+            {
+                Context.Namespace = Namespace;
+                record.Render(key);
+            }
             return record;
         }
 

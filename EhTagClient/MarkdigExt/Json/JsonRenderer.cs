@@ -152,11 +152,11 @@ namespace EhTagClient.MarkdigExt.Json
         protected override void WriteContent(JsonRenderer renderer, CodeInline obj)
         {
             var content = obj.Content;
-            var tag = Extension.GetTag(content);
+            var tag = Extension.GetTagName(content);
             if (tag != null)
             {
                 renderer.WriteProperty("tag", content);
-                renderer.WriteProperty("text", tag.Name.Text);
+                renderer.WriteProperty("text", tag);
             }
             else
             {
