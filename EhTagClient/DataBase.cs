@@ -37,8 +37,18 @@ namespace EhTagClient
             }
         }
 
+        public void Render()
+        {
+            Context.Database = this;
+            foreach (var item in Values)
+            {
+                item.Render();
+            }
+        }
+
         public void Save()
         {
+            Context.Database = this;
             foreach (var item in Values)
             {
                 item.Save();

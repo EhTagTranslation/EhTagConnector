@@ -38,5 +38,26 @@ namespace EhTagClient.MarkdigExt
 
             return (url, title, null);
         }
+        public static Record GetTag(string tag, Namespace ns)
+        {
+            var table = Context.Database[ns];
+            return table.Data[tag];
+        }
+
+        public static Record GetTag(string tag)
+        {
+            var record = GetTag(tag, Context.Namespace);
+            if (record != null) return record;
+            foreach (var item in Context.Database.Keys)
+            {
+                if (item != Context.Namespace)
+                {
+                    record = GetTag(tag, item);
+                    if (record != null) return record;
+                }
+            }
+            Console.WriteLine($"Invalid tag ref {tag}");
+            return null;
+        }
     }
 }

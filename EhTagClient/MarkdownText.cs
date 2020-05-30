@@ -17,16 +17,20 @@ namespace EhTagClient
             rawString = (rawString ?? "").Trim();
             rawString = Regex.Replace(rawString, "(\r\n|\r|\n)", singleLine ? " " : "\n").Trim();
             Raw = rawString;
+        }
+
+        public string Raw { get; private set; }
+        public string Text { get; private set; }
+        public string Html { get; private set; }
+        public Newtonsoft.Json.Linq.JRaw Ast { get; private set; }
+
+        public void Render()
+        {
             var ast = MarkdigExt.Renderer.Parse(Raw);
             Text = MarkdigExt.Renderer.ToPlainText(ast);
             Raw = MarkdigExt.Renderer.ToNormalizedMarkdown(ast);
             Html = MarkdigExt.Renderer.ToHtml(ast);
             Ast = new Newtonsoft.Json.Linq.JRaw(MarkdigExt.Renderer.ToJson(ast));
         }
-
-        public string Raw { get; }
-        public string Text { get; }
-        public string Html { get; }
-        public Newtonsoft.Json.Linq.JRaw Ast { get; }
     }
 }

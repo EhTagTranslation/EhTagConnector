@@ -147,9 +147,22 @@ namespace EhTagClient.MarkdigExt.Json
 
     sealed class CodeInlineRenderer : JsonObjectRenderer<CodeInline>
     {
-        protected override string GetType(JsonRenderer renderer, CodeInline obj) => "code";
+        protected override string GetType(JsonRenderer renderer, CodeInline obj) => "tagref";
 
-        protected override void WriteContent(JsonRenderer renderer, CodeInline obj) => renderer.WriteProperty("text", obj.Content);
+        protected override void WriteContent(JsonRenderer renderer, CodeInline obj)
+        {
+            var content = obj.Content;
+            var tag = Extension.GetTag(content);
+            if (tag != null)
+            {
+                renderer.WriteProperty("tag", content);
+                renderer.WriteProperty("text", tag.Name.Text);
+            }
+            else
+            {
+                renderer.WriteProperty("text", content);
+            }
+        }
     }
 
     sealed class DelimiterInlineRenderer : JsonTextRender<DelimiterInline>

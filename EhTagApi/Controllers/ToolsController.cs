@@ -25,6 +25,7 @@ namespace EhTagApi.Controllers
         [HttpPost("normalize")]
         public IActionResult Normalize([FromBody] Record record)
         {
+            record.Render("");
             return Ok(record);
         }
 
@@ -53,6 +54,7 @@ namespace EhTagApi.Controllers
                 error.AddModelError(nameof(tableRow), "Failed to parse it as a markdown table row.");
                 return BadRequest(error);
             }
+            r.Value.Render(r.Key);
             return Ok(r);
         }
     }

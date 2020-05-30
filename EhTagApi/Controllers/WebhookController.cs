@@ -49,6 +49,7 @@ namespace EhTagApi.Controllers
                 log = $"Pulled form github in {(DateTimeOffset.Now - start).TotalMilliseconds}ms.";
                 logger.LogInformation(log);
                 database.Load();
+                database.Render();
             }
             else
             {

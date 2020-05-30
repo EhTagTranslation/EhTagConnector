@@ -62,6 +62,7 @@ namespace EhTagClient.MarkdigExt
                 htmlRenderer.EnableHtmlForBlock = false;
                 htmlRenderer.EnableHtmlForInline = false;
             }
+            htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.CodeInlineRenderer>(new Html.CodeInlineRenderer());
             htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LinkInlineRenderer>(new Html.EhLinkInlineRenderer());
             htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.HtmlEntityInlineRenderer>(new Html.HtmlEntityInlineRenderer());
             htmlRenderer.ObjectRenderers.Replace<Hr.Inlines.LiteralInlineRenderer>(new Html.LiteralInlineRenderer());

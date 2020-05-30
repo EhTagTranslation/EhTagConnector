@@ -1,13 +1,11 @@
 ﻿using Markdig.Renderers;
 using Markdig.Renderers.Html;
 using Markdig.Syntax.Inlines;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace EhTagClient.MarkdigExt.Html
 {
-
     class EhLinkInlineRenderer : HtmlObjectRenderer<LinkInline>
     {
         protected override void Write(HtmlRenderer renderer, LinkInline link)

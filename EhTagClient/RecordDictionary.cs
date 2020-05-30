@@ -189,8 +189,20 @@ namespace EhTagClient
             }
         }
 
+        public void Render()
+        {
+            Context.Namespace = Namespace;
+            foreach (var item in RawData)
+            {
+                if (item.Key is null)
+                    continue;
+                item.Value.Render(item.Key);
+            }
+        }
+
         public void Save()
         {
+            Context.Namespace = Namespace;
             using (var sw = new StreamWriter(FilePath) { NewLine = "\n" })
             {
                 sw.Write(Prefix);
@@ -208,7 +220,10 @@ namespace EhTagClient
         {
             if (!MapData.TryGetValue(key, out var index))
                 return null;
-            return RawData[index].Value;
+            Context.Namespace = Namespace;
+            var record = RawData[index].Value;
+            record.Render(key);
+            return record;
         }
 
         public void Add(string key, Record record)

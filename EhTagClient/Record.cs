@@ -80,7 +80,8 @@ namespace EhTagClient
             var name = match.Groups[nameof(Name)].Value;
             var intro = match.Groups[nameof(Intro)].Value;
             var links = match.Groups[nameof(Links)].Value;
-            return KeyValuePair.Create(raw, new Record(_Unescape(name), _Unescape(intro), _Unescape(links)));
+            var record = new Record(_Unescape(name), _Unescape(intro), _Unescape(links));
+            return KeyValuePair.Create(raw, record);
         }
 
         private static readonly Regex _UnescapeRe1 = new Regex(@"<br\s*/?>", RegexOptions.Compiled);
@@ -113,7 +114,19 @@ namespace EhTagClient
 
         public MarkdownText Links { get; }
 
+        public void Render(string raw)
+        {
+            Context.Raw = raw;
+            Context.Record = this;
+            Name.Render();
+            Intro.Render();
+            Links.Render();
+        }
+
         public string ToString(string raw)
-            => $"| {raw.Trim().ToLower()} | {_Escape(Name.Raw)} | {_Escape(Intro.Raw)} | {_Escape(Links.Raw)} |";
+        {
+            Render(raw);
+            return $"| {raw.Trim().ToLower()} | {_Escape(Name.Raw)} | {_Escape(Intro.Raw)} | {_Escape(Links.Raw)} |";
+        }
     }
 }
