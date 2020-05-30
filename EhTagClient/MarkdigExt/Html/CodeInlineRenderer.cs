@@ -12,29 +12,35 @@ namespace EhTagClient.MarkdigExt.Html
             var content = obj.Content;
             var tag = Extension.GetTagName(content);
             if (renderer.EnableHtmlForInline)
-                renderer.Write("<ruby>");
-            if (tag != null)
             {
-                renderer.WriteEscape(tag);
-                if (renderer.EnableHtmlForInline)
+                if (tag != null)
                 {
-                    renderer.Write("<rp>(</rp><rt>");
+                    renderer.Write("<abbr title=\"");
                     renderer.WriteEscape(content);
-                    renderer.Write("</rt><rp>)</rp>");
+                    renderer.Write("\">");
+                    renderer.WriteEscape(tag);
                 }
                 else
                 {
+                    renderer.Write("<abbr>");
+                    renderer.WriteEscape(content);
+                }
+                renderer.Write("</abbr>");
+            }
+            else
+            {
+                if (tag != null)
+                {
+                    renderer.WriteEscape(tag);
                     renderer.Write('(');
                     renderer.WriteEscape(content);
                     renderer.Write(')');
                 }
+                else
+                {
+                    renderer.WriteEscape(content);
+                }
             }
-            else
-            {
-                renderer.WriteEscape(content);
-            }
-            if (renderer.EnableHtmlForInline)
-                renderer.Write("</ruby>");
         }
     }
 }
