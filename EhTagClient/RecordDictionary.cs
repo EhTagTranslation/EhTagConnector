@@ -225,7 +225,7 @@ namespace EhTagClient
             }
         }
 
-        public Record Find(string key, bool skipRender)
+        public Record Find(string key, bool skipRender = false)
         {
             if (!MapData.TryGetValue(key, out var index))
                 return null;
