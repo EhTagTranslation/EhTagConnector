@@ -191,7 +191,7 @@ namespace EhTagClient
 
         public void Save()
         {
-            using (var sw = new StreamWriter(FilePath))
+            using (var sw = new StreamWriter(FilePath) { NewLine = "\n" })
             {
                 sw.Write(Prefix);
                 foreach (var item in RawData)
