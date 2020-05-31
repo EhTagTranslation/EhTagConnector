@@ -16,6 +16,12 @@ namespace EhTagApi.Controllers
     [FormatFilter]
     public class ToolsController : ControllerBase
     {
+        private readonly Database _Database;
+        public ToolsController(Database database)
+        {
+            _Database = database;
+        }
+
         [HttpHead("status")]
         public IActionResult Status()
         {
