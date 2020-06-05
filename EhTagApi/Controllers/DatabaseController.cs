@@ -180,7 +180,7 @@ namespace EhTagApi.Controllers
         public ActionResult<Record> Post(
             [SingleNamespace] Namespace @namespace,
             [AcceptableRaw] string raw,
-            [AcceptableTranslation, FromBody] Record record,
+            [AcceptableRecord, FromBody] Record record,
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];
@@ -201,7 +201,7 @@ namespace EhTagApi.Controllers
         public ActionResult<Record> Put(
             [SingleNamespace] Namespace @namespace,
             [AcceptableRaw] string raw,
-            [AcceptableTranslation, FromBody] Record record,
+            [AcceptableRecord, FromBody] Record record,
             [FromHeader] User user)
         {
             var dic = _Database[@namespace];

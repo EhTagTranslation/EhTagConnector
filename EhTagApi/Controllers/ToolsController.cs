@@ -29,22 +29,21 @@ namespace EhTagApi.Controllers
         }
 
         [HttpPost("normalize")]
-        public IActionResult Normalize([FromBody] Record record)
+        public IActionResult Normalize([FromBody, AcceptableRecord(NoCheck = true)] Record record)
         {
-            record.Render("");
             return Ok(record);
         }
 
         [HttpPost("serialize/{raw}")]
         public IActionResult Serialize(
             [AcceptableRaw, Required] string raw,
-            [FromBody] Record record)
+            [FromBody, AcceptableRecord(NoCheck = true)] Record record)
         {
             return Ok(record.ToString(raw));
         }
 
         [HttpPost("parse")]
-        public IActionResult Parse([FromBody][Required] string tableRow)
+        public IActionResult Parse([FromBody, Required] string tableRow)
         {
             var lines = tableRow.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             if (lines.Length != 1)

@@ -10,19 +10,21 @@ using System.Text.RegularExpressions;
 
 namespace EhTagClient
 {
-    public sealed class AcceptableTranslationAttribute : ValidationAttribute
+    public sealed class AcceptableRecordAttribute : ValidationAttribute
     {
+        public bool NoCheck { get; set; }
+
         public override bool RequiresValidationContext => true;
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (!(value is Record record))
-                return new ValidationResult($"The value '{value}' is not valid.");
-            var failedFields = new List<string>(2);
+                return new ValidationResult($"The value '{value}' is not valid.", new[] { validationContext.DisplayName });
+            record.Render(null);
+            if (NoCheck)
+                return ValidationResult.Success;
             if (string.IsNullOrEmpty(record.Name.Text))
-                failedFields.Add(validationContext.MemberName + ".name.text");
-            if (failedFields.Count != 0)
-                return new ValidationResult($"Field should not be empty.", failedFields);
+                return new ValidationResult($"Field should not be empty.", new[] { validationContext.DisplayName + ".name" });
             return ValidationResult.Success;
         }
     }
@@ -31,12 +33,12 @@ namespace EhTagClient
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (!(value is string raw))
-                return new ValidationResult($"The value '{value}' is not a valid tag.");
+                return new ValidationResult($"The value '{value}' is not a valid tag.", new[] { validationContext.DisplayName });
             var traw = raw.Trim();
             if (traw != raw)
-                return new ValidationResult($"The tag starts with or end with whitespaces.");
+                return new ValidationResult($"The tag starts with or end with whitespaces.", new[] { validationContext.DisplayName });
             if (string.IsNullOrEmpty(traw))
-                return new ValidationResult($"The tag is too short.");
+                return new ValidationResult($"The tag is too short.", new[] { validationContext.DisplayName });
             foreach (var ch in traw)
             {
                 if ((ch >= 'a' && ch <= 'z')
@@ -46,7 +48,7 @@ namespace EhTagClient
                     || ch == ' '
                     || ch == '-')
                     continue;
-                return new ValidationResult($"The tag included non-alphanumeric characters which are not permitted. Only hyphens, periods, and spaces are allowed in tags.");
+                return new ValidationResult($"The tag included non-alphanumeric characters which are not permitted. Only hyphens, periods, and spaces are allowed in tags.", new[] { validationContext.DisplayName });
             }
             return ValidationResult.Success;
         }
