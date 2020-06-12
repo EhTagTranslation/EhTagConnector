@@ -65,7 +65,7 @@ namespace EhTagClient
                 };
             };
 
-        public Identity CommandIdentity => new Identity(Consts.Username, Consts.Email);
+        public Identity CommandIdentity => new Identity(Consts.CommitterName, Consts.CommitterEmail);
 
         public string CurrentSha => Repo.Commits.First().Sha;
 

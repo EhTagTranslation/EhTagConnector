@@ -13,8 +13,11 @@ namespace EhTagClient
 
         public static string Username { get; }
         public static string Password { get; }
-        public static string Email { get; }
+
         public static string Token { get; }
+
+        public static string CommitterName { get; }
+        public static string CommitterEmail { get; }
 
         public static JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
         {
@@ -36,8 +39,11 @@ namespace EhTagClient
         {
             Username = _GetString("GitHub:Username");
             Password = _GetString("GitHub:Password");
-            Email = _GetString("GitHub:Email");
+
             Token = _GetString("GitHub:Token");
+
+            CommitterName = _GetString("GitHub:CommitterName");
+            CommitterEmail = _GetString("GitHub:CommitterEmail");
         }
 
         private static string _GetString(string key)
@@ -47,7 +53,10 @@ namespace EhTagClient
                 ?? Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
 
             if (string.IsNullOrEmpty(ev))
+            {
                 Console.WriteLine($"Environment variable `{key}` not found.");
+                return null;
+            }
             return ev;
         }
     }
