@@ -39,7 +39,7 @@ namespace EhTagClient
 
         public void Init()
         {
-            if (Directory.Exists(Consts.REPO_PATH))
+            if (Directory.Exists(Path.Join(Consts.REPO_PATH, ".git")))
             {
                 _GitPath = Repository.Discover(Consts.REPO_PATH);
                 Repo = new Repository(_GitPath);
@@ -76,7 +76,7 @@ namespace EhTagClient
             Commands.Fetch(Repo, remote.Name, refSpecs, new FetchOptions
             {
                 CredentialsProvider = CredentialsProvider
-            }, ""); 
+            }, "");
             var originMaster = Repo.Branches["origin/master"];
             Repo.Reset(ResetMode.Hard, originMaster.Tip);
         }
