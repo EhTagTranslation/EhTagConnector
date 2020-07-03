@@ -1,3 +1,7 @@
+See <https://github.com/EhTagTranslation/Editor>
+
+---
+
 EhTagConnector <!-- omit in toc -->
 ====
 
